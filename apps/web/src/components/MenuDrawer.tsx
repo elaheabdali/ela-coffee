@@ -119,7 +119,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
         </button>
       </div>
 
-      <nav className="flex flex-1 flex-col justify-center gap-2">
+      <nav aria-label={tDrawer("menu")} className="flex flex-1 flex-col justify-center gap-2">
         <ul className="flex flex-col gap-2">
           {LINKS.map((link, i) => {
             const number =
@@ -157,7 +157,11 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
             aria-label={pauseLabel}
             className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent"
           >
-            {paused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
+            {paused ? (
+              <Play size={16} aria-hidden="true" />
+            ) : (
+              <Pause size={16} aria-hidden="true" />
+            )}
             {pauseLabel}
           </button>
         </div>

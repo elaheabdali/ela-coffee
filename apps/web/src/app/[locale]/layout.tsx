@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { buildJsonLd, buildMetadata, serializeJsonLd } from "@/lib/seo";
 import "@fontsource-variable/vazirmatn";
 import "../globals.css";
 
@@ -38,11 +39,14 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "Kuro Coffee — Small-batch iced lattes",
-  description:
-    "Small-batch iced lattes and matchas, poured black first, flavored fresh every morning.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildMetadata(locale === "en" ? "en" : "fa");
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -70,6 +74,23 @@ export default async function LocaleLayout({
       className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        {/*
+          Structured data (Phase 8): built from the same dataset as the
+          page, so it can never disagree with the menu on screen.
+          `dangerouslySetInnerHTML` is the documented Next.js way to emit
+          JSON-LD; the payload is server-built from our own trusted
+          dataset (no user input) and serializeJsonLd escapes `<`, so a
+          `</script>` breakout is structurally impossible. This is the
+          single sanctioned use in the codebase — see SECURITY.md §3.
+          CSP allows it: the script is same-origin inline JSON, and the
+          production CSP keeps script-src 'self' 'unsafe-inline'.
+        */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(buildJsonLd(locale === "en" ? "en" : "fa")),
+          }}
+        />
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>
