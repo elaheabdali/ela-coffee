@@ -7,6 +7,15 @@ import { z } from "zod";
 import { Button, Eyebrow, Reveal, WordReveal } from "@ela-coffee/ui";
 import { ReservationForm } from "@/components/ReservationForm";
 
+/**
+ * Zod jitless (SECURITY.md §3): this component builds a schema at
+ * render time and does not import the shared schemas module, so it
+ * sets the flag itself — otherwise Zod v4's JIT probe (`Function("")`)
+ * runs before the shared module loads and logs a CSP violation.
+ * See src/lib/schemas.ts for the full explanation.
+ */
+z.config({ jitless: true });
+
 interface JoinFormValues {
   email: string;
 }
@@ -108,9 +117,7 @@ export function JoinList() {
                 type="email"
                 autoComplete="email"
                 aria-invalid={emailError ? true : undefined}
-                aria-describedby={
-                  emailError ? `${emailErrorId} ${emailHelperId}` : emailHelperId
-                }
+                aria-describedby={emailError ? `${emailErrorId} ${emailHelperId}` : emailHelperId}
                 {...register("email")}
                 className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring"
               />

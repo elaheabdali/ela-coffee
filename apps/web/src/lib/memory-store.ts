@@ -66,8 +66,7 @@ export function resetMemoryStore(): void {
 export const memoryStore = {
   getDrinks: (): DrinkDTO[] => memoryDrinks(),
 
-  getDrink: (id: string): DrinkDTO | null =>
-    memoryDrinks().find((d) => d.id === id) ?? null,
+  getDrink: (id: string): DrinkDTO | null => memoryDrinks().find((d) => d.id === id) ?? null,
 
   createOrder: (order: OrderDTO, idempotencyKey?: string): OrderDTO => {
     orders.set(order.id, order);
@@ -121,6 +120,9 @@ export const memoryStore = {
   },
 
   subscriberCount: (): number => subscribers.size,
+
+  /** Test-only: how many contact messages were stored. */
+  contactCount: (): number => contacts.length,
 
   createContact: (contact: ContactDTO): ContactDTO => {
     contacts.push(contact);

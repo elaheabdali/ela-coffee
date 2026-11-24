@@ -17,6 +17,14 @@ import type { OrderDTO } from "@/lib/types";
 import { bagSubtotal, useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
 
+/**
+ * Zod jitless (SECURITY.md §3): this component builds a schema at
+ * render time, so it sets the flag itself — otherwise Zod v4's JIT
+ * probe (`Function("")`) can run before the shared schemas module
+ * loads and log a CSP violation. See src/lib/schemas.ts.
+ */
+z.config({ jitless: true });
+
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -279,8 +287,7 @@ export function BagDrawer() {
             <ul className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5">
               {items.map((item) => {
                 const drink =
-                  getDrink(brand, item.drinkId) ??
-                  ALL_DRINKS.find((d) => d.id === item.drinkId);
+                  getDrink(brand, item.drinkId) ?? ALL_DRINKS.find((d) => d.id === item.drinkId);
                 if (!drink) return null;
                 const name = locale === "fa" ? drink.nameFa : drink.nameEn;
                 return (

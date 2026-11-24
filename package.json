@@ -10,6 +10,7 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
+    "audit": "pnpm audit --audit-level high",
     "format": "prettier --write .",
     "prepare": "husky",
     "seed": "pnpm --filter web db:seed"

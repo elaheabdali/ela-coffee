@@ -7,13 +7,28 @@
 import { NextResponse } from "next/server";
 import { jsonError, parseBodyError, validationError } from "@/lib/api-errors";
 import { clientIp, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { assertSameOrigin, corsHeaders, handleOptions } from "@/lib/csrf";
 import { newsletterSchema } from "@/lib/schemas";
 import { subscribeNewsletter } from "@/lib/store";
 
+/** CORS preflight — ACAO only for our own origin (see lib/csrf.ts). */
+export function OPTIONS(request: Request): NextResponse {
+  return handleOptions(request);
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
+  // CSRF first: cross-origin requests are rejected before any other work.
+  const csrf = assertSameOrigin(request);
+  if (csrf) return csrf;
+
   const limit = rateLimit(`newsletter:${clientIp(request)}`, 5, 60);
   if (!limit.allowed) {
-    return jsonError(429, "RATE_LIMITED", "Too many requests. Try again shortly.", rateLimitHeaders(limit));
+    return jsonError(
+      429,
+      "RATE_LIMITED",
+      "Too many requests. Try again shortly.",
+      rateLimitHeaders(limit),
+    );
   }
 
   let body: unknown;
@@ -35,9 +50,9 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // Honeypot filled → bot. Answer like a success, subscribe nothing.
   if (parsed.data.website) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders(request) });
   }
 
   await subscribeNewsletter(parsed.data.email.toLowerCase(), parsed.data.locale ?? "fa");
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true }, { headers: corsHeaders(request) });
 }

@@ -23,6 +23,11 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      # Dependency audit (Phase 7): fails on high/critical advisories.
+      # It cannot run in the sandbox used to build this repo — the
+      # managed registry policy blocks the audit endpoint there — so
+      # the first real result comes from this job.
+      - run: pnpm audit --audit-level high
 
   # PLACEHOLDER (Phase 2): no Playwright tests exist yet, so this job is
   # intentionally a no-op that only records the fact. It becomes a real

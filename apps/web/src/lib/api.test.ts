@@ -18,9 +18,13 @@ import { resetRateLimits } from "@/lib/rate-limit";
 import { updateOrderStatus } from "@/lib/store";
 
 function jsonRequest(url: string, body: unknown, headers?: Record<string, string>): Request {
+  // A browser always sends Origin on a fetch POST; the CSRF check
+  // (lib/csrf.ts) requires it, so the helper sends the same-origin
+  // value by default. Tests that need a foreign/missing origin pass
+  // their own headers explicitly (see security.test.ts).
   return new Request(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...headers },
+    headers: { "Content-Type": "application/json", Origin: "http://x", ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -48,7 +52,9 @@ describe("GET /api/menu", () => {
 
 describe("POST /api/newsletter", () => {
   it("rejects an invalid email", async () => {
-    const response = await newsletterPOST(jsonRequest("http://x/api/newsletter", { email: "nope" }));
+    const response = await newsletterPOST(
+      jsonRequest("http://x/api/newsletter", { email: "nope" }),
+    );
     expect(response.status).toBe(400);
     const data = await readJson(response);
     expect((data.error as { code: string }).code).toBe("VALIDATION_ERROR");

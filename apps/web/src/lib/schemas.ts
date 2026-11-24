@@ -7,6 +7,31 @@
 import { z } from "zod";
 import { isValidIranianPhone, normalizeDigits } from "@ela-coffee/i18n";
 
+/**
+ * Zod runs in jitless mode on purpose (SECURITY.md §3): Zod v4 probes
+ * JIT support with `Function("")` at first use, and our CSP blocks
+ * `eval`/`Function` in production — the probe throws, is caught, and
+ * Zod falls back to interpreted validation anyway, but the probe
+ * still logs a CSP violation in the console. Disabling JIT up front
+ * removes the probe entirely. The cost is negligible: our schemas
+ * are small form/API shapes, and interpreted validation is fast
+ * enough for them.
+ */
+z.config({ jitless: true });
+
+/**
+ * Strip angle brackets from user text at the validation boundary.
+ * React already escapes on render, so a stored `<script>` could never
+ * execute through our pages — this is defence in depth, so the value
+ * is safe even if it is ever read by another consumer (admin view,
+ * export, email). Applied to names and messages, never to emails or
+ * phones (those are already constrained to their own formats).
+ */
+const noAngleBrackets = (value: string): string => value.replace(/[<>]/g, "");
+
+const safeText = (min: number, max: number, requiredMessage: string, tooLongMessage: string) =>
+  z.string().min(min, requiredMessage).max(max, tooLongMessage).transform(noAngleBrackets);
+
 /** Honeypot field: bots fill it, humans never see it. Any non-empty value
  * = spam — but that is decided by the route (answer 200, subscribe
  * nothing), so the schema must ACCEPT a filled honeypot; validating
@@ -21,7 +46,7 @@ export const newsletterSchema = z.object({
 });
 
 export const reservationSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  name: safeText(1, 100, "Name is required", "Name is too long"),
   phone: z
     .string()
     .min(1, "Phone is required")
@@ -42,7 +67,7 @@ export const orderItemSchema = z.object({
 
 export const orderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "At least one item is required").max(20),
-  customerName: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  customerName: safeText(1, 100, "Name is required", "Name is too long"),
   phone: z
     .string()
     .min(1, "Phone is required")
@@ -54,23 +79,31 @@ export const orderSchema = z.object({
 });
 
 export const contactSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  name: safeText(1, 100, "Name is required", "Name is too long"),
   contact: z
     .string()
     .min(1, "Email or phone is required")
     .max(150)
     .refine(
-      (value) =>
-        z.string().email().safeParse(value).success || isValidIranianPhone(value),
+      (value) => z.string().email().safeParse(value).success || isValidIranianPhone(value),
       "Enter a valid email address or Iranian mobile number",
     ),
-  message: z.string().min(1, "Message is required").max(2000, "Message is too long"),
+  message: safeText(1, 2000, "Message is required", "Message is too long"),
   website: honeypotSchema,
 });
 
 /** Normalise an Iranian phone to its canonical Latin-digit form. */
 export function canonicalPhone(phone: string): string {
   return normalizeDigits(phone.trim());
+}
+
+/**
+ * Record ids are UUIDs (memory store) or cuid strings (Prisma).
+ * Reject anything else before it reaches the data layer — a weird id
+ * can never be a real record, so 400 (not 404) is the honest answer.
+ */
+export function isValidRecordId(id: string): boolean {
+  return id.length >= 1 && id.length <= 64 && /^[A-Za-z0-9_-]+$/.test(id);
 }
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>;

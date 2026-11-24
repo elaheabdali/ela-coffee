@@ -7,13 +7,28 @@
 import { NextResponse } from "next/server";
 import { jsonError, parseBodyError, validationError } from "@/lib/api-errors";
 import { clientIp, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
-import { canonicalPhone, reservationSchema } from "@/lib/schemas";
+import { assertSameOrigin, corsHeaders, handleOptions } from "@/lib/csrf";
+import { canonicalPhone, isValidRecordId, reservationSchema } from "@/lib/schemas";
 import { createReservation, getReservation } from "@/lib/store";
 
+/** CORS preflight — ACAO only for our own origin (see lib/csrf.ts). */
+export function OPTIONS(request: Request): NextResponse {
+  return handleOptions(request);
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
+  // CSRF first: cross-origin requests are rejected before any other work.
+  const csrf = assertSameOrigin(request);
+  if (csrf) return csrf;
+
   const limit = rateLimit(`reservations:${clientIp(request)}`, 10, 60);
   if (!limit.allowed) {
-    return jsonError(429, "RATE_LIMITED", "Too many requests. Try again shortly.", rateLimitHeaders(limit));
+    return jsonError(
+      429,
+      "RATE_LIMITED",
+      "Too many requests. Try again shortly.",
+      rateLimitHeaders(limit),
+    );
   }
 
   let body: unknown;
@@ -35,7 +50,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // Honeypot filled → bot. Answer like a success, create nothing.
   if (parsed.data.website) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders(request) });
   }
 
   const reservation = await createReservation({
@@ -44,13 +59,16 @@ export async function POST(request: Request): Promise<NextResponse> {
     date: new Date(parsed.data.date),
     guests: parsed.data.guests,
   });
-  return NextResponse.json({ reservation }, { status: 201 });
+  return NextResponse.json({ reservation }, { status: 201, headers: corsHeaders(request) });
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
   const id = new URL(request.url).searchParams.get("id");
   if (!id) {
     return jsonError(400, "MISSING_ID", "Query parameter id is required.");
+  }
+  if (!isValidRecordId(id)) {
+    return jsonError(400, "INVALID_ID", "Reservation id is not well-formed.");
   }
   const reservation = await getReservation(id);
   if (!reservation) {

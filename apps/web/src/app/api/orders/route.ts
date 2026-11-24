@@ -17,17 +17,28 @@ import { NextResponse } from "next/server";
 import { jsonError, parseBodyError, validationError } from "@/lib/api-errors";
 import { getPaymentProvider } from "@/lib/payments/port";
 import { clientIp, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { assertSameOrigin, corsHeaders, handleOptions } from "@/lib/csrf";
 import { canonicalPhone, orderSchema } from "@/lib/schemas";
-import {
-  createOrder,
-  getOrderByIdempotencyKey,
-  updateOrderPayment,
-} from "@/lib/store";
+import { createOrder, getOrderByIdempotencyKey, updateOrderPayment } from "@/lib/store";
+
+/** CORS preflight — ACAO only for our own origin (see lib/csrf.ts). */
+export function OPTIONS(request: Request): NextResponse {
+  return handleOptions(request);
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
+  // CSRF first: cross-origin requests are rejected before any other work.
+  const csrf = assertSameOrigin(request);
+  if (csrf) return csrf;
+
   const limit = rateLimit(`orders:${clientIp(request)}`, 10, 60);
   if (!limit.allowed) {
-    return jsonError(429, "RATE_LIMITED", "Too many requests. Try again shortly.", rateLimitHeaders(limit));
+    return jsonError(
+      429,
+      "RATE_LIMITED",
+      "Too many requests. Try again shortly.",
+      rateLimitHeaders(limit),
+    );
   }
 
   let body: unknown;
@@ -49,14 +60,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // Honeypot filled → bot. Answer like a success, create nothing.
   if (parsed.data.website) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders(request) });
   }
 
   const idempotencyKey = request.headers.get("Idempotency-Key") ?? undefined;
   if (idempotencyKey) {
     const existing = await getOrderByIdempotencyKey(idempotencyKey);
     if (existing) {
-      return NextResponse.json({ order: existing, idempotent: true });
+      return NextResponse.json(
+        { order: existing, idempotent: true },
+        { headers: corsHeaders(request) },
+      );
     }
   }
 
@@ -74,7 +88,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (error instanceof Error && error.message.startsWith("Unknown drink")) {
       return jsonError(400, "UNKNOWN_DRINK", error.message);
     }
-    throw error;
+    // Never leak internals (Prisma errors, stack traces): a generic
+    // 500 code. The real error is logged server-side by Next.js.
+    return jsonError(500, "INTERNAL_ERROR", "Something went wrong. Please try again.");
   }
 
   // Create the payment through the port (Mock by default).
@@ -97,6 +113,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   return NextResponse.json(
     { order, payment: { authority: payment.authority, url: payment.url, verified } },
-    { status: 201 },
+    { status: 201, headers: corsHeaders(request) },
   );
 }
