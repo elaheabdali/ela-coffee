@@ -14,4 +14,31 @@ describe("Reveal", () => {
     expect(screen.getByText("Always visible")).toBeInTheDocument();
     expect(screen.getByText("Always visible").parentElement).toHaveAttribute("data-revealed");
   });
+
+  it("sets the data-reveal attribute per variant", () => {
+    const { rerender } = render(
+      <Reveal variant="fade">
+        <p>Fading</p>
+      </Reveal>,
+    );
+    expect(screen.getByText("Fading").parentElement).toHaveAttribute("data-reveal", "fade");
+
+    rerender(
+      <Reveal variant="image">
+        <p>Image</p>
+      </Reveal>,
+    );
+    expect(screen.getByText("Image").parentElement).toHaveAttribute("data-reveal", "image");
+  });
+
+  it("passes the delay through --reveal-delay", () => {
+    render(
+      <Reveal variant="fade-up" delayMs={450}>
+        <p>Delayed</p>
+      </Reveal>,
+    );
+    expect(screen.getByText("Delayed").parentElement?.getAttribute("style")).toContain(
+      "--reveal-delay: 450ms",
+    );
+  });
 });

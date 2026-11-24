@@ -1,8 +1,7 @@
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Pill, Price, Reveal } from "@ela-coffee/ui";
+import { Marquee, Pill, Price, Reveal, WordReveal } from "@ela-coffee/ui";
 import { BrandToggle } from "@/components/BrandToggle";
 import { BagDemo } from "@/components/BagDemo";
 
@@ -19,21 +18,6 @@ import { BagDemo } from "@/components/BagDemo";
 // random/placeholder Toman prices are fine for now.
 const PLACEHOLDER_PRICE_TOMAN = 180_000;
 
-function WordStaggerHeading({ text }: { text: string }) {
-  const words = text.split(" ");
-  return (
-    <h1 className="font-display text-[clamp(2.5rem,8vw,4.5rem)] leading-[1.02] font-black tracking-[-0.02em]">
-      {words.map((word, i) => (
-        <span key={`${word}-${i}`} className="kuro-word me-[0.25em] last:me-0">
-          <span className="kuro-word-inner" style={{ "--i": i } as CSSProperties}>
-            {word}
-          </span>
-        </span>
-      ))}
-    </h1>
-  );
-}
-
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -42,6 +26,10 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const tMenu = await getTranslations("menu");
   const tPlaceholder = await getTranslations("placeholder");
   const priceLocale = locale === "en" ? "en" : "fa";
+  const marqueeItems = tHero("marquee")
+    .split("•")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-16 px-5 py-10 sm:px-12 lg:px-16">
@@ -52,7 +40,11 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
 
       <section id="hero" className="flex flex-col gap-8">
         <Pill>{tPlaceholder("motionDemo")}</Pill>
-        <WordStaggerHeading text={tHero("title")} />
+        <WordReveal
+          as="h1"
+          text={tHero("title")}
+          className="font-display text-[clamp(2.5rem,8vw,4.5rem)] leading-[1.02] font-black tracking-[-0.02em]"
+        />
 
         <div className="animate-kuro-wheel-in">
           <Image
@@ -83,16 +75,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       </section>
 
       <section aria-label={tPlaceholder("motionDemo")} className="flex flex-col gap-6">
-        <div
-          className="overflow-hidden rounded-xl border border-border bg-secondary py-3"
-          dir="ltr"
-        >
-          <div className="animate-kuro-marquee flex w-max whitespace-nowrap">
-            <span className="pe-4 font-display text-lg">{tHero("marquee")}</span>
-            <span className="pe-4 font-display text-lg" aria-hidden="true">
-              {tHero("marquee")}
-            </span>
-          </div>
+        <div className="overflow-hidden rounded-xl border border-border bg-secondary py-3">
+          <Marquee items={marqueeItems} ariaLabel={tHero("marquee")} />
         </div>
 
         <div className="flex items-center gap-6">

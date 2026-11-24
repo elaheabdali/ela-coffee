@@ -29,4 +29,5 @@ test-results/
 
 # Misc
 *.log
+*.tsbuildinfo
 .DS_Store

@@ -134,16 +134,29 @@ html[data-brand="matcha"] {
   --text-5xl: 3rem;
   --text-5xl--line-height: 1;
 
-  /* Radii (audit §3.4): base .75rem. */
+  /* Radii (audit §3.4): base --radius is .75rem (= --radius-lg below);
+     md is calc(.75rem * .8) = .6rem, xl 1.05rem, 2xl 1.35rem. */
   --radius-md: 0.6rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1.05rem;
   --radius-2xl: 1.35rem;
 
-  /* Shadows (audit §3.4, representative values). */
+  /* Shadows (audit §3.4 — all five representative values). */
+  --shadow-kuro-soft: 0 12px 32px -14px rgb(0 0 0 / 0.7);
   --shadow-kuro-card: 0 16px 30px -12px rgb(0 0 0 / 0.8);
   --shadow-kuro-lift: 0 20px 44px -16px rgb(0 0 0 / 0.85);
+  --shadow-kuro-wide: 0 30px 50px -24px rgb(0 0 0 / 0.45);
   --shadow-kuro-hero: 0 40px 90px -30px rgb(0 0 0 / 0.9);
+
+  /* Breakpoints (audit §3.4 — Tailwind defaults, made explicit). */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* Spacing unit (audit §3.4): .25rem. */
+  --spacing: 0.25rem;
 
   /* Motion utilities — exact audit §4 durations/easings. */
   --animate-kuro-wheel-in: kuro-wheel-in 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
@@ -158,6 +171,12 @@ html[data-brand="matcha"] {
   --animate-kuro-reveal-zoom: kuro-reveal-zoom 1.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-kuro-word-up: kuro-word-up 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-kuro-word-soft: kuro-word-soft 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /* Dialog enter/exit (audit §4: dialogs open with fade/scale-in;
+     default .15s ease unless overridden — .2s here, matching the
+     reference's snappy feel). */
+  --animate-kuro-dialog-in: kuro-dialog-in 0.2s ease-out both;
+  --animate-kuro-dialog-overlay-in: kuro-dialog-overlay-in 0.2s ease-out both;
 
   @keyframes kuro-wheel-in {
     from {
@@ -270,6 +289,24 @@ html[data-brand="matcha"] {
       opacity: 1;
       filter: blur(0);
       transform: translateY(0);
+    }
+  }
+  @keyframes kuro-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.25rem) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes kuro-dialog-overlay-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 }
@@ -401,6 +438,12 @@ html[data-motion="paused"] .animate-kuro-scroll-cue {
   animation-play-state: paused;
 }
 
+/* Marquee direction flips in RTL (audit §5 / Phase 5 plan): reversing
+   the animation keeps the duplicated-content loop seamless. */
+[dir="rtl"] .animate-kuro-marquee {
+  animation-direction: reverse;
+}
+
 /* Brand switch: .6s colour transitions while html[data-brand-switching]
    is set, only when the user has not asked for reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
@@ -421,7 +464,9 @@ html[data-motion="paused"] .animate-kuro-scroll-cue {
   .animate-kuro-bump,
   .animate-kuro-pour,
   .animate-kuro-scroll-cue,
-  .animate-kuro-marquee {
+  .animate-kuro-marquee,
+  .animate-kuro-dialog-in,
+  .animate-kuro-dialog-overlay-in {
     animation: none !important;
   }
   [data-reveal]:not([data-revealed]) {
