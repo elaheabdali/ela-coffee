@@ -93,7 +93,7 @@ describe("BagDrawer", () => {
     expect(screen.getAllByText("390,000 Toman")).toHaveLength(2);
     expect(screen.getByText("Subtotal")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Increase quantity" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Increase quantity" }));
     expect(useBag.getState().items).toEqual([{ drinkId: "kuro-caramel", qty: 3 }]);
     expect(screen.getAllByText("585,000 Toman")).toHaveLength(2);
   });
@@ -101,7 +101,7 @@ describe("BagDrawer", () => {
   it("removes the line when the stepper is stepped down to zero", () => {
     useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
     renderBag();
-    fireEvent.click(screen.getByRole("button", { name: "Decrease quantity" }));
+    fireEvent.click(screen.getByRole("button", { name: "− Decrease quantity" }));
     expect(useBag.getState().items).toEqual([]);
     expect(screen.getByText("Your bag is empty")).toBeInTheDocument();
   });

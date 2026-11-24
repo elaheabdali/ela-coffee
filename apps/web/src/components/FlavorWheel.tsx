@@ -96,8 +96,7 @@ export function FlavorWheel() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isRtl = () =>
-    typeof document !== "undefined" && document.documentElement.dir === "rtl";
+  const isRtl = () => typeof document !== "undefined" && document.documentElement.dir === "rtl";
 
   const goNext = () => {
     lastManualRef.current = Date.now();
@@ -177,7 +176,7 @@ export function FlavorWheel() {
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           style={{ touchAction: "pan-y" }}
-          className="kuro-stage animate-kuro-wheel-in outline-none"
+          className="kuro-stage animate-kuro-wheel-in"
         >
           <div aria-hidden="true" className="kuro-contours absolute inset-0 opacity-60" />
 
@@ -216,13 +215,7 @@ export function FlavorWheel() {
                   className="kuro-tile"
                   style={{ "--d": String(d), "--near": String(near) } as CSSProperties}
                 >
-                  <Image
-                    src={tileDrink.image}
-                    alt=""
-                    fill
-                    sizes="200px"
-                    className="object-cover"
-                  />
+                  <Image src={tileDrink.image} alt="" fill sizes="160px" className="object-cover" />
                 </div>
               );
             })}
@@ -328,10 +321,12 @@ export function FlavorWheel() {
 
           {/* Counter + dots, bottom-start. */}
           <div className="absolute bottom-6 start-6 z-30 flex items-center gap-3">
-            <span className="font-display text-2xl font-bold">
-              {counter}
-            </span>
-            <span className="flex items-center gap-1.5" role="group" aria-label={tHero("allFlavors")}>
+            <span className="font-display text-2xl font-bold">{counter}</span>
+            <span
+              className="flex items-center gap-1.5"
+              role="group"
+              aria-label={tHero("allFlavors")}
+            >
               {data.drinks.map((dotDrink, i) => (
                 <button
                   key={dotDrink.id}

@@ -37,15 +37,23 @@ export function Story() {
           ))}
           <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-8">
             {story.stats.map((stat) => (
-              <Reveal key={stat.labelEn} variant="fade-up" delayMs={450}>
-                <div className="flex flex-col gap-1">
-                  <dt className="order-2 text-sm leading-snug text-espresso/70">
-                    {isFa ? stat.labelFa : stat.labelEn}
-                  </dt>
-                  <dd className="order-1 font-display text-3xl font-black">
-                    {isFa ? stat.valueFa : stat.valueEn}
-                  </dd>
-                </div>
+              // The Reveal wrapper div is the dl's direct child and holds
+              // the dt/dd pair itself: axe (definition-list / dlitem)
+              // requires dt/dd to sit directly in the dl or in a div
+              // that is itself a direct child of the dl — an extra
+              // nested div between them is a violation.
+              <Reveal
+                key={stat.labelEn}
+                variant="fade-up"
+                delayMs={450}
+                className="flex flex-col gap-1"
+              >
+                <dt className="order-2 text-sm leading-snug text-espresso/70">
+                  {isFa ? stat.labelFa : stat.labelEn}
+                </dt>
+                <dd className="order-1 font-display text-3xl font-black">
+                  {isFa ? stat.valueFa : stat.valueEn}
+                </dd>
               </Reveal>
             ))}
           </dl>

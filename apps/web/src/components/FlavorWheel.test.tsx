@@ -9,9 +9,21 @@ import { useBrand } from "@/stores/brand";
 import { useFlavour } from "@/stores/flavour";
 
 vi.mock("next/image", () => ({
-  default: (props: { src: string; alt: string }) => (
+  default: (props: {
+    src: string;
+    alt: string;
+    priority?: boolean;
+    sizes?: string;
+    fetchPriority?: "high" | "low" | "auto";
+  }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={props.src} alt={props.alt} />
+    <img
+      src={props.src}
+      alt={props.alt}
+      data-priority={props.priority ? "true" : undefined}
+      sizes={props.sizes}
+      fetchPriority={props.fetchPriority}
+    />
   ),
 }));
 
@@ -54,7 +66,9 @@ describe("wheel helpers", () => {
 describe("FlavorWheel", () => {
   it("renders the hero heading, current flavour, price pill and 6 dots", () => {
     renderWheel();
-    expect(screen.getByRole("heading", { level: 1, name: "Choose your coffee" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Choose your coffee" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Original")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Add Kuro Original to your bag, 180,000 Toman/ }),
@@ -87,9 +101,7 @@ describe("FlavorWheel", () => {
     renderWheel();
     fireEvent.click(screen.getByRole("button", { name: "Dark Mocha" }));
     expect(screen.getByText("5 / 6")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Add Dark Mocha to your bag/ }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add Dark Mocha to your bag/ })).toBeInTheDocument();
   });
 
   it("dragging left goes next, dragging right goes previous", () => {
@@ -134,5 +146,34 @@ describe("FlavorWheel", () => {
     expect(scene?.className).toContain("top-(--scene-top)");
     expect(scene?.className).toContain("h-(--s)");
     expect(scene?.className).toContain("w-(--scene-w)");
+  });
+
+  it("marks the hero scene image priority so it preloads for LCP", () => {
+    const { container } = renderWheel();
+    const sceneImg = container.querySelector(".kuro-glass.z-10 img");
+    expect(sceneImg?.getAttribute("data-priority")).toBe("true");
+    // The scene frame is ~957 CSS px on mobile (audit §3.5 geometry),
+    // so the sizes hint must cover the full viewport width.
+    expect(sceneImg?.getAttribute("sizes")).toContain("100vw");
+  });
+
+  it("sizes the tile-ring images to their display size (160px, not 200px)", () => {
+    const { container } = renderWheel();
+    // Tiles display at ≤171 CSS px (--tile ≤ 0.19 × --s); asking for
+    // 200px made the browser fetch the 640w variant for every tile.
+    const ring = container.querySelector('[aria-hidden="true"].z-0');
+    const tileImgs = ring?.querySelectorAll("img") ?? [];
+    expect(tileImgs.length).toBeGreaterThan(0);
+    for (const img of Array.from(tileImgs)) {
+      expect(img.getAttribute("sizes")).toBe("160px");
+    }
+  });
+
+  it("gives the wheel region a visible focus ring (no outline-none)", () => {
+    const { container } = renderWheel();
+    const stage = container.querySelector(".kuro-stage");
+    expect(stage).not.toBeNull();
+    expect(stage?.className).not.toContain("outline-none");
+    expect(stage?.getAttribute("tabindex")).toBe("0");
   });
 });

@@ -69,10 +69,11 @@ describe("SiteHeader", () => {
     expect(screen.getByRole("button", { name: "Open bag" })).toBeInTheDocument();
   });
 
-  it("opens the menu drawer from the hamburger button", () => {
+  it("opens the menu drawer from the hamburger button", async () => {
     renderHeader();
     fireEvent.click(screen.getByRole("button", { name: "Menu" }));
-    expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
+    // The drawer is a dynamic import: the chunk loads after the click.
+    expect(await screen.findByRole("dialog", { name: "Menu" })).toBeInTheDocument();
   });
 
   it("toggles motion pause with aria-pressed", () => {

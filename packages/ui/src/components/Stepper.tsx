@@ -43,14 +43,23 @@ export function Stepper({
 
   return (
     <div className={cn("inline-flex items-center gap-3", className)}>
+      {/* The visible label is a single symbol ("−"/"+"): WCAG 2.5.3
+          (Label in Name) requires the accessible name to contain the
+          visible label, so the symbol stays in the name and the spoken
+          label is provided visually-hidden instead of via aria-label
+          (which would drop the symbol from the name entirely). */}
       <button
         type="button"
-        aria-label={decreaseLabel}
         disabled={!canDecrease}
         onClick={() => onChange(value - 1)}
         className={buttonClass}
       >
-        <span aria-hidden="true">−</span>
+        {/* The symbol is intentionally NOT aria-hidden: it must stay in
+            the accessible name ("− Decrease quantity") for WCAG 2.5.3.
+            The {" "} keeps a space between the symbol and the label —
+            the accessible-name algorithm concatenates adjacent text
+            without one. */}
+        <span>−</span> <span className="sr-only">{decreaseLabel}</span>
       </button>
       <output
         aria-live="polite"
@@ -61,12 +70,11 @@ export function Stepper({
       </output>
       <button
         type="button"
-        aria-label={increaseLabel}
         disabled={!canIncrease}
         onClick={() => onChange(value + 1)}
         className={buttonClass}
       >
-        <span aria-hidden="true">+</span>
+        <span>+</span> <span className="sr-only">{increaseLabel}</span>
       </button>
     </div>
   );

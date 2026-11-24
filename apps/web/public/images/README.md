@@ -47,10 +47,32 @@ confirmed the photos are approved for use (2026-11-24).
   and is **not** copied. `original (1).webp` (1200×670) and the
   `original (3)/(4).webp` duplicates (1080×603) are also not copied.
 
-## TODO (Phase 9)
+## Phase 9 — re-encode (2026-11-24)
 
-- Re-encode `ingredients-key.jpg` and `ingredients-v2-key.jpg` (1.3–1.5 MB
-  each) to AVIF/WebP, and confirm whether `ingredients-v2-key.jpg` is the
-  matcha ingredient sprite before using it on the page.
+`ingredients-key.jpg` and `ingredients-v2-key.jpg` are **not referenced by
+any page** (verified by grep over `apps/web/src`): they are the keying
+source for `scripts/key-cutouts.py` (which reads them from this folder),
+so the re-encode below changes no page-load bytes — it is readiness for
+the day they are used on a page, and it keeps the derivatives next to
+their source. The real page-load image wins in Phase 9 are the
+`next/image` optimisation (sharp, now an explicit dependency) and the
+corrected tile `sizes` in `FlavorWheel.tsx`.
+
+Re-encoded with ffmpeg (SVT-AV1 CRF 32 preset 6; WebP quality 75),
+2528×1696 kept, originals kept as source/fallback:
+
+| File | JPG | AVIF | WebP | PSNR (AVIF / WebP) | SSIM (AVIF / WebP) |
+|---|---|---|---|---|---|
+| `ingredients-key` | 1,338,050 B | 42,312 B (−96.8%) | 71,474 B (−94.7%) | 46.1 / 44.8 dB | 0.991 / 0.990 |
+| `ingredients-v2-key` | 1,474,669 B | 51,670 B (−96.5%) | 76,974 B (−94.8%) | 45.9 / 43.8 dB | 0.991 / 0.989 |
+
+Visual check at 1440 px (side-by-side JPG/AVIF/WebP): no visible
+difference — blue key background, beans, caramel, vanilla, hazelnut,
+chocolate and cinnamon are identical in all three.
+
+## TODO
+
+- Confirm whether `ingredients-v2-key.jpg` is the matcha ingredient
+  sprite before using it (or its AVIF/WebP) on the page.
 - Confirm the roles marked "unconfirmed" above against the live reference
   when the full pages are built (Phase 4).

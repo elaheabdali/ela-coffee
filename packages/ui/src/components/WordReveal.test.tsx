@@ -21,6 +21,15 @@ describe("WordReveal", () => {
     expect(screen.getByRole("heading", { level: 2, name: "Six iced lattes" })).toBeInTheDocument();
   });
 
+  it("does not put aria-label on a paragraph (axe aria-prohibited-attr)", () => {
+    const { container } = render(<WordReveal as="p" text="Kuro Original" />);
+    const p = container.querySelector("p");
+    expect(p).not.toHaveAttribute("aria-label");
+    // The full text stays available to assistive tech once, visually hidden.
+    expect(p?.querySelector(".sr-only")).toHaveTextContent("Kuro Original");
+    expect(p?.querySelector('[aria-hidden="true"]')).toHaveTextContent("KuroOriginal");
+  });
+
   it("applies the soft variant class", () => {
     const { container } = render(<WordReveal text="Soft heading" variant="soft" />);
     expect(container.firstElementChild).toHaveClass("kuro-words-soft");

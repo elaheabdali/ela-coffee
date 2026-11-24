@@ -48,10 +48,11 @@ describe("FlavorControls", () => {
     expect(useBag.getState().isOpen).toBe(true);
   });
 
-  it("lists all 6 drinks of the current brand in the All flavors dialog", () => {
+  it("lists all 6 drinks of the current brand in the All flavors dialog", async () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "All flavors" }));
-    const dialog = screen.getByRole("dialog", { name: "All flavors" });
+    // The dialog is a dynamic import: the chunk loads after the click.
+    const dialog = await screen.findByRole("dialog", { name: "All flavors" });
     expect(dialog).toBeInTheDocument();
     for (const name of [
       "Kuro Original",
@@ -70,18 +71,18 @@ describe("FlavorControls", () => {
     );
   });
 
-  it("jumps to a flavour when its All flavors row is clicked", () => {
+  it("jumps to a flavour when its All flavors row is clicked", async () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "All flavors" }));
-    fireEvent.click(screen.getByRole("button", { name: /Dark Mocha/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Dark Mocha/ }));
     expect(useFlavour.getState().index).toBe(4);
     expect(screen.queryByRole("dialog", { name: "All flavors" })).not.toBeInTheDocument();
   });
 
-  it("shows 3 notes plus size, caffeine and price in the Tasting notes dialog", () => {
+  it("shows 3 notes plus size, caffeine and price in the Tasting notes dialog", async () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
-    const dialog = screen.getByRole("dialog", { name: "Kuro Original" });
+    const dialog = await screen.findByRole("dialog", { name: "Kuro Original" });
     expect(dialog).toBeInTheDocument();
     expect(screen.getByText(/double shot of our house espresso/)).toBeInTheDocument();
     for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
@@ -96,18 +97,18 @@ describe("FlavorControls", () => {
     expect(screen.getByRole("button", { name: "Add to bag" })).toBeInTheDocument();
   });
 
-  it("adds the drink to the bag from the Tasting notes dialog", () => {
+  it("adds the drink to the bag from the Tasting notes dialog", async () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
-    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Add to bag" }));
     expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 1 }]);
     expect(screen.getByRole("status")).toHaveTextContent("Kuro Original added to your bag.");
     expect(screen.queryByRole("dialog", { name: "Kuro Original" })).not.toBeInTheDocument();
   });
 
-  it("shows Persian digits for caffeine in the fa locale", () => {
+  it("shows Persian digits for caffeine in the fa locale", async () => {
     renderControls("fa");
     fireEvent.click(screen.getByRole("button", { name: "یادداشت‌های طعم" }));
-    expect(screen.getByText("۱۵۰ میلی‌گرم")).toBeInTheDocument();
+    expect(await screen.findByText("۱۵۰ میلی‌گرم")).toBeInTheDocument();
   });
 });

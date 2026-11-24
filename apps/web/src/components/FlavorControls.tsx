@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Info, LayoutGrid, ShoppingBag, Shuffle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toFaDigits } from "@ela-coffee/i18n";
@@ -9,7 +10,16 @@ import { BRANDS } from "@/data/flavours";
 import { bagCount, useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
 import { useFlavour } from "@/stores/flavour";
-import { AllFlavorsDialog, TastingNotesDialog } from "./FlavorDialogs";
+
+/**
+ * The flavour dialogs load on demand in their own chunk (architecture
+ * §12 "dialogs lazy"): they are only mounted while open, so the chunk
+ * is fetched on the first open, not on page load.
+ */
+const AllFlavorsDialog = dynamic(() => import("./FlavorDialogs").then((m) => m.AllFlavorsDialog));
+const TastingNotesDialog = dynamic(() =>
+  import("./FlavorDialogs").then((m) => m.TastingNotesDialog),
+);
 
 /**
  * Top-centre glass pill (audit §2): All flavors, Tasting notes,

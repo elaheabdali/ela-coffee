@@ -35,23 +35,38 @@ export function WordReveal({
   const words = text.split(" ").filter((word) => word.length > 0);
   const Tag = as as keyof JSX.IntrinsicElements;
   const style = { "--reveal-delay": `${delayMs}ms` } as CSSProperties;
+  const isHeading = as === "h1" || as === "h2" || as === "h3";
 
   // The words live in separate spans with no whitespace text nodes
   // between them, so without this the accessible name would collapse
-  // to e.g. "Sixicedlattes". `aria-label` keeps the spoken heading exact.
+  // to e.g. "Sixicedlattes". `aria-label` keeps the spoken heading exact
+  // — but aria-label is prohibited on <p>/<span> (axe
+  // aria-prohibited-attr), so for multi-word non-headings the words are
+  // hidden from assistive tech and the full text is provided once,
+  // visually hidden, instead. A single word has no boundary to lose,
+  // so it needs no duplication.
+  const wordSpans = words.map((word, i) => (
+    <span key={`${word}-${i}`} className="kuro-word me-[0.25em] last:me-0">
+      <span className="kuro-word-inner" style={{ "--i": i } as CSSProperties}>
+        {word}
+      </span>
+    </span>
+  ));
+  const needsSrText = !isHeading && words.length > 1;
   return (
     <Tag
       style={style}
-      aria-label={text}
+      aria-label={isHeading ? text : undefined}
       className={cn(variant === "soft" && "kuro-words-soft", className)}
     >
-      {words.map((word, i) => (
-        <span key={`${word}-${i}`} className="kuro-word me-[0.25em] last:me-0">
-          <span className="kuro-word-inner" style={{ "--i": i } as CSSProperties}>
-            {word}
-          </span>
-        </span>
-      ))}
+      {needsSrText ? (
+        <>
+          <span aria-hidden="true">{wordSpans}</span>
+          <span className="sr-only">{text}</span>
+        </>
+      ) : (
+        wordSpans
+      )}
     </Tag>
   );
 }

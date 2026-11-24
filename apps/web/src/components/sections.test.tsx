@@ -90,6 +90,22 @@ describe("Story", () => {
     expect(screen.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
     expect(screen.getByText(stat)).toBeInTheDocument();
   });
+
+  it("keeps the stats dt/dd directly in the dl (axe definition-list / dlitem)", () => {
+    const { container } = renderWithLocale(<Story />, "en");
+    const dl = container.querySelector("dl");
+    expect(dl).not.toBeNull();
+    // axe requires every dt/dd to be a child of the dl or of a div that
+    // is itself a direct child of the dl — no deeper nesting.
+    for (const el of Array.from(dl?.querySelectorAll("dt, dd") ?? [])) {
+      const parent = el.parentElement;
+      expect(parent === dl || (parent?.tagName === "DIV" && parent.parentElement === dl)).toBe(
+        true,
+      );
+    }
+    expect(dl?.querySelectorAll("dt")).toHaveLength(4);
+    expect(dl?.querySelectorAll("dd")).toHaveLength(4);
+  });
 });
 
 describe("MenuSection", () => {
@@ -176,9 +192,7 @@ describe("JoinList", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Join the list" }));
 
-    expect(
-      await screen.findByText("That email address doesn't look right."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("That email address doesn't look right.")).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -202,7 +216,9 @@ describe("JoinList", () => {
     fireEvent.click(screen.getByRole("button", { name: "Join the list" }));
 
     expect(await screen.findByText("You're on the list!")).toBeInTheDocument();
-    expect(screen.getByText("We'll write the day a new flavor reaches the menu.")).toBeInTheDocument();
+    expect(
+      screen.getByText("We'll write the day a new flavor reaches the menu."),
+    ).toBeInTheDocument();
     expect(fetchSpy).toHaveBeenCalledWith(
       "/api/newsletter",
       expect.objectContaining({
@@ -218,7 +234,9 @@ describe("SiteFooter", () => {
     renderWithLocale(<SiteFooter />, "en");
     expect(screen.getByText("kuro")).toBeInTheDocument();
     expect(
-      screen.getByText("Small-batch iced lattes, poured black first, flavored fresh every morning."),
+      screen.getByText(
+        "Small-batch iced lattes, poured black first, flavored fresh every morning.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Story" })).toHaveAttribute("href", "#story");
     expect(screen.getByRole("link", { name: "Menu" })).toHaveAttribute("href", "#menu");

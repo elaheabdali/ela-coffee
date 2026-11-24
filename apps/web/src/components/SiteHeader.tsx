@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Menu, Pause, Play, ShoppingBag } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toFaDigits } from "@ela-coffee/i18n";
@@ -8,10 +9,17 @@ import { BRANDS } from "@/data/flavours";
 import { bagCount, useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
 import { useMotion } from "@/stores/motion";
-import { BagDrawer } from "./BagDrawer";
 import { BrandToggle } from "./BrandToggle";
 import { FlavorControls } from "./FlavorControls";
-import { MenuDrawer } from "./MenuDrawer";
+
+/**
+ * The drawers are interaction-only (menu, checkout): they load on
+ * demand in their own chunks instead of riding in the first-load JS
+ * (architecture §12 "dialogs lazy"). Both are mounted only while open,
+ * so the chunk is fetched on the first open, not on page load.
+ */
+const BagDrawer = dynamic(() => import("./BagDrawer").then((m) => m.BagDrawer));
+const MenuDrawer = dynamic(() => import("./MenuDrawer").then((m) => m.MenuDrawer));
 
 /**
  * Fixed site header (audit §2/§7), with two states driven by scroll:
@@ -33,7 +41,7 @@ export function SiteHeader() {
   const locale = useLocale();
   const { brand } = useBrand();
   const { paused, toggle } = useMotion();
-  const { items, openBag } = useBag();
+  const { items, openBag, isOpen: bagOpen } = useBag();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -74,26 +82,35 @@ export function SiteHeader() {
 
           {scrolled ? (
             <>
-              <nav
-                aria-label={tNav("menu")}
-                className="hidden items-center gap-6 lg:flex"
-              >
-                <a href="#story" className="text-sm font-medium transition-opacity hover:opacity-70">
+              <nav aria-label={tNav("menu")} className="hidden items-center gap-6 lg:flex">
+                <a
+                  href="#story"
+                  className="text-sm font-medium transition-opacity hover:opacity-70"
+                >
                   {tNav("story")}
                 </a>
                 <a href="#menu" className="text-sm font-medium transition-opacity hover:opacity-70">
                   {tNav("menu")}
                 </a>
-                <a href="#process" className="text-sm font-medium transition-opacity hover:opacity-70">
+                <a
+                  href="#process"
+                  className="text-sm font-medium transition-opacity hover:opacity-70"
+                >
                   {tNav("process")}
                 </a>
-                <a href="#origins" className="text-sm font-medium transition-opacity hover:opacity-70">
+                <a
+                  href="#origins"
+                  className="text-sm font-medium transition-opacity hover:opacity-70"
+                >
                   {tNav("origins")}
                 </a>
               </nav>
               <div className="flex items-center gap-2">
                 <span className="max-sm:hidden">
-                  <BrandToggle coffeeLabel={tNav("brandCoffee")} matchaLabel={tNav("brandMatcha")} />
+                  <BrandToggle
+                    coffeeLabel={tNav("brandCoffee")}
+                    matchaLabel={tNav("brandMatcha")}
+                  />
                 </span>
                 <a
                   href="#join"
@@ -127,7 +144,10 @@ export function SiteHeader() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="max-sm:hidden">
-                  <BrandToggle coffeeLabel={tNav("brandCoffee")} matchaLabel={tNav("brandMatcha")} />
+                  <BrandToggle
+                    coffeeLabel={tNav("brandCoffee")}
+                    matchaLabel={tNav("brandMatcha")}
+                  />
                 </span>
                 <button
                   type="button"
@@ -136,7 +156,11 @@ export function SiteHeader() {
                   aria-label={pauseLabel}
                   className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10 max-sm:hidden"
                 >
-                  {paused ? <Play size={20} aria-hidden="true" /> : <Pause size={20} aria-hidden="true" />}
+                  {paused ? (
+                    <Play size={20} aria-hidden="true" />
+                  ) : (
+                    <Pause size={20} aria-hidden="true" />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -151,8 +175,8 @@ export function SiteHeader() {
           )}
         </div>
       </header>
-      <MenuDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <BagDrawer />
+      {drawerOpen ? <MenuDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} /> : null}
+      {bagOpen ? <BagDrawer /> : null}
     </>
   );
 }
