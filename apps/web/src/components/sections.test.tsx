@@ -1,10 +1,11 @@
 import "@testing-library/jest-dom/vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
 import { ToastProvider } from "@ela-coffee/ui";
 import { en, fa } from "@ela-coffee/i18n";
-import { BRANDS } from "@/data/flavours";
+import { ALL_DRINKS, BRANDS } from "@/data/flavours";
 import { useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
 import { Story } from "@/components/Story";
@@ -31,6 +32,44 @@ function renderWithLocale(ui: ReactNode, locale: "fa" | "en") {
   );
 }
 
+/**
+ * Render with a TanStack Query client (Phase 6: MenuSection loads
+ * /api/menu through useQuery). The fetch mock answers the menu
+ * request from the static dataset so no network is touched.
+ */
+function renderWithQuery(ui: ReactNode, locale: "fa" | "en") {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      drinks: ALL_DRINKS.map((drink, index) => ({
+        id: drink.id,
+        brand: drink.brand,
+        slug: drink.slug,
+        nameFa: drink.nameFa,
+        nameEn: drink.nameEn,
+        priceToman: drink.priceToman,
+        caffeineMg: drink.caffeineMg,
+        notesFa: drink.notesFa,
+        notesEn: drink.notesEn,
+        image: drink.image,
+        sort: index,
+      })),
+    }),
+  }) as typeof fetch;
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale={locale} messages={locale === "fa" ? fa : en}>
+        <ToastProvider>{ui}</ToastProvider>
+      </NextIntlClientProvider>
+    </QueryClientProvider>,
+  );
+}
+
+const originalFetch = globalThis.fetch;
+
 beforeEach(() => {
   useBag.getState().clear();
   useBrand.setState({ brand: "kuro" });
@@ -39,6 +78,7 @@ beforeEach(() => {
 afterEach(() => {
   useBag.getState().clear();
   useBrand.setState({ brand: "kuro" });
+  globalThis.fetch = originalFetch;
 });
 
 describe("Story", () => {
@@ -57,12 +97,12 @@ describe("MenuSection", () => {
     ["fa", "شش آیس‌لاته. یک شات بی‌نقص."],
     ["en", "Six iced lattes. One perfect shot."],
   ] as const)("renders the heading in %s", (locale, heading) => {
-    renderWithLocale(<MenuSection />, locale);
+    renderWithQuery(<MenuSection />, locale);
     expect(screen.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
   });
 
   it("renders six cards and the make-it-yours groups", () => {
-    renderWithLocale(<MenuSection />, "en");
+    renderWithQuery(<MenuSection />, "en");
     expect(screen.getByRole("heading", { level: 3, name: "Kuro Original" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: "Dark Mocha" })).toBeInTheDocument();
     expect(screen.getByText("Make it yours")).toBeInTheDocument();
@@ -118,12 +158,6 @@ describe("Origins", () => {
 });
 
 describe("JoinList", () => {
-  const originalFetch = globalThis.fetch;
-
-  afterEach(() => {
-    globalThis.fetch = originalFetch;
-  });
-
   it.each([
     ["fa", "اولین نفر باش که طعم‌های تازه را می‌چشد."],
     ["en", "Be first to taste what's next."],
@@ -154,8 +188,11 @@ describe("JoinList", () => {
     expect(await screen.findByText("An email address is required.")).toBeInTheDocument();
   });
 
-  it("shows the success state for a valid email and never calls fetch", async () => {
-    const fetchSpy = vi.fn();
+  it("posts to /api/newsletter and shows the success state for a valid email", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ok: true }),
+    });
     globalThis.fetch = fetchSpy as typeof fetch;
     renderWithLocale(<JoinList />, "en");
 
@@ -164,9 +201,15 @@ describe("JoinList", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Join the list" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent("You're on the list!");
+    expect(await screen.findByText("You're on the list!")).toBeInTheDocument();
     expect(screen.getByText("We'll write the day a new flavor reaches the menu.")).toBeInTheDocument();
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/newsletter",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ email: "taster@example.com" }),
+      }),
+    );
   });
 });
 

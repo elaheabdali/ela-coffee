@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { ToastProvider } from "@ela-coffee/ui";
+import { QueryProvider } from "@/components/QueryProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { FlavorWheel } from "@/components/FlavorWheel";
 import { BrandMarquee } from "@/components/BrandMarquee";
@@ -27,18 +28,20 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   setRequestLocale(locale);
 
   return (
-    <ToastProvider>
-      <SiteHeader />
-      <main>
-        <FlavorWheel />
-        <BrandMarquee />
-        <Story />
-        <MenuSection />
-        <Process />
-        <Origins />
-        <JoinList />
-      </main>
-      <SiteFooter />
-    </ToastProvider>
+    <QueryProvider>
+      <ToastProvider>
+        <SiteHeader />
+        <main>
+          <FlavorWheel />
+          <BrandMarquee />
+          <Story />
+          <MenuSection />
+          <Process />
+          <Origins />
+          <JoinList />
+        </main>
+        <SiteFooter />
+      </ToastProvider>
+    </QueryProvider>
   );
 }

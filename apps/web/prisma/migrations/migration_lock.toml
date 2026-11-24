@@ -1,0 +1,2 @@
+# Prisma Migrate lock file — this migration targets PostgreSQL (Neon).
+provider = "postgresql"

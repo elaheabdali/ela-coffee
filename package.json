@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "seed": "pnpm --filter web db:seed"
   },
   "prettier": "@ela-coffee/config/prettier",
   "devDependencies": {

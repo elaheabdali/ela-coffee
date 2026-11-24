@@ -1,0 +1,122 @@
+// Prisma schema — data model from architecture §7 (finalised in Phase 6).
+//
+// Postgres (Neon free tier is the default; Supabase is the documented
+// alternative). There is NO live database in this environment and no
+// DATABASE_URL: `prisma migrate dev` cannot run here. The migration in
+// prisma/migrations/ was generated offline with
+// `prisma migrate diff --from-empty --to-schema-datamodel --script`
+// and is reviewable in Git; run `pnpm --filter web db:migrate` once
+// DATABASE_URL exists (docs/fa/phase-06-backend.md).
+//
+// When DATABASE_URL is unset the app does NOT use Prisma at all — the
+// seed-JSON/in-memory fallback in src/lib/store.ts serves the same
+// 12-drink dataset (see that file). The fallback is dev/demo only.
+//
+// Additive fields vs architecture §7 (documented, not breaking):
+// - Order.paymentAuthority: the Zarinpal/Mock authority code for the
+//   order's payment (architecture §9 stores "the authority, the amount
+//   and the verification result"; the authority needs a column).
+// - Order.idempotencyKey: unique, for POST /api/orders idempotency.
+// - ContactMessage: the /api/contact inbox (not in the §7 sketch,
+//   added because the contact form needs somewhere to land).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Brand {
+  KURO
+  MIDORI
+}
+
+enum OrderStatus {
+  RECEIVED
+  PREPARING
+  READY
+  DONE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Drink {
+  id         String @id // e.g. "kuro-original"
+  brand      Brand
+  slug       String @unique
+  nameFa     String
+  nameEn     String
+  priceToman Int // placeholder prices, architecture §14
+  caffeineMg Int // 150 coffee, 70 matcha
+  notesFa    String[] // tasting notes (ONE source of truth)
+  notesEn    String[]
+  image      String
+  sort       Int
+
+  orderItems OrderItem[]
+
+  @@index([brand, sort])
+}
+
+model Order {
+  id               String        @id @default(cuid())
+  status           OrderStatus   @default(RECEIVED)
+  items            OrderItem[]
+  customerName     String
+  phone            String // Iranian validation 09xx / +98
+  totalToman       Int
+  payment          PaymentStatus @default(PENDING)
+  paymentAuthority String?
+  idempotencyKey   String?       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  order      Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  drinkId    String
+  drink      Drink  @relation(fields: [drinkId], references: [id])
+  qty        Int
+  priceToman Int // unit price snapshot at order time
+
+  @@index([orderId])
+}
+
+model Reservation {
+  id        String            @id @default(cuid())
+  name      String
+  phone     String
+  date      DateTime
+  guests    Int
+  status    ReservationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+}
+
+model NewsletterSubscriber {
+  email     String   @unique
+  locale    String
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  contact   String // email or phone, as the visitor typed it
+  message   String
+  createdAt DateTime @default(now())
+}

@@ -32,7 +32,21 @@ const enPaths = enLeaves.map((l) => l.path).sort();
 
 /** User-facing namespaces (the dev-only designSystem catalog is exempt:
  * its notes name Latin tokens and keyboard keys like "Esc"). */
-const USER_FACING = ["nav", "hero", "menu", "join", "footer", "bag", "dialog", "drawer", "notFound"];
+const USER_FACING = [
+  "nav",
+  "hero",
+  "menu",
+  "join",
+  "footer",
+  "bag",
+  "dialog",
+  "drawer",
+  "notFound",
+  "checkout",
+  "order",
+  "reservation",
+  "contact",
+];
 const isUserFacing = (path: string) => USER_FACING.some((ns) => path.startsWith(`${ns}.`));
 
 describe("dictionaries: completeness", () => {

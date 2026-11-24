@@ -1,0 +1,60 @@
+/**
+ * /api/reservations — POST creates a reservation, GET ?id=… reads it
+ * (architecture §6). Zod validation: name, Iranian phone
+ * (09xx / +98), future date, 1–12 guests. Honeypot + in-memory
+ * rate limit (10/min per IP).
+ */
+import { NextResponse } from "next/server";
+import { jsonError, parseBodyError, validationError } from "@/lib/api-errors";
+import { clientIp, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { canonicalPhone, reservationSchema } from "@/lib/schemas";
+import { createReservation, getReservation } from "@/lib/store";
+
+export async function POST(request: Request): Promise<NextResponse> {
+  const limit = rateLimit(`reservations:${clientIp(request)}`, 10, 60);
+  if (!limit.allowed) {
+    return jsonError(429, "RATE_LIMITED", "Too many requests. Try again shortly.", rateLimitHeaders(limit));
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return parseBodyError();
+  }
+
+  const parsed = reservationSchema.safeParse(body);
+  if (!parsed.success) {
+    return validationError(
+      parsed.error.issues.map((issue) => ({
+        field: String(issue.path[0] ?? "reservation"),
+        message: issue.message,
+      })),
+    );
+  }
+
+  // Honeypot filled → bot. Answer like a success, create nothing.
+  if (parsed.data.website) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const reservation = await createReservation({
+    name: parsed.data.name.trim(),
+    phone: canonicalPhone(parsed.data.phone),
+    date: new Date(parsed.data.date),
+    guests: parsed.data.guests,
+  });
+  return NextResponse.json({ reservation }, { status: 201 });
+}
+
+export async function GET(request: Request): Promise<NextResponse> {
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) {
+    return jsonError(400, "MISSING_ID", "Query parameter id is required.");
+  }
+  const reservation = await getReservation(id);
+  if (!reservation) {
+    return jsonError(404, "RESERVATION_NOT_FOUND", "No reservation with this id.");
+  }
+  return NextResponse.json({ reservation });
+}

@@ -3,6 +3,7 @@
 import { Instagram, MessageCircle, MessagesSquare, Phone, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BRANDS } from "@/data/flavours";
+import { ContactForm } from "@/components/ContactForm";
 import { useBrand } from "@/stores/brand";
 
 /**
@@ -41,6 +42,10 @@ export function SiteFooter() {
   return (
     <footer className="bg-roast text-cream">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-5 py-16 sm:px-12 lg:px-16">
+        {/* Contact form — lives in the footer area (Phase 6). */}
+        <div className="max-w-2xl border-b border-cream/10 pb-10">
+          <ContactForm />
+        </div>
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-3">
             <span className="font-display text-3xl font-black tracking-[-0.02em]">

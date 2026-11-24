@@ -5,6 +5,7 @@ import { useForm, type Resolver, type ResolverResult } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Button, Eyebrow, Reveal, WordReveal } from "@ela-coffee/ui";
+import { ReservationForm } from "@/components/ReservationForm";
 
 interface JoinFormValues {
   email: string;
@@ -12,12 +13,14 @@ interface JoinFormValues {
 
 /**
  * Join-the-list section (#join) — dark section (audit §1.1/§1.2).
- * Local-only until Phase 6: a valid submit shows the success state,
- * no fetch or API call is ever made.
+ * Phase 6: posts to POST /api/newsletter (Zod email, honeypot,
+ * rate-limited). The success state is only shown on a real 200;
+ * server errors are shown in the page locale.
  */
 export function JoinList() {
   const t = useTranslations("join");
   const [subscribed, setSubscribed] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   // @hookform/resolvers is not installed, so the Zod schema is run
   // through a small inline resolver with the same contract.
@@ -45,8 +48,26 @@ export function JoinList() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<JoinFormValues>({ resolver, mode: "onSubmit" });
+
+  const onSubmit = async (values: JoinFormValues): Promise<void> => {
+    setServerError(null);
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.email }),
+      });
+      if (!response.ok) {
+        setServerError(t("serverError"));
+        return;
+      }
+      setSubscribed(true);
+    } catch {
+      setServerError(t("serverError"));
+    }
+  };
 
   const emailError = errors.email?.message;
   const emailId = "join-email";
@@ -75,7 +96,7 @@ export function JoinList() {
         ) : (
           <form
             noValidate
-            onSubmit={handleSubmit(() => setSubscribed(true))}
+            onSubmit={handleSubmit(onSubmit)}
             className="flex max-w-2xl flex-col gap-4"
           >
             <div className="flex flex-col gap-2">
@@ -103,10 +124,22 @@ export function JoinList() {
               </p>
             </div>
             <div>
-              <Button type="submit">{t("submit")}</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {t("submit")}
+              </Button>
             </div>
+            {serverError ? (
+              <p role="alert" className="text-sm text-destructive">
+                {serverError}
+              </p>
+            ) : null}
           </form>
         )}
+
+        {/* Reservation form — lives in the Join section area (Phase 6). */}
+        <div className="border-t border-cream/10 pt-10">
+          <ReservationForm />
+        </div>
       </div>
     </section>
   );

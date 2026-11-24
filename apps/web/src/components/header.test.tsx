@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { NextIntlClientProvider } from "next-intl";
 import { en } from "@ela-coffee/i18n";
@@ -17,10 +18,16 @@ vi.mock("next/image", () => ({
 }));
 
 function renderHeader() {
+  // Phase 6: SiteHeader renders BagDrawer, which uses useMutation.
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return render(
-    <NextIntlClientProvider locale="en" messages={en}>
-      <SiteHeader />
-    </NextIntlClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="en" messages={en}>
+        <SiteHeader />
+      </NextIntlClientProvider>
+    </QueryClientProvider>,
   );
 }
 

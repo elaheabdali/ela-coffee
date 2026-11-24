@@ -1,8 +1,9 @@
 import "@testing-library/jest-dom/vitest";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { en, fa } from "@ela-coffee/i18n";
+import { ALL_DRINKS } from "@/data/flavours";
 import Page from "./page";
 
 vi.mock("next/image", () => ({
@@ -16,6 +17,35 @@ vi.mock("next-intl/server", () => ({
   getTranslations: async (namespace?: string) => (key: string) => `${namespace ?? "?"}.${key}`,
   setRequestLocale: () => undefined,
 }));
+
+// Phase 6: MenuSection loads /api/menu through TanStack Query — answer
+// it from the static dataset so the page tests never touch the network.
+const originalFetch = globalThis.fetch;
+
+beforeEach(() => {
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      drinks: ALL_DRINKS.map((drink, index) => ({
+        id: drink.id,
+        brand: drink.brand,
+        slug: drink.slug,
+        nameFa: drink.nameFa,
+        nameEn: drink.nameEn,
+        priceToman: drink.priceToman,
+        caffeineMg: drink.caffeineMg,
+        notesFa: drink.notesFa,
+        notesEn: drink.notesEn,
+        image: drink.image,
+        sort: index,
+      })),
+    }),
+  }) as typeof fetch;
+});
+
+afterEach(() => {
+  globalThis.fetch = originalFetch;
+});
 
 describe("home page (Phase 4)", () => {
   it("renders hero, story, menu, process, origins, join and footer in fa", async () => {
