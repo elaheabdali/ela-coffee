@@ -5,6 +5,7 @@
  */
 export const fa = {
   nav: {
+    skip: "پرش به محتوا",
     story: "داستان ما",
     menu: "منو",
     process: "طرز تهیه",
@@ -25,6 +26,7 @@ export const fa = {
     tastingNotes: "یادداشت‌های طعم",
     pauseMotion: "توقف حرکت شناور",
     playMotion: "پخش حرکت",
+    addToBagWithPrice: "«{name}» را به سبد اضافه کن — {price}",
   },
   menu: {
     eyebrow: "منو",
@@ -40,10 +42,17 @@ export const fa = {
     emailLabel: "نشانی ایمیل",
     emailHelper: "فقط وقتی طعم تازه‌ای می‌آید برایت می‌نویسیم.",
     submit: "عضویت در فهرست",
+    successTitle: "عضو فهرست شدی!",
+    successBody: "روزی که طعم تازه‌ای به منو برسد، برایت می‌نویسیم.",
+    emailRequired: "نشانی ایمیل لازم است.",
+    emailInvalid: "نشانی ایمیل درست نیست.",
   },
   footer: {
     tagline: "آیس‌لاته‌های دست‌ساز؛ اول سیاه ریخته می‌شود، هر صبح تازه طعم‌دار می‌شود.",
     taglineMatcha: "آیس‌ماچاهای دست‌ساز؛ هر صبح تازه هم زده می‌شود.",
+    explore: "کاوش",
+    stayInTouch: "در تماس باش",
+    stayInTouchBody: "طعم‌های تازه هر فصل می‌آیند. اولین نفر باش که می‌فهمد.",
     backToTop: "بازگشت به بالا",
     rights: "© ۲۰۲۶ کورو کافی. همهٔ حقوق محفوظ است.",
   },
@@ -54,6 +63,23 @@ export const fa = {
     subtotal: "جمع اقلام",
     clear: "خالی کردن سبد",
     added: "به سبدت اضافه شد.",
+    open: "باز کردن سبد",
+    decrease: "کم کردن تعداد",
+    increase: "زیاد کردن تعداد",
+    quantity: "تعداد",
+    remove: "حذف از سبد",
+  },
+  dialog: {
+    size: "اندازه",
+    caffeine: "کافئین",
+    price: "قیمت",
+    addToBag: "افزودن به سبد",
+    close: "بستن",
+  },
+  drawer: {
+    close: "بستن منو",
+    fresh: "هر صبح تازه",
+    menu: "منو",
   },
   notFound: {
     title: "این فنجان خالی است…",

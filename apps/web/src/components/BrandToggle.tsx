@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Coffee, Leaf } from "lucide-react";
+import { useBrand } from "@/stores/brand";
 
 export interface BrandToggleProps {
   coffeeLabel: string;
@@ -9,23 +9,16 @@ export interface BrandToggleProps {
 }
 
 /**
- * Coffee / Matcha brand toggle. Switches `html[data-brand]` between
- * `kuro` and `midori`; the whole theme (tokens, copy, prices, images)
- * follows from that one attribute. `data-brand-switching` is set for
- * 600 ms so globals.css can animate the colour transition (.6s),
- * matching the reference (audit §3.2 / §4).
+ * Coffee / Matcha brand toggle, driven by the `useBrand` store (the
+ * whole theme follows from the one `html[data-brand]` attribute).
+ * `data-brand-switching` is set for 600 ms so globals.css can animate
+ * the colour transition (.6s), matching the reference (audit §3.2 / §4).
+ * The store also resets the flavour index and preloads the other
+ * brand's images, so no tile renders as a black square (audit §8.4).
  */
 export function BrandToggle({ coffeeLabel, matchaLabel }: BrandToggleProps) {
-  const [brand, setBrand] = useState<"kuro" | "midori">("kuro");
-
-  const toggle = () => {
-    const next = brand === "kuro" ? "midori" : "kuro";
-    const root = document.documentElement;
-    root.setAttribute("data-brand-switching", "");
-    root.setAttribute("data-brand", next);
-    setBrand(next);
-    window.setTimeout(() => root.removeAttribute("data-brand-switching"), 600);
-  };
+  const { brand, setBrand } = useBrand();
+  const toggle = () => setBrand(brand === "kuro" ? "midori" : "kuro");
 
   return (
     <button

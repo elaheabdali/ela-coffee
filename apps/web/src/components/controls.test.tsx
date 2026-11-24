@@ -1,0 +1,113 @@
+import "@testing-library/jest-dom/vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import { NextIntlClientProvider } from "next-intl";
+import { ToastProvider } from "@ela-coffee/ui";
+import { en, fa } from "@ela-coffee/i18n";
+import { FlavorControls } from "./FlavorControls";
+import { useBag } from "@/stores/bag";
+import { useBrand } from "@/stores/brand";
+import { useFlavour } from "@/stores/flavour";
+
+vi.mock("next/image", () => ({
+  default: (props: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={props.src} alt={props.alt} />
+  ),
+}));
+
+function renderControls(locale: "en" | "fa" = "en") {
+  const messages = locale === "fa" ? fa : en;
+  return render(
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ToastProvider>
+        <FlavorControls />
+      </ToastProvider>
+    </NextIntlClientProvider>,
+  );
+}
+
+beforeEach(() => {
+  localStorage.clear();
+  useBag.setState({ items: [], isOpen: false });
+  useBrand.setState({ brand: "kuro" });
+  useFlavour.setState({ index: 0 });
+});
+
+describe("FlavorControls", () => {
+  it("changes the flavour index on Surprise me", () => {
+    renderControls();
+    expect(useFlavour.getState().index).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "Surprise me" }));
+    expect(useFlavour.getState().index).not.toBe(0);
+  });
+
+  it("opens the bag drawer from the bag button", () => {
+    renderControls();
+    fireEvent.click(screen.getByRole("button", { name: "Open bag" }));
+    expect(useBag.getState().isOpen).toBe(true);
+  });
+
+  it("lists all 6 drinks of the current brand in the All flavours dialog", () => {
+    renderControls();
+    fireEvent.click(screen.getByRole("button", { name: "All flavours" }));
+    const dialog = screen.getByRole("dialog", { name: "All flavours" });
+    expect(dialog).toBeInTheDocument();
+    for (const name of [
+      "Kuro Original",
+      "Salted Caramel",
+      "Vanilla Cream",
+      "Toasted Hazelnut",
+      "Dark Mocha",
+      "Brown Sugar Cinnamon",
+    ]) {
+      expect(screen.getByRole("button", { name: new RegExp(name) })).toBeInTheDocument();
+    }
+    // The current flavour (index 0) is marked with aria-current.
+    expect(screen.getByRole("button", { name: /Kuro Original/ })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+  });
+
+  it("jumps to a flavour when its All flavours row is clicked", () => {
+    renderControls();
+    fireEvent.click(screen.getByRole("button", { name: "All flavours" }));
+    fireEvent.click(screen.getByRole("button", { name: /Dark Mocha/ }));
+    expect(useFlavour.getState().index).toBe(4);
+    expect(screen.queryByRole("dialog", { name: "All flavours" })).not.toBeInTheDocument();
+  });
+
+  it("shows 3 notes plus size, caffeine and price in the Tasting notes dialog", () => {
+    renderControls();
+    fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
+    const dialog = screen.getByRole("dialog", { name: "Kuro Original" });
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText(/double shot of our house espresso/)).toBeInTheDocument();
+    for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
+      expect(screen.getByText(note)).toBeInTheDocument();
+    }
+    expect(screen.getByText("Size")).toBeInTheDocument();
+    expect(screen.getByText("16 oz iced")).toBeInTheDocument();
+    expect(screen.getByText("Caffeine")).toBeInTheDocument();
+    expect(screen.getByText("150 mg")).toBeInTheDocument();
+    expect(screen.getByText("Price")).toBeInTheDocument();
+    expect(screen.getByText("180,000 Toman")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add to bag" })).toBeInTheDocument();
+  });
+
+  it("adds the drink to the bag from the Tasting notes dialog", () => {
+    renderControls();
+    fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
+    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 1 }]);
+    expect(screen.getByRole("status")).toHaveTextContent("Kuro Original added to your bag.");
+    expect(screen.queryByRole("dialog", { name: "Kuro Original" })).not.toBeInTheDocument();
+  });
+
+  it("shows Persian digits for caffeine in the fa locale", () => {
+    renderControls("fa");
+    fireEvent.click(screen.getByRole("button", { name: "یادداشت‌های طعم" }));
+    expect(screen.getByText("۱۵۰ mg")).toBeInTheDocument();
+  });
+});

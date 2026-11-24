@@ -4,6 +4,7 @@
  */
 export const en = {
   nav: {
+    skip: "Skip to content",
     story: "Story",
     menu: "Menu",
     process: "How it's made",
@@ -24,6 +25,7 @@ export const en = {
     tastingNotes: "Tasting notes",
     pauseMotion: "Pause floating motion",
     playMotion: "Play motion",
+    addToBagWithPrice: "Add {name} to your bag, {price}",
   },
   menu: {
     eyebrow: "The menu",
@@ -39,10 +41,17 @@ export const en = {
     emailLabel: "Email address",
     emailHelper: "We only write when there's a new flavour.",
     submit: "Join the list",
+    successTitle: "You're on the list!",
+    successBody: "We'll write the day a new flavour reaches the menu.",
+    emailRequired: "An email address is required.",
+    emailInvalid: "That email address doesn't look right.",
   },
   footer: {
     tagline: "Small-batch iced lattes, poured black first, flavoured fresh every morning.",
     taglineMatcha: "Small-batch iced matchas, whisked bright first, every morning.",
+    explore: "Explore",
+    stayInTouch: "Stay in touch",
+    stayInTouchBody: "New flavours land every season. Be the first to know.",
     backToTop: "Back to top",
     rights: "© 2026 Kuro Coffee. All rights reserved.",
   },
@@ -53,6 +62,23 @@ export const en = {
     subtotal: "Subtotal",
     clear: "Clear bag",
     added: "added to your bag.",
+    open: "Open bag",
+    decrease: "Decrease quantity",
+    increase: "Increase quantity",
+    quantity: "Quantity",
+    remove: "Remove from bag",
+  },
+  dialog: {
+    size: "Size",
+    caffeine: "Caffeine",
+    price: "Price",
+    addToBag: "Add to bag",
+    close: "Close",
+  },
+  drawer: {
+    close: "Close menu",
+    fresh: "Fresh every morning",
+    menu: "Menu",
   },
   notFound: {
     title: "This cup is empty…",
