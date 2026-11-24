@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: typecheck / lint / test / build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+  # PLACEHOLDER (Phase 2): no Playwright tests exist yet, so this job is
+  # intentionally a no-op that only records the fact. It becomes a real
+  # `pnpm exec playwright test` step in Phase 10 (Testing & debugging),
+  # when the E2E suite and the visual-regression baseline are written.
+  # It is kept as a separate job now so the Phase 10 change is a one-line
+  # edit, not a workflow redesign.
+  e2e-smoke:
+    name: e2e smoke (placeholder until Phase 10)
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Playwright smoke tests land in Phase 10 — no E2E suite exists yet in Phase 2."

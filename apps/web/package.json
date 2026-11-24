@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "@ela-coffee/i18n": "workspace:*",
+    "@ela-coffee/ui": "workspace:*",
+    "@fontsource-variable/vazirmatn": "^5.3.0",
+    "@tanstack/react-query": "^5.108.4",
+    "lucide-react": "^0.556.0",
+    "next": "16.4.6",
+    "next-intl": "^4.16.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-hook-form": "^7.92.0",
+    "zod": "^4.6.7",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@ela-coffee/config": "workspace:*",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5",
+    "vitest": "^4.0.17"
+  },
+  "name": "web",
+  "packageManager": "pnpm@10.34.9",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "eslint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "version": "0.1.0"
+}

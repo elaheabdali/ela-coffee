@@ -1,0 +1,70 @@
+/**
+ * Persian (fa) message dictionary. Default locale.
+ * Persian copy is written professionally, not literally translated;
+ * strings marked TODO(review) are placeholders for the client's review.
+ */
+export const fa = {
+  nav: {
+    story: "داستان ما",
+    menu: "منو",
+    process: "طرز تهیه",
+    origins: "خاستگاه",
+    join: "عضویت در فهرست",
+    brandCoffee: "قهوه",
+    brandMatcha: "ماچا",
+  },
+  hero: {
+    title: "قهوه‌ات را انتخاب کن",
+    titleMatcha: "ماچا‌ات را انتخاب کن",
+    scrollCue: "اسکرول کن تا بچشی",
+    marquee:
+      "کورو اورجینال • کارامل نمکی • وانیل خامه‌ای • فندق برشته • موکای تلخ • دارچین و شکر قهوه‌ای •",
+    addToBag: "به سبد اضافه کن",
+    surpriseMe: "سورپرایزم کن",
+    allFlavours: "همهٔ طعم‌ها",
+    tastingNotes: "یادداشت‌های طعم",
+    pauseMotion: "توقف حرکت شناور",
+    playMotion: "پخش حرکت",
+  },
+  menu: {
+    eyebrow: "منو",
+    title: "شش آیس‌لاته. یک شات بی‌نقص.",
+    titleMatcha: "شش آیس‌ماچا. یک هم‌زدن بی‌نقص.",
+    spinWheel: "چرخ طعم را بچرخان",
+    makeItYours: "به سلیقهٔ خودت",
+    makeItYoursNote: "هر تغییری رایگان است؛ هنگام سفارش فقط بگو.",
+  },
+  join: {
+    eyebrow: "به فهرست بپیوند",
+    title: "اولین نفر باش که طعم‌های تازه را می‌چشد.",
+    emailLabel: "نشانی ایمیل",
+    emailHelper: "فقط وقتی طعم تازه‌ای می‌آید برایت می‌نویسیم.",
+    submit: "عضویت در فهرست",
+  },
+  footer: {
+    tagline: "آیس‌لاته‌های دست‌ساز؛ اول سیاه ریخته می‌شود، هر صبح تازه طعم‌دار می‌شود.",
+    taglineMatcha: "آیس‌ماچاهای دست‌ساز؛ هر صبح تازه هم زده می‌شود.",
+    backToTop: "بازگشت به بالا",
+    rights: "© ۲۰۲۶ کورو کافی. همهٔ حقوق محفوظ است.",
+  },
+  bag: {
+    title: "سبد تو",
+    empty: "سبدت خالی است",
+    emptyHint: "روی دکمهٔ سبد زیر هر نوشیدنی بزن تا اینجا اضافه شود.",
+    subtotal: "جمع اقلام",
+    clear: "خالی کردن سبد",
+    added: "به سبدت اضافه شد.",
+  },
+  notFound: {
+    title: "این فنجان خالی است…",
+    body: "صفحه‌ای که دنبالش بودی جابه‌جا شده یا هرگز وجود نداشته است.",
+    back: "بازگشت به طعم‌ها",
+  },
+  placeholder: {
+    note: "این یک صفحهٔ جایگزین موقت است؛ چرخ طعم کامل و همهٔ بخش‌ها در فاز ۴ می‌آیند.",
+    motionDemo: "نمایش موشن",
+    priceDemo: "قیمت نمونه (تومان، موقت)",
+  },
+} as const;
+
+export type Messages = typeof fa;

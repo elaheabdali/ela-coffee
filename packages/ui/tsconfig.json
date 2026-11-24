@@ -1,0 +1,7 @@
+{
+  "extends": "@ela-coffee/config/tsconfig/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src"]
+}
