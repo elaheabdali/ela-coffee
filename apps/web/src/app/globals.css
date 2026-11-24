@@ -640,10 +640,41 @@ html[data-motion="paused"] .animate-kuro-scroll-cue {
   display: block;
 }
 
+/* ------------------------------------------------------------------ */
+/* 9. Persian typography (Phase 5, architecture §10).                  */
+/*    UNLAYERED on purpose: these must beat both Tailwind utilities    */
+/*    and next/font's variable classes (both unlayered), so the fa     */
+/*    overrides win on specificity.                                    */
+/*                                                                     */
+/*    - Font stacks: Vazirmatn covers Persian; Fraunces/Geist Mono    */
+/*      stay FIRST where the glyph is Latin (wordmark "kuro", "404"),  */
+/*      because font fallback is per-glyph: Persian glyphs fall        */
+/*      through Fraunces/Manrope/Geist Mono to Vazirmatn. Without      */
+/*      this, fa headings fell back to Times New Roman and fa body     */
+/*      text to Arial instead of Vazirmatn.                            */
+/*    - No letter-spacing on Persian text: it breaks joining.          */
+/*    - Persian body copy reads at line-height ≥ 1.8.                  */
+/* ------------------------------------------------------------------ */
+
+html[lang="fa"] {
+  --font-app-sans: "Vazirmatn Variable", "Manrope", Arial, sans-serif;
+  --font-app-heading: "Fraunces", "Vazirmatn Variable", "Times New Roman", serif;
+  --font-app-mono: "Geist Mono", "Vazirmatn Variable", Arial, monospace;
+}
+
+html[lang="fa"] [class*="tracking-"] {
+  letter-spacing: 0;
+}
+
+html[lang="fa"] .leading-relaxed {
+  line-height: 1.8;
+}
+
 /* Floating ingredient cut-outs (transparent WebP, keyed in Phase 4). */
 .kuro-cutout {
   filter: drop-shadow(0 18px 24px rgb(0 0 0 / 0.45));
   pointer-events: none;
   user-select: none;
 }
+
 

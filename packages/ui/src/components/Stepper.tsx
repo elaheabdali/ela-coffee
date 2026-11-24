@@ -1,5 +1,6 @@
 "use client";
 
+import { toFaDigits, type Locale } from "@ela-coffee/i18n";
 import { cn } from "../cn";
 
 export interface StepperProps {
@@ -12,13 +13,16 @@ export interface StepperProps {
   increaseLabel?: string;
   /** Accessible label for the current value. */
   valueLabel?: string;
+  /** Locale for the displayed value: Persian digits in fa. */
+  locale?: Locale;
   className?: string;
 }
 
 /**
  * Minus / plus quantity control (the bag line-item stepper, audit §2).
  * Buttons are disabled at the bounds, and the value is announced via
- * `aria-live="polite"`.
+ * `aria-live="polite"`. The value renders in Persian digits when
+ * locale is "fa" (architecture §10).
  */
 export function Stepper({
   value,
@@ -28,6 +32,7 @@ export function Stepper({
   decreaseLabel = "Decrease quantity",
   increaseLabel = "Increase quantity",
   valueLabel = "Quantity",
+  locale = "en",
   className,
 }: StepperProps) {
   const canDecrease = value > min;
@@ -52,7 +57,7 @@ export function Stepper({
         aria-label={valueLabel}
         className="min-w-6 text-center font-semibold tabular-nums"
       >
-        {value}
+        {locale === "fa" ? toFaDigits(value) : value}
       </output>
       <button
         type="button"

@@ -231,10 +231,10 @@ export function FlavorWheel() {
           {/* Floating ingredient cut-outs (kuro-float 7s, staggered delays). */}
           {data.cutouts.map((cutout, i) => {
             const positions = [
-              "left-[4%] top-[26%] max-sm:top-[60%]",
-              "left-[16%] top-[56%] max-sm:top-[74%]",
-              "right-[5%] top-[30%] max-sm:top-[64%]",
-              "right-[15%] top-[58%] max-sm:top-[78%]",
+              "start-[4%] top-[26%] max-sm:top-[60%]",
+              "start-[16%] top-[56%] max-sm:top-[74%]",
+              "end-[5%] top-[30%] max-sm:top-[64%]",
+              "end-[15%] top-[58%] max-sm:top-[78%]",
             ];
             return (
               <div
@@ -331,7 +331,7 @@ export function FlavorWheel() {
             <span className="font-display text-2xl font-bold">
               {counter}
             </span>
-            <span className="flex items-center gap-1.5" role="group" aria-label={tHero("allFlavours")}>
+            <span className="flex items-center gap-1.5" role="group" aria-label={tHero("allFlavors")}>
               {data.drinks.map((dotDrink, i) => (
                 <button
                   key={dotDrink.id}

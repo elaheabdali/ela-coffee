@@ -165,7 +165,7 @@ describe("JoinList", () => {
     fireEvent.click(screen.getByRole("button", { name: "Join the list" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("You're on the list!");
-    expect(screen.getByText("We'll write the day a new flavour reaches the menu.")).toBeInTheDocument();
+    expect(screen.getByText("We'll write the day a new flavor reaches the menu.")).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
@@ -175,7 +175,7 @@ describe("SiteFooter", () => {
     renderWithLocale(<SiteFooter />, "en");
     expect(screen.getByText("kuro")).toBeInTheDocument();
     expect(
-      screen.getByText("Small-batch iced lattes, poured black first, flavoured fresh every morning."),
+      screen.getByText("Small-batch iced lattes, poured black first, flavored fresh every morning."),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Story" })).toHaveAttribute("href", "#story");
     expect(screen.getByRole("link", { name: "Menu" })).toHaveAttribute("href", "#menu");

@@ -42,6 +42,8 @@ export interface Drink {
   caffeineMg: number;
   /** Stat-box size, e.g. "16 oz iced". */
   size: string;
+  /** Stat-box size in Persian, e.g. "۱۶ انس، سرد". */
+  sizeFa: string;
   /** Exactly 3 tasting notes — the one source of truth. */
   notesEn: string[];
   notesFa: string[];
@@ -143,6 +145,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 180_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Dark cocoa", "Toasted almond", "Brown sugar"],
     notesFa: ["کاکائوی تلخ", "بادام برشته", "شکر قهوه‌ای"],
     image: "/images/scenes/original.webp",
@@ -163,6 +166,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 195_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Burnt sugar", "Butterscotch", "Sea salt"],
     notesFa: ["شکر سوخته", "کره و شکر قهوه‌ای", "نمک دریا"],
     image: "/images/scenes/caramel-latte.webp",
@@ -182,6 +186,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 190_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Vanilla bean", "Fresh cream", "Wildflower honey"],
     notesFa: ["دانهٔ وانیل", "خامهٔ تازه", "عسل گل وحشی"],
     image: "/images/scenes/vanilla-latte.webp",
@@ -201,6 +206,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 195_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Roasted hazelnut", "Praline", "Milk chocolate"],
     notesFa: ["فندق برشته", "پرالین", "شکلات شیری"],
     image: "/images/scenes/hazelnut-latte.webp",
@@ -221,6 +227,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 205_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Dark chocolate", "Black cherry", "Cocoa nib"],
     notesFa: ["شکلات تلخ", "گیلاس سیاه", "دانهٔ کاکائو"],
     image: "/images/scenes/mocha-latte.webp",
@@ -241,6 +248,7 @@ const COFFEE_DRINKS: Drink[] = [
     priceToman: 195_000,
     caffeineMg: 150,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Molasses", "Ceylon cinnamon", "Toffee"],
     notesFa: ["ملاس", "دارچین سیلان", "تافی"],
     image: "/images/scenes/cinnamon-latte.webp",
@@ -264,6 +272,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 195_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Stone-ground", "Fresh cream", "Wildflower honey"],
     notesFa: ["آسیاب‌سنگی", "خامهٔ تازه", "عسل گل وحشی"],
     // PLACEHOLDER: no Midori Original scene was supplied — tea.webp stands in.
@@ -284,6 +293,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     // Single source of truth: the reference card showed only 2 notes here.
     notesEn: ["Wild blueberry", "Vanilla", "Green tea"],
     notesFa: ["بلوبری وحشی", "وانیل", "چای سبز"],
@@ -304,6 +314,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Dark cherry", "Wildflower honey", "Green tea"],
     notesFa: ["گیلاس تلخ", "عسل گل وحشی", "چای سبز"],
     image: "/images/scenes/cherry.webp",
@@ -323,6 +334,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 200_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Toasted coconut", "Fresh cream", "Vanilla"],
     notesFa: ["نارگیل برشته", "خامهٔ تازه", "وانیل"],
     image: "/images/scenes/coconut.webp",
@@ -342,6 +354,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Blackberry", "Wildflower honey", "Green tea"],
     notesFa: ["شاه‌توت", "عسل گل وحشی", "چای سبز"],
     image: "/images/scenes/blackberry.webp",
@@ -361,6 +374,7 @@ const MATCHA_DRINKS: Drink[] = [
     priceToman: 205_000,
     caffeineMg: 70,
     size: "16 oz iced",
+    sizeFa: "۱۶ انس، سرد",
     notesEn: ["Strawberry", "Vanilla", "Fresh cream"],
     notesFa: ["توت‌فرنگی", "وانیل", "خامهٔ تازه"],
     image: "/images/scenes/strawberry.webp",
@@ -403,7 +417,7 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleFa: "کورو یعنی سیاه. بقیه‌اش با توست.",
       bodyEn: [
         "We started with one stubborn idea: a perfect black espresso is the foundation of every great iced latte. So we built everything around the shot.",
-        "Then we make our flavours the slow way, every morning, from real caramel, real vanilla bean, toasted hazelnut and dark chocolate. No powders. No shortcuts.",
+        "Then we make our flavors the slow way, every morning, from real caramel, real vanilla bean, toasted hazelnut and dark chocolate. No powders. No shortcuts.",
       ],
       bodyFa: [
         "از یک ایدهٔ سرسخت شروع کردیم: یک اسپرسوی سیاهِ بی‌نقص، پایهٔ هر آیس‌لاتهٔ عالی است. پس همه‌چیز را دور شات ساختیم. — TODO(review)",
@@ -412,7 +426,7 @@ export const BRANDS: Record<Brand, BrandData> = {
       stats: [
         { valueEn: "7 days", valueFa: "۷ روز", labelEn: "Every roast rests before we brew it", labelFa: "هر برشته پیش از دم‌آوری استراحت می‌کند" },
         { valueEn: "2", valueFa: "۲", labelEn: "Single origins, roasted every week", labelFa: "دو خاستگاه تک‌منبع، هفته‌ای یک‌بار برشته می‌شود" },
-        { valueEn: "6", valueFa: "۶", labelEn: "Flavours made in house each morning", labelFa: "طعمِ ساخته‌شده در خانه، هر صبح" },
+        { valueEn: "6", valueFa: "۶", labelEn: "Flavors made in house each morning", labelFa: "طعمِ ساخته‌شده در خانه، هر صبح" },
         { valueEn: "0", valueFa: "۰", labelEn: "Powders or artificial syrups", labelFa: "پودر یا سیروپ مصنوعی" },
       ],
       image: "/images/story/bean.webp",
@@ -423,7 +437,7 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Six iced lattes. One perfect shot.",
       titleFa: "شش آیس‌لاته. یک شات بی‌نقص.",
       introEn:
-        "Every drink starts with a double shot of Kuro espresso over ice and cold milk, then one of our house flavours.",
+        "Every drink starts with a double shot of Kuro espresso over ice and cold milk, then one of our house flavors.",
       introFa:
         "هر نوشیدنی با دابل‌شات اسپرسوی کورو روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
     },
@@ -458,7 +472,7 @@ export const BRANDS: Record<Brand, BrandData> = {
         {
           titleEn: "Pour",
           titleFa: "ریختن",
-          bodyEn: "The shot meets ice, cold milk and a house-made flavour, then goes straight into your hand.",
+          bodyEn: "The shot meets ice, cold milk and a house-made flavor, then goes straight into your hand.",
           bodyFa: "شات با یخ، شیر سرد و طعم خانگی آشنا می‌شود و مستقیم به دستت می‌رسد. — TODO(review)",
           image: "/images/process/pour.webp",
         },
@@ -532,7 +546,7 @@ export const BRANDS: Record<Brand, BrandData> = {
       stats: [
         { valueEn: "21 days", valueFa: "۲۱ روز", labelEn: "Every leaf is shaded before harvest", labelFa: "هر برگ پیش از برداشت سایه می‌بیند" },
         { valueEn: "2", valueFa: "۲", labelEn: "Gardens we source from", labelFa: "دو باغی که از آن‌ها می‌گیریم" },
-        { valueEn: "6", valueFa: "۶", labelEn: "Flavours whisked fresh each morning", labelFa: "طعمِ تازه‌هم‌زده، هر صبح" },
+        { valueEn: "6", valueFa: "۶", labelEn: "Flavors whisked fresh each morning", labelFa: "طعمِ تازه‌هم‌زده، هر صبح" },
         { valueEn: "0", valueFa: "۰", labelEn: "Added colours or powders", labelFa: "رنگ یا پودرِ افزوده" },
       ],
       image: "/images/tea.webp",
@@ -543,7 +557,7 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Six iced matchas. One perfect whisk.",
       titleFa: "شش آیس‌ماچا. یک هم‌زدن بی‌نقص.",
       introEn:
-        "Every drink starts with whisked ceremonial matcha over ice and cold milk, then one of our house flavours.",
+        "Every drink starts with whisked ceremonial matcha over ice and cold milk, then one of our house flavors.",
       introFa:
         "هر نوشیدنی با ماچای تشریفاتیِ هم‌زده روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
     },
@@ -556,7 +570,7 @@ export const BRANDS: Record<Brand, BrandData> = {
         {
           titleEn: "Shade",
           titleFa: "سایه",
-          bodyEn: "Tea bushes are shaded for up to 21 days before harvest, so the leaves grow tender and rich in flavour.",
+          bodyEn: "Tea bushes are shaded for up to 21 days before harvest, so the leaves grow tender and rich in flavor.",
           bodyFa: "بوته‌های چای تا ۲۱ روز پیش از برداشت سایه می‌بینند تا برگ‌ها لطیف و پرطعم رشد کنند. — TODO(review)",
           image: "/images/shade.webp",
         },
@@ -573,13 +587,13 @@ export const BRANDS: Record<Brand, BrandData> = {
           titleEn: "Whisk",
           titleFa: "هم‌زدن",
           bodyEn: "Each serving is whisked to order, two grams of matcha with hot water until it turns silky and smooth.",
-          bodyFa: "هر وعده به سفارش هم زده می‌شود؛ دو گرم ماچا با آب داغ تا ابریشمی و نرم شود. — TODO(review)",
+          bodyFa: "هر وعده به سفارش هم‌زده می‌شود؛ دو گرم ماچا با آب داغ تا ابریشمی و نرم شود. — TODO(review)",
           image: "/images/whisk.webp",
         },
         {
           titleEn: "Pour",
           titleFa: "ریختن",
-          bodyEn: "The whisked matcha meets ice, cold milk and a house-made flavour, then goes straight into your hand.",
+          bodyEn: "The whisked matcha meets ice, cold milk and a house-made flavor, then goes straight into your hand.",
           bodyFa: "ماچای هم‌زده با یخ، شیر سرد و طعم خانگی آشنا می‌شود و مستقیم به دستت می‌رسد. — TODO(review)",
           image: "/images/process/pour.webp",
         },

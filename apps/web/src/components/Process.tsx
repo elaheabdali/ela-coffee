@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { toFaDigits } from "@ela-coffee/i18n";
 import { Eyebrow, Reveal, WordReveal } from "@ela-coffee/ui";
 import { BRANDS } from "@/data/flavours";
 import { useBrand } from "@/stores/brand";
@@ -37,7 +38,9 @@ export function Process() {
           {process.steps.map((step, index) => (
             <li key={step.titleEn} className="flex flex-col gap-4">
               <span className="font-mono text-sm text-crema">
-                {String(index + 1).padStart(2, "0")}
+                {isFa
+                  ? toFaDigits(String(index + 1).padStart(2, "0"))
+                  : String(index + 1).padStart(2, "0")}
               </span>
               {step.image ? (
                 <Reveal variant="image">

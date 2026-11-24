@@ -69,6 +69,8 @@ export function DesignSystemCatalog() {
   const t = useTranslations("designSystem");
   const tNav = useTranslations("nav");
   const tHero = useTranslations("hero");
+  const tBag = useTranslations("bag");
+  const tDialog = useTranslations("dialog");
   const locale = useLocale();
   const priceLocale = locale === "en" ? "en" : "fa";
 
@@ -128,15 +130,15 @@ export function DesignSystemCatalog() {
 
         <Section title={t("buttons")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Button variant="primary">Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="outline">Outline</Button>
+            <Button variant="primary">{t("variantPrimary")}</Button>
+            <Button variant="secondary">{t("variantSecondary")}</Button>
+            <Button variant="ghost">{t("variantGhost")}</Button>
+            <Button variant="outline">{t("variantOutline")}</Button>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button size="sm">Small</Button>
-            <Button size="md">Medium</Button>
-            <Button size="lg">Large</Button>
+            <Button size="sm">{t("sizeSmall")}</Button>
+            <Button size="md">{t("sizeMedium")}</Button>
+            <Button size="lg">{t("sizeLarge")}</Button>
             <Button loading>{t("loading")}</Button>
             <Button disabled>{t("disabled")}</Button>
           </div>
@@ -144,15 +146,15 @@ export function DesignSystemCatalog() {
 
         <Section title={t("pills")}>
           <div className="flex flex-wrap items-center gap-3">
-            <Pill>Glass pill (default)</Pill>
-            <Pill variant="label">Label pill</Pill>
+            <Pill>{t("pillGlass")}</Pill>
+            <Pill variant="label">{t("pillLabel")}</Pill>
           </div>
         </Section>
 
         <Section title={t("eyebrow")}>
           <div className="flex flex-col gap-2">
-            <Eyebrow>Our story</Eyebrow>
-            <Eyebrow size="sm">The menu</Eyebrow>
+            <Eyebrow>{tNav("story")}</Eyebrow>
+            <Eyebrow size="sm">{tNav("menu")}</Eyebrow>
           </div>
         </Section>
 
@@ -171,7 +173,16 @@ export function DesignSystemCatalog() {
         </Section>
 
         <Section title={t("stepper")}>
-          <Stepper value={qty} onChange={setQty} min={1} max={6} />
+          <Stepper
+            value={qty}
+            onChange={setQty}
+            min={1}
+            max={6}
+            decreaseLabel={tBag("decrease")}
+            increaseLabel={tBag("increase")}
+            valueLabel={tBag("quantity")}
+            locale={priceLocale}
+          />
         </Section>
 
         <Section title={t("dialog")}>
@@ -182,6 +193,7 @@ export function DesignSystemCatalog() {
               onClose={() => setDialogOpen(false)}
               title={tHero("tastingNotes")}
               description={t("dialogBody")}
+              closeLabel={tDialog("close")}
             >
               <div className="flex flex-col gap-4">
                 <Image

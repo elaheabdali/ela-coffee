@@ -24,6 +24,52 @@ describe("flavours dataset", () => {
     }
   });
 
+  it("has a Persian size label for every drink", () => {
+    for (const drink of ALL_DRINKS) {
+      expect(drink.size).toBe("16 oz iced");
+      expect(drink.sizeFa).toBe("۱۶ انس، سرد");
+    }
+  });
+
+  it("keeps English copy free of Persian script and Persian copy free of Latin letters", () => {
+    const persian = /[\u0600-\u06FF]/;
+    const latin = /[A-Za-z]/;
+    const stripFlag = (s: string) => s.replace(/ ?— ?TODO\(review\)/g, "");
+    for (const drink of ALL_DRINKS) {
+      for (const field of [drink.nameEn, drink.shortEn, drink.descriptionEn, ...drink.notesEn]) {
+        expect(field).not.toMatch(persian);
+      }
+      for (const field of [
+        drink.nameFa,
+        drink.shortFa,
+        drink.descriptionFa,
+        ...drink.notesFa,
+      ]) {
+        expect(stripFlag(field)).not.toMatch(latin);
+      }
+    }
+  });
+
+  it("flags exactly the 32 uncertain Persian strings with TODO(review)", () => {
+    const flagged: string[] = [];
+    const walk = (value: unknown): void => {
+      if (typeof value === "string") {
+        if (value.includes("TODO(review)")) flagged.push(value);
+        return;
+      }
+      if (value && typeof value === "object") {
+        for (const child of Object.values(value)) walk(child);
+      }
+    };
+    walk(BRANDS);
+    // 12 drink descriptions + 4 story bodies + 2 menu intros +
+    // 8 process bodies + 2 origins intros + 4 origin-card intros.
+    expect(flagged).toHaveLength(32);
+    for (const s of flagged) {
+      expect(s).toMatch(/[\u0600-\u06FF]/);
+    }
+  });
+
   it("has positive placeholder prices and the reference caffeine values", () => {
     for (const drink of ALL_DRINKS) {
       expect(drink.priceToman).toBeGreaterThan(0);

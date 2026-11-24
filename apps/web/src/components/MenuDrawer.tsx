@@ -122,7 +122,10 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
       <nav className="flex flex-1 flex-col justify-center gap-2">
         <ul className="flex flex-col gap-2">
           {LINKS.map((link, i) => {
-            const number = locale === "fa" ? toFaDigits(i + 1) : String(i + 1).padStart(2, "0");
+            const number =
+              locale === "fa"
+                ? toFaDigits(String(i + 1).padStart(2, "0"))
+                : String(i + 1).padStart(2, "0");
             return (
               <li key={link.href}>
                 <a

@@ -37,7 +37,7 @@ describe("SiteHeader", () => {
   it("renders the wordmark and the flavour controls in the hero state", () => {
     renderHeader();
     expect(screen.getByRole("link", { name: "kuro" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "All flavours" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All flavors" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Menu" })).toBeInTheDocument();
     // Scrolled-only links are not rendered yet.
     expect(screen.queryByRole("link", { name: "Story" })).not.toBeInTheDocument();

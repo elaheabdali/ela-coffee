@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatJalali, formatToman, isValidIranianPhone, toFaDigits } from "./format";
+import { formatJalali, formatToman, isValidIranianPhone, normalizeDigits, toFaDigits } from "./format";
 
 describe("formatToman", () => {
   it("formats Toman with Persian digits in fa", () => {
@@ -44,9 +44,35 @@ describe("isValidIranianPhone", () => {
     expect(isValidIranianPhone("۰۹۱۲۳۴۵۶۷۸۹")).toBe(true);
   });
 
+  it("accepts +98 written with Persian digits", () => {
+    expect(isValidIranianPhone("+۹۸۹۱۲۳۴۵۶۷۸۹")).toBe(true);
+    expect(isValidIranianPhone(" ۰۹۱۲۳۴۵۶۷۸۹ ")).toBe(true);
+  });
+
   it("rejects landlines, short numbers and other countries", () => {
     expect(isValidIranianPhone("02112345678")).toBe(false);
     expect(isValidIranianPhone("0912345678")).toBe(false);
     expect(isValidIranianPhone("+12123456789")).toBe(false);
+  });
+
+  it("rejects the 0098 prefix, inner spaces and too-short numbers", () => {
+    expect(isValidIranianPhone("00989123456789")).toBe(false);
+    expect(isValidIranianPhone("0912 345 6789")).toBe(false);
+    expect(isValidIranianPhone("091234567")).toBe(false);
+    expect(isValidIranianPhone("")).toBe(false);
+  });
+});
+
+describe("normalizeDigits", () => {
+  it("converts Persian and Arabic-Indic digits to Latin", () => {
+    expect(normalizeDigits("۱۲۳")).toBe("123");
+    expect(normalizeDigits("٩١٢")).toBe("912");
+  });
+});
+
+describe("formatToman", () => {
+  it("formats zero", () => {
+    expect(formatToman(0, "fa")).toBe("۰ تومان");
+    expect(formatToman(0, "en")).toBe("0 Toman");
   });
 });

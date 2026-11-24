@@ -48,10 +48,10 @@ describe("FlavorControls", () => {
     expect(useBag.getState().isOpen).toBe(true);
   });
 
-  it("lists all 6 drinks of the current brand in the All flavours dialog", () => {
+  it("lists all 6 drinks of the current brand in the All flavors dialog", () => {
     renderControls();
-    fireEvent.click(screen.getByRole("button", { name: "All flavours" }));
-    const dialog = screen.getByRole("dialog", { name: "All flavours" });
+    fireEvent.click(screen.getByRole("button", { name: "All flavors" }));
+    const dialog = screen.getByRole("dialog", { name: "All flavors" });
     expect(dialog).toBeInTheDocument();
     for (const name of [
       "Kuro Original",
@@ -70,12 +70,12 @@ describe("FlavorControls", () => {
     );
   });
 
-  it("jumps to a flavour when its All flavours row is clicked", () => {
+  it("jumps to a flavour when its All flavors row is clicked", () => {
     renderControls();
-    fireEvent.click(screen.getByRole("button", { name: "All flavours" }));
+    fireEvent.click(screen.getByRole("button", { name: "All flavors" }));
     fireEvent.click(screen.getByRole("button", { name: /Dark Mocha/ }));
     expect(useFlavour.getState().index).toBe(4);
-    expect(screen.queryByRole("dialog", { name: "All flavours" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "All flavors" })).not.toBeInTheDocument();
   });
 
   it("shows 3 notes plus size, caffeine and price in the Tasting notes dialog", () => {
@@ -108,6 +108,6 @@ describe("FlavorControls", () => {
   it("shows Persian digits for caffeine in the fa locale", () => {
     renderControls("fa");
     fireEvent.click(screen.getByRole("button", { name: "یادداشت‌های طعم" }));
-    expect(screen.getByText("۱۵۰ mg")).toBeInTheDocument();
+    expect(screen.getByText("۱۵۰ میلی‌گرم")).toBeInTheDocument();
   });
 });

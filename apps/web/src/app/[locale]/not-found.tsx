@@ -1,4 +1,5 @@
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { toFaDigits } from "@ela-coffee/i18n";
 import { Link } from "@/i18n/navigation";
 
 /**
@@ -14,7 +15,9 @@ export default async function NotFound() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center gap-4 px-5 text-center">
-      <p className="font-display text-8xl font-black tracking-[-0.02em]">404</p>
+      <p className="font-display text-8xl font-black tracking-[-0.02em]">
+        {locale === "fa" ? toFaDigits("404") : "404"}
+      </p>
       <h1 className="font-display text-3xl font-bold">{t("title")}</h1>
       <p className="max-w-md text-muted-foreground">{t("body")}</p>
       <Link

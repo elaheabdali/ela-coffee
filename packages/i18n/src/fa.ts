@@ -22,7 +22,7 @@ export const fa = {
       "کورو اورجینال • کارامل نمکی • وانیل خامه‌ای • فندق برشته • موکای تلخ • دارچین و شکر قهوه‌ای •",
     addToBag: "به سبد اضافه کن",
     surpriseMe: "سورپرایزم کن",
-    allFlavours: "همهٔ طعم‌ها",
+    allFlavors: "همهٔ طعم‌ها",
     tastingNotes: "یادداشت‌های طعم",
     pauseMotion: "توقف حرکت شناور",
     playMotion: "پخش حرکت",
@@ -49,12 +49,24 @@ export const fa = {
   },
   footer: {
     tagline: "آیس‌لاته‌های دست‌ساز؛ اول سیاه ریخته می‌شود، هر صبح تازه طعم‌دار می‌شود.",
-    taglineMatcha: "آیس‌ماچاهای دست‌ساز؛ هر صبح تازه هم زده می‌شود.",
+    taglineMatcha: "آیس‌ماچاهای دست‌ساز؛ هر صبح تازه هم‌زده می‌شود.",
     explore: "کاوش",
     stayInTouch: "در تماس باش",
     stayInTouchBody: "طعم‌های تازه هر فصل می‌آیند. اولین نفر باش که می‌فهمد.",
     backToTop: "بازگشت به بالا",
     rights: "© ۲۰۲۶ کورو کافی. همهٔ حقوق محفوظ است.",
+    contactTitle: "تماس",
+    phone: "تلفن",
+    whatsapp: "واتس‌اپ",
+    telegram: "تلگرام",
+    eitaa: "ایتا",
+    instagram: "اینستاگرام",
+    /**
+     * PLACEHOLDER (Phase 5): no real phone number or handles have been
+     * supplied yet. Replace these with the client's real contact
+     * details before delivery — see docs/fa/phase-05-i18n-rtl.md.
+     */
+    phoneNumber: "۰۲۱ ۰۰۰۰ ۰۰۰۰",
   },
   bag: {
     title: "سبد تو",
@@ -97,7 +109,16 @@ export const fa = {
     tokens: "توکن‌ها",
     tokensNote: "مقادیر از audit §۳؛ با تعویض برند (قهوه ↔ ماچا) همهٔ رنگ‌ها عوض می‌شوند.",
     buttons: "دکمه‌ها",
+    variantPrimary: "اصلی",
+    variantSecondary: "فرعی",
+    variantGhost: "شبح",
+    variantOutline: "دورخط",
+    sizeSmall: "کوچک",
+    sizeMedium: "متوسط",
+    sizeLarge: "بزرگ",
     pills: "پل‌ها",
+    pillGlass: "پل شیشه‌ای (پیش‌فرض)",
+    pillLabel: "پل برچسب",
     eyebrow: "برچسب بخش",
     price: "قیمت",
     stepper: "شمارنده",

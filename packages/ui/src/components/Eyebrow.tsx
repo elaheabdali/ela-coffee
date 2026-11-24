@@ -17,9 +17,10 @@ const SIZES: Record<EyebrowSize, string> = {
 
 /**
  * Small uppercase section label (OUR STORY, THE MENU, …).
- * Persian copy uses no letter-spacing on the glyphs themselves — the
- * tracking here is the reference's Latin eyebrow style; in `fa` the
- * text stays uppercase-free because Persian has no case.
+ * Letter-spacing is the reference's Latin eyebrow style (audit §3.3);
+ * in `fa` it is neutralised by the globals.css rule
+ * `html[lang="fa"] [class*="tracking-"]` — letter-spacing on Persian
+ * text breaks joining, so fa eyebrows render with no tracking.
  */
 export function Eyebrow({ children, size = "md", className }: EyebrowProps) {
   return (

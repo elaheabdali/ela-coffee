@@ -147,6 +147,7 @@ export function BagDrawer() {
                         decreaseLabel={tBag("decrease")}
                         increaseLabel={tBag("increase")}
                         valueLabel={tBag("quantity")}
+                        locale={priceLocale}
                         className="mt-2"
                       />
                     </div>

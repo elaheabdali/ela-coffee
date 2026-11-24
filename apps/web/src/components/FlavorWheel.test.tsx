@@ -60,7 +60,7 @@ describe("FlavorWheel", () => {
       screen.getByRole("button", { name: /Add Kuro Original to your bag, 180,000 Toman/ }),
     ).toBeInTheDocument();
     expect(screen.getByText("1 / 6")).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "All flavours" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "All flavors" })).toBeInTheDocument();
   });
 
   it("shows the reference's 4 featured flavours", () => {

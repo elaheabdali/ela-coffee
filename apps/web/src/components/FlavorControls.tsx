@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Info, LayoutGrid, ShoppingBag, Shuffle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { toFaDigits } from "@ela-coffee/i18n";
 import { Pill } from "@ela-coffee/ui";
 import { BRANDS } from "@/data/flavours";
 import { bagCount, useBag } from "@/stores/bag";
@@ -11,7 +12,7 @@ import { useFlavour } from "@/stores/flavour";
 import { AllFlavorsDialog, TastingNotesDialog } from "./FlavorDialogs";
 
 /**
- * Top-centre glass pill (audit §2): All flavours, Tasting notes,
+ * Top-centre glass pill (audit §2): All flavors, Tasting notes,
  * Surprise me, and the bag with a count badge. The badge is keyed by
  * the count so the `kuro-bump` animation re-triggers on every add.
  * The dialogs are only mounted while open, so the toast hook inside
@@ -20,6 +21,7 @@ import { AllFlavorsDialog, TastingNotesDialog } from "./FlavorDialogs";
 export function FlavorControls() {
   const tHero = useTranslations("hero");
   const tBag = useTranslations("bag");
+  const locale = useLocale();
   const { brand } = useBrand();
   const { index, surprise } = useFlavour();
   const { items, openBag } = useBag();
@@ -37,7 +39,7 @@ export function FlavorControls() {
       <Pill variant="glass" className="gap-1 px-2 py-1.5">
         <button
           type="button"
-          aria-label={tHero("allFlavours")}
+          aria-label={tHero("allFlavors")}
           onClick={() => setAllOpen(true)}
           className={iconButtonClass}
         >
@@ -72,7 +74,7 @@ export function FlavorControls() {
               data-testid="bag-count"
               className="animate-kuro-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
             >
-              {count}
+              {locale === "fa" ? toFaDigits(count) : count}
             </span>
           ) : null}
         </button>

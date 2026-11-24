@@ -17,7 +17,7 @@ export default function GlobalNotFound() {
     <html lang="fa" dir="rtl" data-brand="kuro">
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center gap-4 px-5 text-center">
-          <p className="text-8xl font-black tracking-[-0.02em]">404</p>
+          <p className="text-8xl font-black tracking-[-0.02em]">۴۰۴</p>
           <h1 className="text-3xl font-bold">این فنجان خالی است…</h1>
           <p className="max-w-md text-muted-foreground">
             صفحه‌ای که دنبالش بودی جابه‌جا شده یا هرگز وجود نداشته است.

@@ -41,7 +41,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Kuro Coffee — Small-batch iced lattes",
   description:
-    "Small-batch iced lattes and matchas, poured black first, flavoured fresh every morning.",
+    "Small-batch iced lattes and matchas, poured black first, flavored fresh every morning.",
 };
 
 export function generateStaticParams() {

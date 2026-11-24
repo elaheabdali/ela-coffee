@@ -68,4 +68,30 @@ describe("home page (Phase 4)", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/All rights reserved/)).toBeInTheDocument();
   });
+
+  it("renders the fa page with Persian digits and no Latin digits in visible text", async () => {
+    const ui = await Page({ params: Promise.resolve({ locale: "fa" }) });
+    render(
+      <NextIntlClientProvider locale="fa" messages={fa}>
+        {ui}
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getAllByText("۱۸۰٬۰۰۰ تومان").length).toBeGreaterThan(0);
+    const text = document.body.textContent ?? "";
+    expect(text).not.toMatch(/[0-9]/);
+  });
+
+  it("renders the en page with Latin digits and no Persian script in visible text", async () => {
+    const ui = await Page({ params: Promise.resolve({ locale: "en" }) });
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        {ui}
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getAllByText("180,000 Toman").length).toBeGreaterThan(0);
+    const text = document.body.textContent ?? "";
+    expect(text).not.toMatch(/[\u0600-\u06FF]/);
+  });
 });

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Menu, Pause, Play, ShoppingBag } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { toFaDigits } from "@ela-coffee/i18n";
 import { BRANDS } from "@/data/flavours";
 import { bagCount, useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
@@ -29,6 +30,7 @@ export function SiteHeader() {
   const tHero = useTranslations("hero");
   const tBag = useTranslations("bag");
   const tDrawer = useTranslations("drawer");
+  const locale = useLocale();
   const { brand } = useBrand();
   const { paused, toggle } = useMotion();
   const { items, openBag } = useBag();
@@ -112,7 +114,7 @@ export function SiteHeader() {
                       data-testid="bag-count"
                       className="animate-kuro-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
                     >
-                      {count}
+                      {locale === "fa" ? toFaDigits(count) : count}
                     </span>
                   ) : null}
                 </button>

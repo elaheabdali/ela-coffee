@@ -42,13 +42,14 @@ function drinkNotes(drink: Drink, locale: string): string[] {
  */
 export function AllFlavorsDialog({ open, onClose }: AllFlavorsDialogProps) {
   const tHero = useTranslations("hero");
+  const tDialog = useTranslations("dialog");
   const locale = useLocale();
   const { brand } = useBrand();
   const { index, setIndex } = useFlavour();
   const drinks = BRANDS[brand].drinks;
 
   return (
-    <Dialog open={open} onClose={onClose} title={tHero("allFlavours")}>
+    <Dialog open={open} onClose={onClose} title={tHero("allFlavors")} closeLabel={tDialog("close")}>
       <ul className="flex flex-col gap-1">
         {drinks.map((drink, i) => {
           const isCurrent = i === index;
@@ -108,11 +109,13 @@ export function TastingNotesDialog({ open, onClose, drink }: TastingNotesDialogP
 
   const name = drinkName(drink, locale);
   const notes = drinkNotes(drink, locale);
+  // fa: Persian digits + the Persian unit ("۱۵۰ میلی‌گرم"); en keeps "150 mg".
   const caffeine =
-    locale === "fa" ? `${toFaDigits(drink.caffeineMg)} mg` : `${drink.caffeineMg} mg`;
+    locale === "fa" ? `${toFaDigits(drink.caffeineMg)} میلی‌گرم` : `${drink.caffeineMg} mg`;
+  const size = locale === "fa" ? drink.sizeFa : drink.size;
 
   return (
-    <Dialog open={open} onClose={onClose} title={name}>
+    <Dialog open={open} onClose={onClose} title={name} closeLabel={tDialog("close")}>
       <div className="flex flex-col gap-4">
         <Image
           src={drink.image}
@@ -139,7 +142,7 @@ export function TastingNotesDialog({ open, onClose, drink }: TastingNotesDialogP
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {tDialog("size")}
             </p>
-            <p className="mt-1 text-sm font-semibold">{drink.size}</p>
+            <p className="mt-1 text-sm font-semibold">{size}</p>
           </div>
           <div className="rounded-xl bg-secondary px-2 py-3 ring-1 ring-border">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
