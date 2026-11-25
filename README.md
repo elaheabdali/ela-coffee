@@ -1,8 +1,8 @@
 # ela-coffee
 
-Bilingual (fa default, en) rebuild of the Kuro coffee-shop template as a
+Bilingual (fa default, en) rebuild of the Ela coffee-shop template as a
 production Next.js app — a real client deliverable and flagship portfolio
-piece. One single page, two brands (coffee `kuro` / matcha `midori`)
+piece. One single page, two brands (coffee `ela` / matcha `midori`)
 switched client-side, plus the features the reference does not have: cart,
 checkout/reservation with live order status, and Iranian contact channels.
 
