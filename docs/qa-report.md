@@ -214,3 +214,28 @@ Bugs found & fixed (full list in `docs/fa/phase-10-testing.md` §6):
 - **Not a bug:** unmatched routes render `global-not-found.tsx`, which is fa-first by design — `/en/does-not-exist` shows the Persian 404 with the English paragraph inline.
 
 CI: `.github/workflows/ci.yml` gained a real `e2e` job (install → `playwright install --with-deps chromium firefox` → `pnpm --filter web test:e2e`). It has not run yet — the first real run happens on push in Phase 11.
+
+## 10. Phase 11 — Deploy (2026-11-25, incomplete: blocked on auth)
+
+**Status: no push, no deploy, no CI run yet — and none is claimed.**
+
+- **Real bug fixed before the first push:** `.github/workflows/ci.yml`
+  listened for pushes to `main`, but every commit in this repo is on
+  `master` — so CI would never have run. Fixed to `branches: [master]`
+  (with an explanatory comment in the file). Local verification after
+  the fix: install ✅, typecheck ✅ (0 errors), lint ✅ (0 errors, 1
+  pre-existing warning), unit tests ✅ **224 in 30 files**, build ✅.
+- **Blocker:** neither `gh` nor the Vercel MCP connector is
+  authenticated in this environment, no tokens are set, and no saved
+  GitHub login exists in the Vault. Creating the repo
+  (`github.com/elaheabdali/ela-coffee`, **private** — template licence
+  evidence still open, see `docs/fa/phase-11-deploy.md` §8) and the
+  Vercel project both need the user to sign in in a browser. The
+  Phase 11 commit is local only; there is no remote yet.
+- **What is ready:** `docs/fa/phase-11-deploy.md` (Persian tutorial:
+  repo + CI + Vercel wiring, preview vs production, env-var table,
+  Neon steps, private-vs-public note, Lighthouse command).
+- **Still unverified:** CI `check` + `e2e` jobs (first real run on
+  push), first real `pnpm audit` result, production URL + live checks
+  (/fa, /en, /api/menu, sitemap, robots, 404, security headers),
+  Lighthouse ≥95 mobile.

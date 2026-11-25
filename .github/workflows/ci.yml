@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # The repo's default branch is `master` (all commits so far are on
+    # master). The workflow originally listed `main`, so no push would
+    # ever have triggered it — fixed in Phase 11 before the first push.
+    branches: [master]
   pull_request:
 
 jobs:
