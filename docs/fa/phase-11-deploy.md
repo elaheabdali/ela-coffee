@@ -230,3 +230,33 @@ git push -u origin master
 gh run watch        # اگر با gh لاگین کرده‌ای — تماشای ران CI
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
+
+## رفع آسیب‌پذیری‌های audit (اولین اجرای CI)
+
+اولین ران CI جاب check را قرمز کرد — نه به‌خاطر کد ما، بلکه چون
+`pnpm audit --audit-level high` دو آسیب‌پذیری high پیدا کرد که هر دو
+از وابستگی‌های انتقالی Prisma می‌آمدند (`@prisma/config`):
+
+- `deepmerge-ts` ‏7.1.5 — خستگی پشته هنگام ادغام گراف‌های بازگشتی
+  (GHSA-ggr8-5vv4-36mx)؛ نسخهٔ اصلاح‌شده ‏≥8.0.0
+- `effect` ‏3.21.0 — ‏ReDoS در `Schema.TemplateLiteral`
+  (GHSA-7589-6fvf-x4pw)؛ نسخهٔ اصلاح‌شده ‏≥3.22.1
+
+به‌روزرسانی Prisma به آخرین 6.x (‏6.19.3) کافی نبود، چون همان
+`@prisma/config` هنوز نسخه‌های آسیب‌پذیر را می‌خواست؛ پس در
+`package.json` ریشه دو override گذاشتیم:
+
+```json
+"pnpm": {
+  "overrides": {
+    "deepmerge-ts": "^8.0.0",
+    "effect": "^3.22.1"
+  }
+}
+```
+
+بعد از آن lockfile ‏`deepmerge-ts@8.0.2` و `effect@3.22.5` را حل
+می‌کند و typecheck/lint/‏224 تست/build همه سبز می‌مانند. هر دو
+آسیب‌پذیری در مسیر build-time پریسما بودند، نه در مسیر درخواست‌های
+کاربر، ولی دروازهٔ audit برای همین ساخته شده بود — به‌جای غیرفعال‌کردنش
+آن‌ها را واقعاً رفع کردیم.
