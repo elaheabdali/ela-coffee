@@ -21,9 +21,9 @@ import { useBrand } from "@/stores/brand";
 const CONTACT_LINKS = [
   { key: "phone", href: "tel:+982100000000", Icon: Phone },
   { key: "whatsapp", href: "https://wa.me/982100000000", Icon: MessageCircle },
-  { key: "telegram", href: "https://t.me/kurocoffee", Icon: Send },
-  { key: "eitaa", href: "https://eitaa.com/kurocoffee", Icon: MessagesSquare },
-  { key: "instagram", href: "https://instagram.com/kurocoffee", Icon: Instagram },
+  { key: "telegram", href: "https://t.me/elacoffee", Icon: Send },
+  { key: "eitaa", href: "https://eitaa.com/elacoffee", Icon: MessagesSquare },
+  { key: "instagram", href: "https://instagram.com/elacoffee", Icon: Instagram },
 ] as const;
 
 export function SiteFooter() {

@@ -72,19 +72,19 @@ const originalFetch = globalThis.fetch;
 
 beforeEach(() => {
   useBag.getState().clear();
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
 });
 
 afterEach(() => {
   useBag.getState().clear();
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   globalThis.fetch = originalFetch;
 });
 
 describe("Story", () => {
   it.each([
-    ["fa", "کورو یعنی سیاه. بقیه‌اش با توست.", "۷ روز"],
-    ["en", "Kuro means black. The rest is up to you.", "7 days"],
+    ["fa", "الا سیاه شروع می‌شود. بقیه‌اش با توست.", "۷ روز"],
+    ["en", "Ela starts black. The rest is up to you.", "7 days"],
   ] as const)("renders the heading in %s", (locale, heading, stat) => {
     renderWithLocale(<Story />, locale);
     expect(screen.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("MenuSection", () => {
 
   it("renders six cards and the make-it-yours groups", () => {
     renderWithQuery(<MenuSection />, "en");
-    expect(screen.getByRole("heading", { level: 3, name: "Kuro Original" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Ela Original" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: "Dark Mocha" })).toBeInTheDocument();
     expect(screen.getByText("Make it yours")).toBeInTheDocument();
     expect(screen.getByText("Every swap is free. Just ask when you order.")).toBeInTheDocument();
@@ -232,7 +232,7 @@ describe("JoinList", () => {
 describe("SiteFooter", () => {
   it("renders the brand wordmark, tagline, explore links and back-to-top", () => {
     renderWithLocale(<SiteFooter />, "en");
-    expect(screen.getByText("kuro")).toBeInTheDocument();
+    expect(screen.getByText("ela")).toBeInTheDocument();
     expect(
       screen.getByText(
         "Small-batch iced lattes, poured black first, flavored fresh every morning.",
@@ -244,7 +244,7 @@ describe("SiteFooter", () => {
     expect(screen.getByRole("link", { name: "Origins" })).toHaveAttribute("href", "#origins");
     expect(screen.getByRole("link", { name: "Join the list" })).toHaveAttribute("href", "#join");
     expect(screen.getByRole("link", { name: "Back to top" })).toHaveAttribute("href", "#hero");
-    expect(screen.getByText("© 2026 Kuro Coffee. All rights reserved.")).toBeInTheDocument();
+    expect(screen.getByText("© 2026 Ela Coffee. All rights reserved.")).toBeInTheDocument();
     expect(screen.queryByText(/Modulify/i)).not.toBeInTheDocument();
   });
 
@@ -260,26 +260,26 @@ describe("SiteFooter", () => {
 
 describe("MenuCard", () => {
   it("adds the drink to the bag store on click", async () => {
-    const drink = BRANDS.kuro.drinks[0];
+    const drink = BRANDS.ela.drinks[0];
     renderWithLocale(<MenuCard drink={drink} />, "en");
 
-    expect(screen.getByRole("heading", { level: 3, name: "Kuro Original" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Ela Original" })).toBeInTheDocument();
     // All three tasting notes from the same array the dialog uses.
     for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
       expect(screen.getByText(note)).toBeInTheDocument();
     }
 
     fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 1 }]);
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
 
     fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 2 }]);
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
   });
 
   it("renders the fa name, notes and price", () => {
-    const drink = BRANDS.kuro.drinks[0];
+    const drink = BRANDS.ela.drinks[0];
     renderWithLocale(<MenuCard drink={drink} />, "fa");
-    expect(screen.getByRole("heading", { level: 3, name: "کورو اورجینال" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "الا اورجینال" })).toBeInTheDocument();
     expect(screen.getByText("کاکائوی تلخ")).toBeInTheDocument();
   });
 });

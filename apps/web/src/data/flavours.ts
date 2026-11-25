@@ -23,10 +23,10 @@
  * matcha scenes.
  */
 
-export type Brand = "kuro" | "midori";
+export type Brand = "ela" | "midori";
 
 export interface Drink {
-  /** Stable id, e.g. "kuro-original". */
+  /** Stable id, e.g. "ela-original". */
   id: string;
   brand: Brand;
   slug: string;
@@ -82,7 +82,7 @@ export interface OriginCard {
 
 export interface BrandData {
   brand: Brand;
-  wordmark: "kuro" | "midori";
+  wordmark: "ela" | "midori";
   heroTitleEn: string;
   heroTitleFa: string;
   drinks: Drink[];
@@ -131,11 +131,11 @@ export interface BrandData {
 
 const COFFEE_DRINKS: Drink[] = [
   {
-    id: "kuro-original",
-    brand: "kuro",
+    id: "ela-original",
+    brand: "ela",
     slug: "original",
-    nameEn: "Kuro Original",
-    nameFa: "کورو اورجینال",
+    nameEn: "Ela Original",
+    nameFa: "الا اورجینال",
     shortEn: "Original",
     shortFa: "اورجینال",
     descriptionEn:
@@ -152,8 +152,8 @@ const COFFEE_DRINKS: Drink[] = [
     featured: false,
   },
   {
-    id: "kuro-caramel",
-    brand: "kuro",
+    id: "ela-caramel",
+    brand: "ela",
     slug: "caramel",
     nameEn: "Salted Caramel",
     nameFa: "کارامل نمکی",
@@ -173,8 +173,8 @@ const COFFEE_DRINKS: Drink[] = [
     featured: true,
   },
   {
-    id: "kuro-vanilla",
-    brand: "kuro",
+    id: "ela-vanilla",
+    brand: "ela",
     slug: "vanilla",
     nameEn: "Vanilla Cream",
     nameFa: "وانیل خامه‌ای",
@@ -193,8 +193,8 @@ const COFFEE_DRINKS: Drink[] = [
     featured: true,
   },
   {
-    id: "kuro-hazelnut",
-    brand: "kuro",
+    id: "ela-hazelnut",
+    brand: "ela",
     slug: "hazelnut",
     nameEn: "Toasted Hazelnut",
     nameFa: "فندق برشته",
@@ -213,8 +213,8 @@ const COFFEE_DRINKS: Drink[] = [
     featured: false,
   },
   {
-    id: "kuro-mocha",
-    brand: "kuro",
+    id: "ela-mocha",
+    brand: "ela",
     slug: "mocha",
     nameEn: "Dark Mocha",
     nameFa: "موکای تلخ",
@@ -234,8 +234,8 @@ const COFFEE_DRINKS: Drink[] = [
     featured: true,
   },
   {
-    id: "kuro-cinnamon",
-    brand: "kuro",
+    id: "ela-cinnamon",
+    brand: "ela",
     slug: "cinnamon",
     nameEn: "Brown Sugar Cinnamon",
     nameFa: "دارچین و شکر قهوه‌ای",
@@ -404,17 +404,17 @@ const MAKE_IT_YOURS: BrandData["makeItYours"] = [
 ];
 
 export const BRANDS: Record<Brand, BrandData> = {
-  kuro: {
-    brand: "kuro",
-    wordmark: "kuro",
+  ela: {
+    brand: "ela",
+    wordmark: "ela",
     heroTitleEn: "Choose your coffee",
     heroTitleFa: "قهوه‌ات را انتخاب کن",
     drinks: COFFEE_DRINKS,
     story: {
       eyebrowEn: "Our story",
       eyebrowFa: "داستان ما",
-      titleEn: "Kuro means black. The rest is up to you.",
-      titleFa: "کورو یعنی سیاه. بقیه‌اش با توست.",
+      titleEn: "Ela starts black. The rest is up to you.",
+      titleFa: "الا سیاه شروع می‌شود. بقیه‌اش با توست.",
       bodyEn: [
         "We started with one stubborn idea: a perfect black espresso is the foundation of every great iced latte. So we built everything around the shot.",
         "Then we make our flavors the slow way, every morning, from real caramel, real vanilla bean, toasted hazelnut and dark chocolate. No powders. No shortcuts.",
@@ -437,9 +437,9 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Six iced lattes. One perfect shot.",
       titleFa: "شش آیس‌لاته. یک شات بی‌نقص.",
       introEn:
-        "Every drink starts with a double shot of Kuro espresso over ice and cold milk, then one of our house flavors.",
+        "Every drink starts with a double shot of Ela espresso over ice and cold milk, then one of our house flavors.",
       introFa:
-        "هر نوشیدنی با دابل‌شات اسپرسوی کورو روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
+        "هر نوشیدنی با دابل‌شات اسپرسوی الا روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
     },
     process: {
       eyebrowEn: "How it's made",

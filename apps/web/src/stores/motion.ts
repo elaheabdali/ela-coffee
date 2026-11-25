@@ -12,8 +12,8 @@ interface MotionState {
 
 /**
  * Motion pause. Mirrors the reference's `html[data-motion=paused]`
- * (audit §4): it pauses `kuro-float`, `kuro-marquee` and
- * `kuro-scroll-cue` in globals.css. Persisted with the brand.
+ * (audit §4): it pauses `ela-float`, `ela-marquee` and
+ * `ela-scroll-cue` in globals.css. Persisted with the brand.
  */
 export const useMotion = create<MotionState>()(
   persist(

@@ -19,17 +19,19 @@ for (const locale of LOCALE_LIST) {
 
     test("page head carries canonical, hreflang and Open Graph tags", async ({ page }) => {
       await page.goto(`/${locale}`);
-      // NOTE: the base URL is the NEXT_PUBLIC_SITE_URL placeholder
-      // (ela-coffee.vercel.app) until Phase 11 replaces it with the
-      // real domain — then this assertion moves with it.
+      // NOTE: the base URL is the production domain
+      // (https://ela-coffee-yi88.vercel.app) — the DEFAULT_SITE_URL
+      // in src/lib/seo.ts, overridden in production by the Vercel
+      // env var of the same value. If the domain ever changes, this
+      // assertion moves with it.
       const canonical = page.locator('link[rel="canonical"]');
-      await expect(canonical).toHaveAttribute("href", `https://ela-coffee.vercel.app/${locale}`);
+      await expect(canonical).toHaveAttribute("href", `https://ela-coffee-yi88.vercel.app/${locale}`);
       // hreflang for fa, en and x-default (→ /fa).
       for (const lang of ["fa", "en", "x-default"]) {
         const link = page.locator(`link[rel="alternate"][hreflang="${lang}"]`);
         await expect(link).toHaveAttribute(
           "href",
-          `https://ela-coffee.vercel.app/${lang === "x-default" ? "fa" : lang}`,
+          `https://ela-coffee-yi88.vercel.app/${lang === "x-default" ? "fa" : lang}`,
         );
       }
       await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute(
@@ -50,8 +52,8 @@ test.describe("sitemap & robots", () => {
     expect(response.status()).toBe(200);
     const body = await response.text();
     expect(body).toContain("<urlset");
-    expect(body).toContain("https://ela-coffee.vercel.app/fa");
-    expect(body).toContain("https://ela-coffee.vercel.app/en");
+    expect(body).toContain("https://ela-coffee-yi88.vercel.app/fa");
+    expect(body).toContain("https://ela-coffee-yi88.vercel.app/en");
     expect(body).toContain('hreflang="x-default"');
     // The dev-only design-system catalog is not indexed.
     expect(body).not.toContain("design-system");
@@ -66,6 +68,6 @@ test.describe("sitemap & robots", () => {
     expect(body).toContain("User-Agent: *");
     expect(body).toContain("Allow: /");
     expect(body).toContain("Disallow: /api/");
-    expect(body).toContain("Sitemap: https://ela-coffee.vercel.app/sitemap.xml");
+    expect(body).toContain("Sitemap: https://ela-coffee-yi88.vercel.app/sitemap.xml");
   });
 });

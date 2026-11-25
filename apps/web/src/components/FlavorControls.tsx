@@ -24,7 +24,7 @@ const TastingNotesDialog = dynamic(() =>
 /**
  * Top-centre glass pill (audit §2): All flavors, Tasting notes,
  * Surprise me, and the bag with a count badge. The badge is keyed by
- * the count so the `kuro-bump` animation re-triggers on every add.
+ * the count so the `ela-bump` animation re-triggers on every add.
  * The dialogs are only mounted while open, so the toast hook inside
  * the tasting-notes dialog only runs when it is actually shown.
  */
@@ -82,7 +82,7 @@ export function FlavorControls() {
             <span
               key={count}
               data-testid="bag-count"
-              className="animate-kuro-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
+              className="animate-ela-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
             >
               {locale === "fa" ? toFaDigits(count) : count}
             </span>

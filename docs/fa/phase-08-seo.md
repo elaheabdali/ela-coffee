@@ -7,7 +7,13 @@
 
 ---
 
-## ۱. دامنهٔ جای‌نگه‌دار — اول این را بخوان
+## ۱. دامنه — جای‌نگه‌دار بود، واقعی شد (فاز ۱۲)
+
+> **به‌روزرسانی ۱۴۰۴/۹/۴ (فاز ۱۲):** سایت در فاز ۱۱ دیپلوی شد و دامنهٔ
+> واقعی‌اش **`https://ela-coffee-yi88.vercel.app`** است. متن زیر تاریخچهٔ
+> فاز ۸ است؛ امروز همهٔ URLهای عمومی از همان دامنه ساخته می‌شوند
+> (پیش‌فرض کد در `apps/web/src/lib/seo.ts` و متغیر `NEXT_PUBLIC_SITE_URL`
+> در ورسل — هر دو همین آدرس‌اند).
 
 سایت هنوز دیپلوی نشده (دیپلوی فاز ۱۱ است)، پس دامنهٔ واقعی نداریم. همهٔ URLهای عمومی — canonical، hreflang، تصاویر OG، نقشهٔ سایت و robots.txt — از متغیر `NEXT_PUBLIC_SITE_URL` ساخته می‌شوند که پیش‌فرضش این است:
 
@@ -28,7 +34,7 @@ https://ela-coffee.vercel.app
 | عنوان        | کورو \| لاته‌های یخی دست‌ساز                        | Kuro Coffee — Small-batch iced lattes        |
 | قالب عنوان   | `%s \| کورو`                                        | `%s \| Kuro Coffee`                          |
 | توضیح        | لاته‌های یخی و ماچای دست‌ساز کورو؛ اسپرسو اول سیاه… | Small-batch iced lattes and matchas, poured… |
-| canonical    | `https://ela-coffee.vercel.app/fa`                  | `https://ela-coffee.vercel.app/en`           |
+| canonical    | `https://ela-coffee-yi88.vercel.app/fa`                  | `https://ela-coffee-yi88.vercel.app/en`           |
 | hreflang     | `fa` ،`en` ،`x-default` (→ `/fa`)                   | همان                                         |
 | OG locale    | `fa_IR` (جایگزین `en_US`)                           | `en_US` (جایگزین `fa_IR`)                    |
 | Twitter card | `summary_large_image`                               | `summary_large_image`                        |

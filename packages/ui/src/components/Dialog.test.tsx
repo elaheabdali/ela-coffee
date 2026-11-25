@@ -20,7 +20,7 @@ function Harness({ children }: { children?: ReactNode }) {
         open={open}
         onClose={() => setOpen(false)}
         title="Tasting notes"
-        description="Kuro Original — dark cocoa, toasted almond, brown sugar."
+        description="Ela Original — dark cocoa, toasted almond, brown sugar."
       >
         <p>Dialog body</p>
         <Button onClick={() => setOpen(false)}>Add to bag</Button>
@@ -54,7 +54,7 @@ describe("Dialog", () => {
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(dialog).toHaveTextContent("Dialog body");
     expect(
-      screen.getByText("Kuro Original — dark cocoa, toasted almond, brown sugar."),
+      screen.getByText("Ela Original — dark cocoa, toasted almond, brown sugar."),
     ).toBeInTheDocument();
   });
 

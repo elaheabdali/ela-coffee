@@ -71,7 +71,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     counterInitial: "۱ / ۶",
     // RTL: ArrowRight moves to the previous flavour (wraps 0 → 5).
     counterAfterArrowRight: "۶ / ۶",
-    drinkName: "کورو اورجینال",
+    drinkName: "الا اورجینال",
     drinkNotes: ["کاکائوی تلخ", "بادام برشته", "شکر قهوه‌ای"],
     priceOne: "۱۸۰٬۰۰۰ تومان",
     priceTwo: "۳۶۰٬۰۰۰ تومان",
@@ -118,7 +118,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     counterInitial: "1 / 6",
     // LTR: ArrowRight moves to the next flavour (0 → 1).
     counterAfterArrowRight: "2 / 6",
-    drinkName: "Kuro Original",
+    drinkName: "Ela Original",
     drinkNotes: ["Dark cocoa", "Toasted almond", "Brown sugar"],
     priceOne: "180,000 Toman",
     priceTwo: "360,000 Toman",

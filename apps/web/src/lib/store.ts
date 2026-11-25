@@ -30,7 +30,11 @@ export { hasDatabase };
 function toDrinkDTO(drink: PrismaDrink): DrinkDTO {
   return {
     id: drink.id,
-    brand: drink.brand === "KURO" ? "kuro" : "midori",
+    // "KURO" is the Postgres Brand-enum label (storage only, never
+    // user-visible): the Phase 12 rebrand renamed the app brand to
+    // "ela" but deliberately left the enum value alone — see
+    // docs/architecture.md §7. The API only ever emits "ela".
+    brand: drink.brand === "KURO" ? "ela" : "midori",
     slug: drink.slug,
     nameFa: drink.nameFa,
     nameEn: drink.nameEn,

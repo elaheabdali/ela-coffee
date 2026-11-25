@@ -9,7 +9,7 @@ export interface WordRevealProps {
   text: string;
   as?: WordRevealAs;
   /**
-   * `soft` uses the `.kuro-words-soft` variant (blur 10px, translate
+   * `soft` uses the `.ela-words-soft` variant (blur 10px, translate
    * .45em, 1.1s — audit §4) instead of the masked word-up.
    */
   variant?: WordRevealVariant;
@@ -20,7 +20,7 @@ export interface WordRevealProps {
 
 /**
  * Word-by-word heading reveal (audit §4): each word sits in a
- * `.kuro-word` (overflow hidden) with a `.kuro-word-inner` that animates
+ * `.ela-word` (overflow hidden) with a `.ela-word-inner` that animates
  * `translate 110% → 0` in .95s, staggered 65 ms per word via `--i`.
  * The animation itself lives in `globals.css`; this component only
  * provides the markup and the `--i` / `--reveal-delay` variables.
@@ -46,8 +46,8 @@ export function WordReveal({
   // visually hidden, instead. A single word has no boundary to lose,
   // so it needs no duplication.
   const wordSpans = words.map((word, i) => (
-    <span key={`${word}-${i}`} className="kuro-word me-[0.25em] last:me-0">
-      <span className="kuro-word-inner" style={{ "--i": i } as CSSProperties}>
+    <span key={`${word}-${i}`} className="ela-word me-[0.25em] last:me-0">
+      <span className="ela-word-inner" style={{ "--i": i } as CSSProperties}>
         {word}
       </span>
     </span>
@@ -57,7 +57,7 @@ export function WordReveal({
     <Tag
       style={style}
       aria-label={isHeading ? text : undefined}
-      className={cn(variant === "soft" && "kuro-words-soft", className)}
+      className={cn(variant === "soft" && "ela-words-soft", className)}
     >
       {needsSrText ? (
         <>

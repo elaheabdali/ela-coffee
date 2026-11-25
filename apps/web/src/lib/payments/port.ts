@@ -87,7 +87,7 @@ export class ZarinpalPayment implements PaymentPort {
       body: JSON.stringify({
         merchant_id: this.merchantId,
         amount: order.totalToman * 10, // Toman → Rial
-        description: `Kuro Coffee order ${order.id}`,
+        description: `Ela Coffee order ${order.id}`,
         callback_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/payments/callback`,
         metadata: { order_id: order.id, mobile: order.phone },
       }),

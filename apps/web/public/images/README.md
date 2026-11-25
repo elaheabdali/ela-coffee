@@ -8,7 +8,7 @@ confirmed the photos are approved for use (2026-11-24).
 
 | Source (`assets-original/Images/`) | Public path | Role |
 |---|---|---|
-| `original.webp` (1920×1072) | `scenes/original.webp` | Coffee hero / menu scene — Kuro Original |
+| `original.webp` (1920×1072) | `scenes/original.webp` | Coffee hero / menu scene — Ela Original |
 | `caramel-latte (1).webp` (1920×1072) | `scenes/caramel-latte.webp` | Salted Caramel scene |
 | `vanilla-latte (1).webp` (1920×1072) | `scenes/vanilla-latte.webp` | Vanilla Cream scene |
 | `hazelnut-latte (1).webp` (1920×1072) | `scenes/hazelnut-latte.webp` | Toasted Hazelnut scene |

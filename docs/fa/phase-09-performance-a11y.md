@@ -60,7 +60,7 @@
 Lighthouse برای اجرا به مرورگر Chrome نیاز دارد و در این محیط Chrome وجود ندارد — یک بار امتحان کردیم و خطا داد: «CHROME_PATH باید ست شود». پس **هیچ نمرهٔ Lighthouseای در این فاز نداریم و عددی هم جعل نکرده‌ایم.** بعد از فاز ۱۱ (دیپلوی روی Vercel) این دستور را روی آدرس واقعی سایت بزن:
 
 ```bash
-npx -y lighthouse https://ela-coffee.vercel.app/fa \
+npx -y lighthouse https://ela-coffee-yi88.vercel.app/fa \
   --only-categories=performance,accessibility,best-practices,seo \
   --output=html --output-path=/tmp/lh-fa.html \
   --chrome-flags="--headless --no-sandbox"

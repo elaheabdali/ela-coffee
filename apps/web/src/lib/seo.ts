@@ -5,20 +5,18 @@ import type { Locale } from "@/i18n/routing";
 /**
  * SEO helpers (Phase 8, architecture §12).
  *
- * PLACEHOLDER DOMAIN — read this before deploying:
- * the site is not deployed yet (deployment is Phase 11), so there is
- * no production domain. Canonical URLs, hreflang, OG URLs, the sitemap
- * and robots.txt all use NEXT_PUBLIC_SITE_URL, which defaults to the
- * INTENDED Vercel production URL below. At deploy time (Phase 11) the
- * real domain must replace it in the Vercel project env vars (and in
- * .env.example); until then every public URL the app emits points at
- * this placeholder. Never hardcode a localhost URL as canonical.
+ * DEFAULT SITE URL — the real production domain (deployed in Phase 11
+ * to https://ela-coffee-yi88.vercel.app). Canonical URLs, hreflang, OG
+ * URLs, the sitemap and robots.txt all use NEXT_PUBLIC_SITE_URL, which
+ * defaults to this value; the Vercel project env var overrides it in
+ * production, so the two must stay in sync if the domain ever changes.
+ * Never hardcode a localhost URL as canonical.
  */
-export const PLACEHOLDER_SITE_URL = "https://ela-coffee.vercel.app";
+export const DEFAULT_SITE_URL = "https://ela-coffee-yi88.vercel.app";
 
 export function getSiteUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  return fromEnv ? fromEnv.replace(/\/$/, "") : PLACEHOLDER_SITE_URL;
+  return fromEnv ? fromEnv.replace(/\/$/, "") : DEFAULT_SITE_URL;
 }
 
 const COPY: Record<
@@ -34,24 +32,24 @@ const COPY: Record<
   }
 > = {
   fa: {
-    title: "کورو | لاته‌های یخی دست‌ساز",
-    titleTemplate: "%s | کورو",
+    title: "الا | لاته‌های یخی دست‌ساز",
+    titleTemplate: "%s | الا",
     description:
-      "لاته‌های یخی و ماچای دست‌ساز کورو؛ اسپرسو اول سیاه ریخته می‌شود و طعم‌ها هر صبح تازه، از کارامل و وانیل واقعی ساخته می‌شوند.",
-    keywords: ["لاته یخی", "ماچا", "قهوه تخصصی", "کورو", "اسپرسو", "کافه"],
-    siteName: "کورو",
+      "لاته‌های یخی و ماچای دست‌ساز الا؛ اسپرسو اول سیاه ریخته می‌شود و طعم‌ها هر صبح تازه، از کارامل و وانیل واقعی ساخته می‌شوند.",
+    keywords: ["لاته یخی", "ماچا", "قهوه تخصصی", "الا", "اسپرسو", "کافه"],
+    siteName: "الا",
     ogLocale: "fa_IR",
-    ogImageAlt: "یک لیوان لاتهٔ یخی کورو روی تپه‌ای از قهوهٔ آسیاب‌شده",
+    ogImageAlt: "یک لیوان لاتهٔ یخی الا روی تپه‌ای از قهوهٔ آسیاب‌شده",
   },
   en: {
-    title: "Kuro Coffee — Small-batch iced lattes",
-    titleTemplate: "%s | Kuro Coffee",
+    title: "Ela Coffee — Small-batch iced lattes",
+    titleTemplate: "%s | Ela Coffee",
     description:
       "Small-batch iced lattes and matchas, poured black first, flavored fresh every morning.",
-    keywords: ["iced latte", "matcha", "specialty coffee", "Kuro Coffee", "espresso", "cafe"],
-    siteName: "Kuro Coffee",
+    keywords: ["iced latte", "matcha", "specialty coffee", "Ela Coffee", "espresso", "cafe"],
+    siteName: "Ela Coffee",
     ogLocale: "en_US",
-    ogImageAlt: "A Kuro iced latte on a mound of ground coffee",
+    ogImageAlt: "A Ela iced latte on a mound of ground coffee",
   },
 };
 
@@ -136,10 +134,10 @@ export function buildJsonLd(locale: Locale): Record<string, unknown> {
     return {
       "@type": "MenuSection",
       name: isFa
-        ? brand.brand === "kuro"
+        ? brand.brand === "ela"
           ? "لاته‌های یخی"
           : "ماچاهای یخی"
-        : brand.brand === "kuro"
+        : brand.brand === "ela"
           ? "Iced lattes"
           : "Iced matchas",
       hasMenuItem: menuItems,
@@ -152,8 +150,8 @@ export function buildJsonLd(locale: Locale): Record<string, unknown> {
       {
         "@type": "CafeOrCoffeeShop",
         "@id": `${siteUrl}/#cafe`,
-        name: isFa ? "کورو" : "Kuro Coffee",
-        alternateName: isFa ? "Kuro Coffee" : "کورو",
+        name: isFa ? "الا" : "Ela Coffee",
+        alternateName: isFa ? "Ela Coffee" : "الا",
         description: COPY[locale].description,
         url: `${siteUrl}/${locale}`,
         servesCuisine: ["Coffee", "Matcha"],
@@ -161,7 +159,7 @@ export function buildJsonLd(locale: Locale): Record<string, unknown> {
         acceptsReservations: true,
         hasMenu: {
           "@type": "Menu",
-          name: isFa ? "منوی کورو" : "Kuro menu",
+          name: isFa ? "منوی الا" : "Ela menu",
           hasMenuSection: sections,
         },
       },

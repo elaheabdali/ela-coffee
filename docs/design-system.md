@@ -12,12 +12,12 @@
 ## 1. Tokens
 
 All tokens live in `apps/web/src/app/globals.css`: raw values in `:root`
-(kuro) and `html[data-brand="matcha"]` (midori), exposed to Tailwind through
+(ela) and `html[data-brand="matcha"]` (midori), exposed to Tailwind through
 `@theme inline`. Switching brand is a runtime variable swap — no rebuild.
 
 ### 1.1 Colour
 
-| Token                                  | Kuro (coffee)                             | Midori (matcha)                           | Role                               |
+| Token                                  | Ela (coffee)                             | Midori (matcha)                           | Role                               |
 | -------------------------------------- | ----------------------------------------- | ----------------------------------------- | ---------------------------------- |
 | `--background`                         | `#120b08`                                 | `#0e180c`                                 | Page / hero background             |
 | `--foreground`                         | `#f6eee3`                                 | `#eef0e1`                                 | Primary text on dark               |
@@ -31,11 +31,11 @@ All tokens live in `apps/web/src/app/globals.css`: raw values in `:root`
 | `--ring`                               | `#d9a066`                                 | `#a9c46c`                                 | Focus ring                         |
 | `--destructive`                        | `#e40014`                                 | `#e40014`                                 | Errors                             |
 | `--border` / `--input`                 | `#f6eee31f` / `#f6eee329`                 | (same)                                    | Borders / inputs (hex-alpha)       |
-| `--kuro-cream`                         | `#f3ebe0`                                 | `#eef0e1`                                 | Cream sections / text              |
-| `--kuro-espresso`                      | `#120b08`                                 | `#0e180c`                                 | Espresso brown-black               |
-| `--kuro-roast`                         | `#1e130d`                                 | `#172313`                                 | Roast brown                        |
-| `--kuro-crema`                         | `#d9a066`                                 | `#a9c46c`                                 | Crema gold-tan                     |
-| `--kuro-stage-glow` / `-mid` / `-edge` | `#2b1a10` / `#180f0a` / `#0e0906`         | `#26361b` / `#142010` / `#0a1108`         | Hero radial-gradient stops         |
+| `--ela-cream`                         | `#f3ebe0`                                 | `#eef0e1`                                 | Cream sections / text              |
+| `--ela-espresso`                      | `#120b08`                                 | `#0e180c`                                 | Espresso brown-black               |
+| `--ela-roast`                         | `#1e130d`                                 | `#172313`                                 | Roast brown                        |
+| `--ela-crema`                         | `#d9a066`                                 | `#a9c46c`                                 | Crema gold-tan                     |
+| `--ela-stage-glow` / `-mid` / `-edge` | `#2b1a10` / `#180f0a` / `#0e0906`         | `#26361b` / `#142010` / `#0a1108`         | Hero radial-gradient stops         |
 | `--chart-1…5`                          | `#d9a066 #b9772f #8b5a3c #5e3324 #3a2216` | `#a9c46c #7f9c48 #5b7334 #3b4d22 #243317` | Chart ramp (unused on the page)    |
 | `--sidebar` / `--sidebar-primary`      | `#160e0a` / `#d9a066`                     | (same)                                    | Present in CSS, unused on the page |
 
@@ -60,11 +60,11 @@ Tailwind utilities: `bg-background`, `text-foreground`, `bg-card`,
 - **Spacing unit:** `--spacing: .25rem` (Tailwind v4 default, made explicit).
 - **Radii:** base `--radius` is `.75rem` (= `--radius-lg`); md `.6rem`
   (`calc(.75rem * .8)`), lg `.75rem`, xl `1.05rem`, 2xl `1.35rem`.
-- **Shadows:** `shadow-kuro-soft` `0 12px 32px -14px rgb(0 0 0/.7)`,
-  `shadow-kuro-card` `0 16px 30px -12px rgb(0 0 0/.8)`,
-  `shadow-kuro-lift` `0 20px 44px -16px rgb(0 0 0/.85)`,
-  `shadow-kuro-wide` `0 30px 50px -24px rgb(0 0 0/.45)`,
-  `shadow-kuro-hero` `0 40px 90px -30px rgb(0 0 0/.9)`.
+- **Shadows:** `shadow-ela-soft` `0 12px 32px -14px rgb(0 0 0/.7)`,
+  `shadow-ela-card` `0 16px 30px -12px rgb(0 0 0/.8)`,
+  `shadow-ela-lift` `0 20px 44px -16px rgb(0 0 0/.85)`,
+  `shadow-ela-wide` `0 30px 50px -24px rgb(0 0 0/.45)`,
+  `shadow-ela-hero` `0 40px 90px -30px rgb(0 0 0/.9)`.
 - **Blur:** `blur-md 12px`, `blur-xl 24px` (glass pills: `bg-espresso/45 backdrop-blur-md`, border `cream/10`).
 - **Breakpoints:** sm `40rem`, md `48rem`, lg `64rem`, xl `80rem`, 2xl `96rem`
   (Tailwind defaults, made explicit as `--breakpoint-*`).
@@ -74,12 +74,12 @@ Tailwind utilities: `bg-background`, `text-foreground`, `bg-card`,
 ### 1.4 Motion (unchanged from Phase 2 — see `globals.css`)
 
 All 12 keyframes from audit §4 with exact durations/easings
-(`kuro-wheel-in` 1.6s, `kuro-pour` 1.2s, `kuro-float` 7s, `kuro-scroll-cue`
-1.8s, `kuro-marquee` 48s, `kuro-bump` .48s, reveal family, `kuro-word-up`
-.95s + 65 ms/word stagger, `kuro-word-soft` 1.1s). Phase 3 adds two
-dialog-only keyframes (`kuro-dialog-in` / `kuro-dialog-overlay-in`, .2s
+(`ela-wheel-in` 1.6s, `ela-pour` 1.2s, `ela-float` 7s, `ela-scroll-cue`
+1.8s, `ela-marquee` 48s, `ela-bump` .48s, reveal family, `ela-word-up`
+.95s + 65 ms/word stagger, `ela-word-soft` 1.1s). Phase 3 adds two
+dialog-only keyframes (`ela-dialog-in` / `ela-dialog-overlay-in`, .2s
 ease-out — audit §4: dialogs open with fade/scale-in, default .15s ease)
-and one rule: `[dir="rtl"] .animate-kuro-marquee { animation-direction: reverse; }`
+and one rule: `[dir="rtl"] .animate-ela-marquee { animation-direction: reverse; }`
 so the ticker flips direction in RTL while staying seamless.
 `prefers-reduced-motion` disables all of them; `html[data-motion=paused]`
 pauses float / marquee / scroll cue.
@@ -98,9 +98,9 @@ Strict TypeScript, no `any`.
 | `Price`                                | `amountToman`, `originalPriceToman?`, `locale`, `size`                                                     | Toman via `packages/i18n` `formatToman`; `sm` / `md` / `lg`; optional struck-through original price                                                                                 |
 | `Stepper`                              | `value`, `onChange`, `min` (1), `max?`, `decreaseLabel`, `increaseLabel`, `valueLabel`                     | Minus/plus; disabled at bounds; value in `<output aria-live="polite">`                                                                                                              |
 | `Dialog`                               | `open`, `onClose`, `title`, `description?`, `children`, `closeLabel?`                                      | `role="dialog"`, `aria-modal`, labelled by title; focus trap; Esc / overlay / X close; focus returns to trigger; body scroll locked; portal to `document.body`; enter fade+scale    |
-| `Toast` / `ToastProvider` / `useToast` | `Toast`: `message`, `open`, `onClose?`, `durationMs` (4000), `bumpKey?`; `showToast(message, durationMs?)` | Bottom-centre dark pill, `role="status"` + `aria-live="polite"`, auto-dismiss; `bumpKey` change re-triggers `kuro-bump`                                                             |
+| `Toast` / `ToastProvider` / `useToast` | `Toast`: `message`, `open`, `onClose?`, `durationMs` (4000), `bumpKey?`; `showToast(message, durationMs?)` | Bottom-centre dark pill, `role="status"` + `aria-live="polite"`, auto-dismiss; `bumpKey` change re-triggers `ela-bump`                                                             |
 | `Reveal`                               | `variant`, `delayMs`, `children`                                                                           | `fade-up` / `fade` / `image`; IntersectionObserver adds `data-revealed`; `--reveal-delay`; **no-JS fallback: content never stuck hidden** (audit defect §8.7)                       |
-| `WordReveal`                           | `text`, `as` (`h1`/`h2`/`h3`/`p`/`span`), `variant`, `delayMs`                                             | Word-by-word `.kuro-word` / `.kuro-word-inner`, 65 ms stagger via `--i`; `soft` variant (blur 10px, 1.1s); `aria-label` carries the full text so screen readers hear it with spaces |
+| `WordReveal`                           | `text`, `as` (`h1`/`h2`/`h3`/`p`/`span`), `variant`, `delayMs`                                             | Word-by-word `.ela-word` / `.ela-word-inner`, 65 ms stagger via `--i`; `soft` variant (blur 10px, 1.1s); `aria-label` carries the full text so screen readers hear it with spaces |
 | `Marquee`                              | `items: string[]`, `separator` (`•`), `ariaLabel?`                                                         | 48s linear infinite, duplicated content, `translate -50%`; duplicate copy `aria-hidden`; direction reverses in RTL                                                                  |
 
 ### Usage examples
@@ -117,12 +117,12 @@ import { Button, Dialog, Marquee, Price, Stepper, WordReveal } from "@ela-coffee
 // Accessible dialog
 const [open, setOpen] = useState(false);
 <Button onClick={() => setOpen(true)}>Tasting notes</Button>
-<Dialog open={open} onClose={() => setOpen(false)} title="Kuro Original">
+<Dialog open={open} onClose={() => setOpen(false)} title="Ela Original">
   <p>Dark cocoa, toasted almond, brown sugar.</p>
 </Dialog>
 
 // Ticker (direction flips automatically in RTL)
-<Marquee items={["Kuro Original", "Salted Caramel", "Vanilla Cream"]} />
+<Marquee items={["Ela Original", "Salted Caramel", "Vanilla Cream"]} />
 
 // Toast (wrap the app — or a section — once in ToastProvider)
 const { showToast } = useToast();
@@ -153,7 +153,7 @@ showToast("Salted Caramel added to your bag.");
 - `Dialog` for All-flavours and Tasting-notes; `Toast` for add-to-bag feedback.
 - `Reveal` for every section's scroll entrance (delays 300 / 450 / 600 ms).
 - `Pill` (glass) for the hero / header pill.
-- Tokens + keyframes are frozen: Phase 4 adds the wheel geometry (`.kuro-stage`,
+- Tokens + keyframes are frozen: Phase 4 adds the wheel geometry (`.ela-stage`,
   audit §3.5) and the sections, but does not change token values.
 
 ## 5. Tests

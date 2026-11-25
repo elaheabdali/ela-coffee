@@ -14,7 +14,7 @@ import type { OrderDTO } from "@/lib/types";
 const baseOrder: OrderDTO = {
   id: "order-1",
   status: "RECEIVED",
-  items: [{ id: "item-1", drinkId: "kuro-caramel", qty: 1, priceToman: 195_000 }],
+  items: [{ id: "item-1", drinkId: "ela-caramel", qty: 1, priceToman: 195_000 }],
   customerName: "Test Taster",
   phone: "09123456789",
   totalToman: 195_000,

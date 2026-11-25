@@ -40,7 +40,7 @@ interface BrandState {
 export const useBrand = create<BrandState>()(
   persist(
     (set, get) => ({
-      brand: "kuro",
+      brand: "ela",
       applyBrand: () => {
         if (typeof document === "undefined") return;
         document.documentElement.setAttribute("data-brand", get().brand);
@@ -58,15 +58,25 @@ export const useBrand = create<BrandState>()(
         useFlavour.getState().setIndex(0);
         // Warm the cache for the brand we just left, so switching back
         // is instant too.
-        preloadBrandAssets(next === "kuro" ? "midori" : "kuro");
+        preloadBrandAssets(next === "ela" ? "midori" : "ela");
       },
     }),
     {
       name: "ela-coffee-brand",
       storage: jsonStorage(),
       partialize: (state) => ({ brand: state.brand }) as BrandState,
+      version: 1,
+      // Phase 12 rebrand (Kuro → Ela): a browser that persisted the old
+      // brand "kuro" before the rebrand would rehydrate to a brand that
+      // no longer exists in BRANDS, and every section reads
+      // BRANDS[brand] — so map it forward instead of crashing.
+      migrate: (persisted) => {
+        const state = persisted as { brand?: unknown } | undefined;
+        if (state && state.brand === "kuro") return { ...state, brand: "ela" } as BrandState;
+        return (persisted ?? {}) as BrandState;
+      },
       // After rehydration on the client, sync the persisted brand to
-      // <html> (the layout hardcodes data-brand="kuro" for SSR).
+      // <html> (the layout hardcodes data-brand="ela" for SSR).
       onRehydrateStorage: () => (state) => {
         state?.applyBrand();
       },
@@ -76,6 +86,6 @@ export const useBrand = create<BrandState>()(
 
 /** Warm the cache for both brands (called once, e.g. on first idle). */
 export function preloadAllBrandAssets(): void {
-  preloadBrandAssets("kuro");
+  preloadBrandAssets("ela");
   preloadBrandAssets("midori");
 }

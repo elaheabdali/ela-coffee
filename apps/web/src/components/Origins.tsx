@@ -43,7 +43,7 @@ export function Origins() {
         <div className="grid gap-6 lg:grid-cols-2">
           {origins.cards.map((card, index) => (
             <Reveal key={card.nameEn} variant="fade-up" delayMs={index * 150}>
-              <article className="flex h-full flex-col gap-4 rounded-2xl bg-card p-6 text-foreground shadow-kuro-card ring-1 ring-border sm:p-8">
+              <article className="flex h-full flex-col gap-4 rounded-2xl bg-card p-6 text-foreground shadow-ela-card ring-1 ring-border sm:p-8">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-display text-2xl font-bold">
                     {isFa ? card.nameFa : card.nameEn}

@@ -5,7 +5,7 @@
  * is active. Dates are ISO strings so the shapes are JSON-safe.
  */
 
-export type Brand = "kuro" | "midori";
+export type Brand = "ela" | "midori";
 export type OrderStatus = "RECEIVED" | "PREPARING" | "READY" | "DONE";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
 export type ReservationStatus = "PENDING" | "CONFIRMED" | "CANCELLED";

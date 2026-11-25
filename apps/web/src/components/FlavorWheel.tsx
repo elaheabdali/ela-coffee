@@ -36,15 +36,15 @@ const FLOAT_DELAYS = ["0s", "-2.4s", "-4.8s", "-1.2s"];
 /**
  * The flavour wheel (audit §3.5) — the heart of the page.
  *
- * Geometry: the `.kuro-stage` (globals.css) is a `container-type: size`
+ * Geometry: the `.ela-stage` (globals.css) is a `container-type: size`
  * box whose `--s` sizes everything (1.7917:1 frame, wheel radius 1.6×s,
- * 10.5° steps). Each flavour is a `.kuro-tile` positioned at the wheel
+ * 10.5° steps). Each flavour is a `.ela-tile` positioned at the wheel
  * pivot (centre-x, cup-cy + wheel-r) and swung onto the ring by the
  * audit's transform — rotate(d * 10.5deg) translateY(-wheel-r - s*.3*near)
  * scale(1 - .55*near) — with `--d` / `--near` set here from the store.
  *
  * Interpretation note: in the reference the tiles sit BEHIND the big
- * cup photo (`.kuro-glass-photo`, z-index 1) — no tile fan is visible
+ * cup photo (`.ela-glass-photo`, z-index 1) — no tile fan is visible
  * in the resting hero (see baseline-1920px.png). We reproduce that:
  * the tiles carry the real rotation state and animate on every change,
  * while the visible wheel is the pour-masked cup, the flavour name,
@@ -176,9 +176,9 @@ export function FlavorWheel() {
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           style={{ touchAction: "pan-y" }}
-          className="kuro-stage animate-kuro-wheel-in"
+          className="ela-stage animate-ela-wheel-in"
         >
-          <div aria-hidden="true" className="kuro-contours absolute inset-0 opacity-60" />
+          <div aria-hidden="true" className="ela-contours absolute inset-0 opacity-60" />
 
           {/* The cup: the audit's 16:9 scene frame (audit §3.5) —
               width var(--scene-w), height var(--s), top var(--scene-top),
@@ -187,7 +187,7 @@ export function FlavorWheel() {
               stays small and the H1 floats in the dark space above it,
               exactly like the reference. The pour mask runs on flavour
               change; the scene mask fades the strip's edges. */}
-          <div className="kuro-glass absolute left-1/2 top-(--scene-top) z-10 h-(--s) w-(--scene-w) -translate-x-1/2">
+          <div className="ela-glass absolute left-1/2 top-(--scene-top) z-10 h-(--s) w-(--scene-w) -translate-x-1/2">
             <Image
               key={`${brand}-${drink.id}`}
               src={drink.image}
@@ -195,7 +195,7 @@ export function FlavorWheel() {
               fill
               priority
               sizes="(max-width: 640px) 900px, 100vw"
-              className="kuro-stage-scene kuro-glass-photo animate-kuro-pour kuro-pour-mask object-cover"
+              className="ela-stage-scene ela-glass-photo animate-ela-pour ela-pour-mask object-cover"
             />
           </div>
 
@@ -212,7 +212,7 @@ export function FlavorWheel() {
               return (
                 <div
                   key={tileDrink.id}
-                  className="kuro-tile"
+                  className="ela-tile"
                   style={{ "--d": String(d), "--near": String(near) } as CSSProperties}
                 >
                   <Image src={tileDrink.image} alt="" fill sizes="160px" className="object-cover" />
@@ -221,7 +221,7 @@ export function FlavorWheel() {
             })}
           </div>
 
-          {/* Floating ingredient cut-outs (kuro-float 7s, staggered delays). */}
+          {/* Floating ingredient cut-outs (ela-float 7s, staggered delays). */}
           {data.cutouts.map((cutout, i) => {
             const positions = [
               "start-[4%] top-[26%] max-sm:top-[60%]",
@@ -233,7 +233,7 @@ export function FlavorWheel() {
               <div
                 key={cutout.src}
                 aria-hidden="true"
-                className={`kuro-cutout animate-kuro-float absolute z-20 w-16 sm:w-24 lg:w-32 ${positions[i % positions.length]}`}
+                className={`ela-cutout animate-ela-float absolute z-20 w-16 sm:w-24 lg:w-32 ${positions[i % positions.length]}`}
                 style={{ animationDelay: FLOAT_DELAYS[i % FLOAT_DELAYS.length] }}
               >
                 <Image
@@ -274,7 +274,7 @@ export function FlavorWheel() {
                 name: isFa ? drink.nameFa : drink.nameEn,
                 price: priceText,
               })}
-              className="mt-1 flex flex-col items-center gap-1 rounded-[1.25rem] bg-cream px-4 py-2 text-espresso shadow-kuro-lift transition-transform hover:scale-105 active:scale-95 max-sm:absolute max-sm:left-1/2 max-sm:top-(--chip-y) max-sm:z-30 max-sm:mt-0 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
+              className="mt-1 flex flex-col items-center gap-1 rounded-[1.25rem] bg-cream px-4 py-2 text-espresso shadow-ela-lift transition-transform hover:scale-105 active:scale-95 max-sm:absolute max-sm:left-1/2 max-sm:top-(--chip-y) max-sm:z-30 max-sm:mt-0 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
             >
               <span className="font-mono text-sm font-bold">{priceText}</span>
               <span className="inline-flex items-center justify-center rounded-full bg-espresso p-2 text-cream">
@@ -301,7 +301,7 @@ export function FlavorWheel() {
                     aria-pressed={isCurrent}
                     className={
                       isCurrent
-                        ? "rounded-full bg-cream px-4 py-1.5 text-sm font-semibold text-espresso shadow-kuro-card"
+                        ? "rounded-full bg-cream px-4 py-1.5 text-sm font-semibold text-espresso shadow-ela-card"
                         : "rounded-full bg-espresso/45 px-4 py-1.5 text-sm font-medium text-cream ring-1 ring-cream/25 backdrop-blur-md transition-colors hover:bg-cream/10"
                     }
                   >
@@ -353,7 +353,7 @@ export function FlavorWheel() {
             className="absolute bottom-6 end-6 z-30 inline-flex items-center gap-2 text-sm text-muted-foreground"
           >
             {tHero("scrollCue")}
-            <ChevronDown size={16} className="animate-kuro-scroll-cue" />
+            <ChevronDown size={16} className="animate-ela-scroll-cue" />
           </a>
         </div>
       </div>

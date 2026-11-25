@@ -73,7 +73,7 @@ for (const locale of LOCALE_LIST) {
       // Tracking view: order number + RECEIVED status + server total.
       // The client never sends a total — the total shown here is the
       // one the server computed from its own prices (180,000 for one
-      // Kuro Original), which is the point of this assertion. All
+      // Ela Original), which is the point of this assertion. All
       // assertions are scoped to the bag dialog: the hero behind it
       // shows the same price text.
       await expect(dialog.getByRole("heading", { name: t.trackingTitle })).toBeVisible();

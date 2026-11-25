@@ -44,9 +44,9 @@ describe("GET /api/menu", () => {
     expect(response.status).toBe(200);
     const data = (await readJson(response)) as { drinks: { id: string; brand: string }[] };
     expect(data.drinks).toHaveLength(12);
-    expect(data.drinks.filter((d) => d.brand === "kuro")).toHaveLength(6);
+    expect(data.drinks.filter((d) => d.brand === "ela")).toHaveLength(6);
     expect(data.drinks.filter((d) => d.brand === "midori")).toHaveLength(6);
-    expect(data.drinks.find((d) => d.id === "kuro-original")?.brand).toBe("kuro");
+    expect(data.drinks.find((d) => d.id === "ela-original")?.brand).toBe("ela");
   });
 });
 
@@ -173,7 +173,7 @@ describe("POST /api/contact", () => {
 
 describe("POST /api/orders", () => {
   const validOrder = {
-    items: [{ drinkId: "kuro-caramel", qty: 2 }],
+    items: [{ drinkId: "ela-caramel", qty: 2 }],
     customerName: "Test Taster",
     phone: "09123456789",
   };
@@ -248,7 +248,7 @@ describe("GET /api/orders/[id]/events", () => {
   it("streams text/event-stream with the current status first", async () => {
     const created = await ordersPOST(
       jsonRequest("http://x/api/orders", {
-        items: [{ drinkId: "kuro-original", qty: 1 }],
+        items: [{ drinkId: "ela-original", qty: 1 }],
         customerName: "Test Taster",
         phone: "09123456789",
       }),
@@ -271,7 +271,7 @@ describe("GET /api/orders/[id]/events", () => {
   it("emits a new event when the status changes", async () => {
     const created = await ordersPOST(
       jsonRequest("http://x/api/orders", {
-        items: [{ drinkId: "kuro-original", qty: 1 }],
+        items: [{ drinkId: "ela-original", qty: 1 }],
         customerName: "Test Taster",
         phone: "09123456789",
       }),

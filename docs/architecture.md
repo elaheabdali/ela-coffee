@@ -10,7 +10,7 @@ A bilingual (fa default, en) rebuild of the Kuro single-page coffee template as 
 production Next.js app, plus the features the reference does **not** have:
 cart → checkout/reservation with live order status, contact channels for Iran,
 and a client-handover-ready codebase. The reference is one page with two
-brands (coffee `kuro` / matcha `midori`) switched client-side; the rebuild
+brands (coffee `ela` / matcha `midori`) switched client-side; the rebuild
 keeps that exact behaviour and adds a real backend behind it.
 
 Non-goals for v1: multi-branch / multi-tenant support, a separate admin panel
@@ -133,8 +133,8 @@ is kept, translated professionally for fa.
 
 ```prisma
 model Drink {
-  id        String   @id            // e.g. "kuro-original"
-  brand     Brand                     // KURO | MIDORI
+  id        String   @id            // e.g. "ela-original"
+  brand     Brand                     // KURO | MIDORI (DB enum label — see note below)
   slug      String   @unique
   nameFa    String
   nameEn    String
@@ -165,6 +165,18 @@ model NewsletterSubscriber { email String @unique; locale String; createdAt Date
 Seed data = the 12 drinks from the audit (names, prices, notes, caffeine).
 The menu API serves the seed/DB data; the page itself is statically rendered
 from the same dataset, so menu and page can never disagree.
+
+> **Brand enum note (Phase 12 rebrand):** the coffee brand was renamed
+> Kuro → Ela everywhere in the app, but the Postgres `Brand` enum still
+> stores the label `KURO` (`schema.prisma`, initial migration). That label
+> is a storage-only token — the API maps it to `"ela"` (`src/lib/store.ts`)
+> and the seed maps `"ela"` back to `KURO` (`prisma/seed.ts`), so no
+> user-visible string ever contains it. It was deliberately left alone:
+> renaming an enum value needs a new migration plus a regenerated Prisma
+> client, and the Prisma CLI cannot run in the build sandbox (its update
+> check crashes on the sandbox network). If a future rename is wanted,
+> add a migration with `ALTER TYPE "Brand" RENAME VALUE 'KURO' TO 'ELA';`,
+> update `schema.prisma`, and regenerate the client.
 
 ## 8. Real-time order status — decision
 
@@ -258,8 +270,8 @@ Tailwind v4 `@theme` with the exact audit values: `--color-espresso #120b08`,
 matcha overrides under `html[data-brand=matcha]` (`#0e180c / #eef0e1 /
 #a9c46c`), `--radius .75rem`, type scale xs–5xl, Fraunces/Manrope/Geist Mono/
 Vazirmatn. Animation keyframes re-implemented 1:1 from the audit table
-(`kuro-wheel-in 1.6s`, `kuro-pour 1.2s`, `kuro-float 7s`, `kuro-marquee 48s`,
-`kuro-bump .48s`, reveal family, word stagger 65 ms) with the same
+(`ela-wheel-in 1.6s`, `ela-pour 1.2s`, `ela-float 7s`, `ela-marquee 48s`,
+`ela-bump .48s`, reveal family, word stagger 65 ms) with the same
 `prefers-reduced-motion` and `data-motion=paused` behaviour.
 
 ## 12. Security, SEO, performance, accessibility (bars carried into every phase)

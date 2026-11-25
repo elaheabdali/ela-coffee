@@ -54,7 +54,7 @@ enum ReservationStatus {
 }
 
 model Drink {
-  id         String @id // e.g. "kuro-original"
+  id         String @id // e.g. "ela-original"
   brand      Brand
   slug       String @unique
   nameFa     String

@@ -191,7 +191,7 @@ export function BagDrawer() {
         aria-modal="true"
         aria-label={tBag("title")}
         tabIndex={-1}
-        className="absolute inset-y-0 end-0 flex w-full max-w-md flex-col bg-card text-foreground shadow-kuro-hero outline-none"
+        className="absolute inset-y-0 end-0 flex w-full max-w-md flex-col bg-card text-foreground shadow-ela-hero outline-none"
       >
         <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
           <h2 className="font-display text-2xl font-bold">

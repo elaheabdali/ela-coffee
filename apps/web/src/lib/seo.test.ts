@@ -6,7 +6,7 @@ import {
   buildJsonLd,
   buildMetadata,
   getSiteUrl,
-  PLACEHOLDER_SITE_URL,
+  DEFAULT_SITE_URL,
   serializeJsonLd,
 } from "./seo";
 
@@ -17,23 +17,23 @@ import {
  * the rendered output.
  */
 describe("getSiteUrl (Phase 8)", () => {
-  it("defaults to the documented placeholder domain", () => {
-    expect(getSiteUrl()).toBe(PLACEHOLDER_SITE_URL);
-    expect(PLACEHOLDER_SITE_URL).toBe("https://ela-coffee.vercel.app");
+  it("defaults to the production domain", () => {
+    expect(getSiteUrl()).toBe(DEFAULT_SITE_URL);
+    expect(DEFAULT_SITE_URL).toBe("https://ela-coffee-yi88.vercel.app");
   });
 });
 
 describe("buildMetadata (Phase 8)", () => {
   it("fa: Persian title/description, canonical /fa, hreflang fa/en/x-default", () => {
     const meta = buildMetadata("fa");
-    expect(meta.metadataBase?.toString()).toBe(`${PLACEHOLDER_SITE_URL}/`);
-    expect(meta.title).toEqual({ default: "کورو | لاته‌های یخی دست‌ساز", template: "%s | کورو" });
-    expect(meta.description).toContain("کورو");
+    expect(meta.metadataBase?.toString()).toBe(`${DEFAULT_SITE_URL}/`);
+    expect(meta.title).toEqual({ default: "الا | لاته‌های یخی دست‌ساز", template: "%s | الا" });
+    expect(meta.description).toContain("الا");
     expect(meta.alternates?.canonical).toBe("/fa");
     expect(meta.alternates?.languages).toEqual({
-      fa: `${PLACEHOLDER_SITE_URL}/fa`,
-      en: `${PLACEHOLDER_SITE_URL}/en`,
-      "x-default": `${PLACEHOLDER_SITE_URL}/fa`,
+      fa: `${DEFAULT_SITE_URL}/fa`,
+      en: `${DEFAULT_SITE_URL}/en`,
+      "x-default": `${DEFAULT_SITE_URL}/fa`,
     });
     expect(meta.openGraph?.locale).toBe("fa_IR");
     expect(meta.openGraph?.alternateLocale).toBe("en_US");
@@ -45,8 +45,8 @@ describe("buildMetadata (Phase 8)", () => {
   it("en: English title/description, canonical /en, hreflang fa/en/x-default", () => {
     const meta = buildMetadata("en");
     expect(meta.title).toEqual({
-      default: "Kuro Coffee — Small-batch iced lattes",
-      template: "%s | Kuro Coffee",
+      default: "Ela Coffee — Small-batch iced lattes",
+      template: "%s | Ela Coffee",
     });
     expect(meta.description).toContain("iced lattes");
     expect(meta.alternates?.canonical).toBe("/en");
@@ -59,7 +59,7 @@ describe("buildMetadata (Phase 8)", () => {
     const images = meta.openGraph?.images;
     expect(Array.isArray(images)).toBe(true);
     const image = (images as { url: string; width: number; height: number; alt: string }[])[0];
-    expect(image.url).toBe(`${PLACEHOLDER_SITE_URL}/images/scenes/original.webp`);
+    expect(image.url).toBe(`${DEFAULT_SITE_URL}/images/scenes/original.webp`);
     expect(image.width).toBe(1920);
     expect(image.height).toBe(1072);
     expect(image.alt.length).toBeGreaterThan(0);
@@ -78,7 +78,7 @@ describe("buildJsonLd (Phase 8)", () => {
       string,
       unknown
     >;
-    expect(cafe.name).toBe("کورو");
+    expect(cafe.name).toBe("الا");
     expect(cafe.priceRange).toBe("180000-210000 IRR");
     expect(cafe.acceptsReservations).toBe(true);
 
@@ -105,11 +105,11 @@ describe("buildJsonLd (Phase 8)", () => {
       string,
       unknown
     >;
-    expect(cafe.name).toBe("Kuro Coffee");
+    expect(cafe.name).toBe("Ela Coffee");
     const menu = cafe.hasMenu as Record<string, unknown>;
     const sections = menu.hasMenuSection as { hasMenuItem: { name: string }[] }[];
     const names = sections.flatMap((section) => section.hasMenuItem.map((item) => item.name));
-    expect(names).toContain("Kuro Original");
+    expect(names).toContain("Ela Original");
     expect(names).toContain("Midori Original");
   });
 
@@ -126,7 +126,7 @@ describe("buildJsonLd (Phase 8)", () => {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: `${PLACEHOLDER_SITE_URL}/en`,
+      item: `${DEFAULT_SITE_URL}/en`,
     });
   });
 
@@ -143,14 +143,14 @@ describe("sitemap (Phase 8)", () => {
   it("lists /fa and /en with hreflang alternates, nothing else", () => {
     const entries = sitemap();
     expect(entries.map((entry) => entry.url)).toEqual([
-      `${PLACEHOLDER_SITE_URL}/fa`,
-      `${PLACEHOLDER_SITE_URL}/en`,
+      `${DEFAULT_SITE_URL}/fa`,
+      `${DEFAULT_SITE_URL}/en`,
     ]);
     for (const entry of entries) {
       expect(entry.alternates?.languages).toEqual({
-        fa: `${PLACEHOLDER_SITE_URL}/fa`,
-        en: `${PLACEHOLDER_SITE_URL}/en`,
-        "x-default": `${PLACEHOLDER_SITE_URL}/fa`,
+        fa: `${DEFAULT_SITE_URL}/fa`,
+        en: `${DEFAULT_SITE_URL}/en`,
+        "x-default": `${DEFAULT_SITE_URL}/fa`,
       });
       expect(entry.priority).toBe(1);
     }
@@ -164,6 +164,6 @@ describe("robots (Phase 8)", () => {
   it("allows all, disallows /api/, points at the sitemap", () => {
     const result = robots();
     expect(result.rules).toEqual({ userAgent: "*", allow: "/", disallow: "/api/" });
-    expect(result.sitemap).toBe(`${PLACEHOLDER_SITE_URL}/sitemap.xml`);
+    expect(result.sitemap).toBe(`${DEFAULT_SITE_URL}/sitemap.xml`);
   });
 });

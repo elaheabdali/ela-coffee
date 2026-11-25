@@ -4,6 +4,10 @@
  * the data: it imports the dataset and upserts it, so the DB and the
  * static page can never disagree.
  *
+ * "KURO" below is the Postgres Brand-enum label (storage only): the
+ * Phase 12 rebrand renamed the app brand to "ela" but deliberately
+ * left the enum value alone — see docs/architecture.md §7.
+ *
  * Run:  pnpm --filter web db:seed   (needs DATABASE_URL, see
  * docs/fa/phase-06-backend.md — no database exists yet in this
  * environment, so this script refuses to run without one).
@@ -24,7 +28,7 @@ async function main(): Promise<void> {
     await prisma.drink.upsert({
       where: { id: drink.id },
       update: {
-        brand: drink.brand === "kuro" ? "KURO" : "MIDORI",
+        brand: drink.brand === "ela" ? "KURO" : "MIDORI",
         slug: drink.slug,
         nameFa: drink.nameFa,
         nameEn: drink.nameEn,
@@ -37,7 +41,7 @@ async function main(): Promise<void> {
       },
       create: {
         id: drink.id,
-        brand: drink.brand === "kuro" ? "KURO" : "MIDORI",
+        brand: drink.brand === "ela" ? "KURO" : "MIDORI",
         slug: drink.slug,
         nameFa: drink.nameFa,
         nameEn: drink.nameEn,

@@ -7,7 +7,7 @@ import { useMotion } from "./motion";
 
 function resetStores() {
   window.localStorage.clear();
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   useMotion.setState({ paused: false });
   useBag.setState({ items: [], isOpen: false });
   useFlavour.setState({ index: 0 });
@@ -49,6 +49,18 @@ describe("useBrand", () => {
     });
     expect(document.documentElement.getAttribute("data-brand")).toBe("midori");
   });
+
+  it("migrates a persisted pre-rebrand brand \"kuro\" to \"ela\" on rehydrate", async () => {
+    window.localStorage.setItem(
+      "ela-coffee-brand",
+      JSON.stringify({ state: { brand: "kuro" }, version: 0 }),
+    );
+    await act(async () => {
+      await useBrand.persist.rehydrate();
+    });
+    expect(useBrand.getState().brand).toBe("ela");
+    expect(document.documentElement.getAttribute("data-brand")).toBe("ela");
+  });
 });
 
 describe("useMotion", () => {
@@ -68,23 +80,23 @@ describe("useMotion", () => {
 describe("useBag", () => {
   it("adds drinks, increments quantity, and counts items", () => {
     act(() => {
-      useBag.getState().add("kuro-original");
-      useBag.getState().add("kuro-original");
-      useBag.getState().add("kuro-caramel");
+      useBag.getState().add("ela-original");
+      useBag.getState().add("ela-original");
+      useBag.getState().add("ela-caramel");
     });
     expect(useBag.getState().items).toEqual([
-      { drinkId: "kuro-original", qty: 2 },
-      { drinkId: "kuro-caramel", qty: 1 },
+      { drinkId: "ela-original", qty: 2 },
+      { drinkId: "ela-caramel", qty: 1 },
     ]);
     expect(bagCount(useBag.getState().items)).toBe(3);
   });
 
   it("computes the subtotal from dataset prices, never a client total", () => {
-    // Kuro Original 180,000 + Salted Caramel 195,000 x2.
+    // Ela Original 180,000 + Salted Caramel 195,000 x2.
     act(() => {
-      useBag.getState().add("kuro-original");
-      useBag.getState().add("kuro-caramel");
-      useBag.getState().add("kuro-caramel");
+      useBag.getState().add("ela-original");
+      useBag.getState().add("ela-caramel");
+      useBag.getState().add("ela-caramel");
     });
     expect(bagSubtotal(useBag.getState().items)).toBe(180_000 + 195_000 * 2);
     expect(bagSubtotal([])).toBe(0);
@@ -92,11 +104,11 @@ describe("useBag", () => {
 
   it("setQty to 0 removes the line, and clear empties the bag", () => {
     act(() => {
-      useBag.getState().add("kuro-original");
-      useBag.getState().add("kuro-mocha");
-      useBag.getState().setQty("kuro-original", 0);
+      useBag.getState().add("ela-original");
+      useBag.getState().add("ela-mocha");
+      useBag.getState().setQty("ela-original", 0);
     });
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-mocha", qty: 1 }]);
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-mocha", qty: 1 }]);
     act(() => {
       useBag.getState().clear();
     });

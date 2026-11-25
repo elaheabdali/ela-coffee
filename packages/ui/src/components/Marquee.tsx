@@ -11,7 +11,7 @@ export interface MarqueeProps {
 }
 
 /**
- * Flavour ticker (audit §4): `kuro-marquee`, 48s linear infinite,
+ * Flavour ticker (audit §4): `ela-marquee`, 48s linear infinite,
  * content duplicated so the `translate 0 → -50%` loop is seamless.
  * Pauses under `html[data-motion=paused]`, stops under
  * `prefers-reduced-motion`, and reverses direction in RTL
@@ -21,7 +21,7 @@ export interface MarqueeProps {
 export function Marquee({ items, separator = "•", ariaLabel, className }: MarqueeProps) {
   return (
     <div aria-label={ariaLabel} className={cn("overflow-hidden", className)}>
-      <div className="animate-kuro-marquee flex w-max items-center whitespace-nowrap font-display text-lg">
+      <div className="animate-ela-marquee flex w-max items-center whitespace-nowrap font-display text-lg">
         {[0, 1].map((copy) => (
           <span key={copy} aria-hidden={copy === 1 || undefined} className="flex items-center">
             {items.map((item, i) => (

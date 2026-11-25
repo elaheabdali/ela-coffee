@@ -60,7 +60,7 @@ describe("home page (Phase 4)", () => {
       screen.getByRole("heading", { level: 1, name: "قهوه‌ات را انتخاب کن" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "کورو یعنی سیاه. بقیه‌اش با توست." }),
+      screen.getByRole("heading", { name: "الا سیاه شروع می‌شود. بقیه‌اش با توست." }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "شش آیس‌لاته. یک شات بی‌نقص." }),
@@ -91,7 +91,7 @@ describe("home page (Phase 4)", () => {
       screen.getByRole("heading", { level: 1, name: "Choose your coffee" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Kuro means black. The rest is up to you." }),
+      screen.getByRole("heading", { name: "Ela starts black. The rest is up to you." }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Six iced lattes. One perfect shot." }),

@@ -34,7 +34,7 @@ function renderHeader() {
 beforeEach(() => {
   localStorage.clear();
   useBag.setState({ items: [], isOpen: false });
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   useFlavour.setState({ index: 0 });
   useMotion.setState({ paused: false });
   Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
@@ -43,7 +43,7 @@ beforeEach(() => {
 describe("SiteHeader", () => {
   it("renders the wordmark and the flavour controls in the hero state", () => {
     renderHeader();
-    expect(screen.getByRole("link", { name: "kuro" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "ela" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "All flavors" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Menu" })).toBeInTheDocument();
     // Scrolled-only links are not rendered yet.
@@ -54,7 +54,7 @@ describe("SiteHeader", () => {
     renderHeader();
     expect(screen.queryByTestId("bag-count")).not.toBeInTheDocument();
     act(() => {
-      useBag.getState().add("kuro-original");
+      useBag.getState().add("ela-original");
     });
     expect(screen.getByTestId("bag-count")).toHaveTextContent("1");
   });

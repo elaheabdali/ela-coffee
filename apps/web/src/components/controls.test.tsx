@@ -30,7 +30,7 @@ function renderControls(locale: "en" | "fa" = "en") {
 beforeEach(() => {
   localStorage.clear();
   useBag.setState({ items: [], isOpen: false });
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   useFlavour.setState({ index: 0 });
 });
 
@@ -55,7 +55,7 @@ describe("FlavorControls", () => {
     const dialog = await screen.findByRole("dialog", { name: "All flavors" });
     expect(dialog).toBeInTheDocument();
     for (const name of [
-      "Kuro Original",
+      "Ela Original",
       "Salted Caramel",
       "Vanilla Cream",
       "Toasted Hazelnut",
@@ -65,7 +65,7 @@ describe("FlavorControls", () => {
       expect(screen.getByRole("button", { name: new RegExp(name) })).toBeInTheDocument();
     }
     // The current flavour (index 0) is marked with aria-current.
-    expect(screen.getByRole("button", { name: /Kuro Original/ })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: /Ela Original/ })).toHaveAttribute(
       "aria-current",
       "true",
     );
@@ -82,7 +82,7 @@ describe("FlavorControls", () => {
   it("shows 3 notes plus size, caffeine and price in the Tasting notes dialog", async () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
-    const dialog = await screen.findByRole("dialog", { name: "Kuro Original" });
+    const dialog = await screen.findByRole("dialog", { name: "Ela Original" });
     expect(dialog).toBeInTheDocument();
     expect(screen.getByText(/double shot of our house espresso/)).toBeInTheDocument();
     for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
@@ -101,9 +101,9 @@ describe("FlavorControls", () => {
     renderControls();
     fireEvent.click(screen.getByRole("button", { name: "Tasting notes" }));
     fireEvent.click(await screen.findByRole("button", { name: "Add to bag" }));
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 1 }]);
-    expect(screen.getByRole("status")).toHaveTextContent("Kuro Original added to your bag.");
-    expect(screen.queryByRole("dialog", { name: "Kuro Original" })).not.toBeInTheDocument();
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
+    expect(screen.getByRole("status")).toHaveTextContent("Ela Original added to your bag.");
+    expect(screen.queryByRole("dialog", { name: "Ela Original" })).not.toBeInTheDocument();
   });
 
   it("shows Persian digits for caffeine in the fa locale", async () => {

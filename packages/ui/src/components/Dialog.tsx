@@ -25,7 +25,7 @@ const FOCUSABLE_SELECTOR =
  * Accessible modal dialog (the reference's tasting-notes / all-flavours
  * pattern, audit §2). Focus is trapped inside while open, Escape closes,
  * clicking the overlay closes, and focus returns to the element that
- * opened it. Enter animation is fade + scale (`kuro-dialog-in`, audit §4);
+ * opened it. Enter animation is fade + scale (`ela-dialog-in`, audit §4);
  * under `prefers-reduced-motion` the animation is disabled in globals.css.
  *
  * Rendered in a portal so it is never clipped by an ancestor's overflow.
@@ -101,7 +101,7 @@ export function Dialog({
         data-testid="dialog-overlay"
         onClick={onClose}
         tabIndex={-1}
-        className="animate-kuro-dialog-overlay-in absolute inset-0 cursor-default bg-black/60 backdrop-blur-sm"
+        className="animate-ela-dialog-overlay-in absolute inset-0 cursor-default bg-black/60 backdrop-blur-sm"
       />
       <div
         ref={panelRef}
@@ -111,7 +111,7 @@ export function Dialog({
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
         className={cn(
-          "animate-kuro-dialog-in relative w-full max-w-md rounded-2xl bg-card p-6 text-foreground shadow-kuro-hero outline-none",
+          "animate-ela-dialog-in relative w-full max-w-md rounded-2xl bg-card p-6 text-foreground shadow-ela-hero outline-none",
           className,
         )}
       >

@@ -70,7 +70,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
-      data-brand="kuro"
+      data-brand="ela"
       className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">

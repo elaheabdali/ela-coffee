@@ -112,7 +112,7 @@ Tool: `axe-core` 4.10.3 (the repo's existing dependency, injected into the live 
 
 ### Contrast ratios (computed from the theme tokens in `globals.css`)
 
-| Pair                                     | kuro  | midori | AA bar         |
+| Pair                                     | ela  | midori | AA bar         |
 | ---------------------------------------- | ----- | ------ | -------------- |
 | H1 foreground on lightest stage gradient | 14.51 | 11.19  | 3:1 (large) ✅ |
 | H1 foreground on darkest stage           | 17.22 | 16.58  | 3:1 ✅         |
@@ -131,7 +131,7 @@ The two pairs axe could not evaluate over photography (flavour counter "1 / 6" a
 
 25 Tab stops from the top of `/fa` and `/en`, all **visible and in logical order** (menu → wheel region → add-to-bag → featured flavours → scroll links → menu cards → newsletter → reservation). Focus outline: solid 2–3 px in the brand ring colour on every stop.
 
-**One real bug found and fixed:** the wheel region (`div[tabindex="0"].kuro-stage`) had Tailwind's `outline-none` class, which beat the global `:focus-visible` rule (utility layer wins over the base layer), so keyboard users tabbing to the wheel saw **no focus ring at all**. The class is removed; the stage now shows the global `2px solid var(--ring)` ring on `:focus-visible` (verified live: `solid 2px rgb(217, 160, 102)`, offset 2 px, after a real Tab/keyboard focus — programmatic `.focus()` alone does not trigger `:focus-visible`, by design).
+**One real bug found and fixed:** the wheel region (`div[tabindex="0"].ela-stage`) had Tailwind's `outline-none` class, which beat the global `:focus-visible` rule (utility layer wins over the base layer), so keyboard users tabbing to the wheel saw **no focus ring at all**. The class is removed; the stage now shows the global `2px solid var(--ring)` ring on `:focus-visible` (verified live: `solid 2px rgb(217, 160, 102)`, offset 2 px, after a real Tab/keyboard focus — programmatic `.focus()` alone does not trigger `:focus-visible`, by design).
 
 ### Reduced motion
 
@@ -145,7 +145,7 @@ Wheel region has `role="region"` + `aria-label` (hero title); dots are buttons w
 
 Verified live on the production build after all changes (desktop 1280×800 — the header brand toggle is `max-sm:hidden`, so the mobile check uses the MenuDrawer copy):
 
-- Brand toggle flips `html[data-brand]` **kuro → midori → kuro** in both locales (Playwright click and DOM click).
+- Brand toggle flips `html[data-brand]` **ela → midori → ela** in both locales (Playwright click and DOM click).
 - Wheel keyboard: `ArrowRight` on the focused stage moves the counter **1 / 6 → 2 / 6** and the flavour name changes (Original → Caramel).
 - Pour (1.2 s), wheel-in (1.6 s), float (7 s), marquee, word stagger (65 ms) all intact — confirmed visually at 1440 px in both locales (screenshots in `/tmp/perf/after1440-*-hero.png`, scratch).
 - **One measurement quirk, not a product bug:** at the 390 px mobile viewport the header toggle is hidden by design, so the first toggle probes targeted a `max-sm:hidden` element (0×0 box) and timed out. The toggle itself was never broken.
@@ -215,27 +215,53 @@ Bugs found & fixed (full list in `docs/fa/phase-10-testing.md` §6):
 
 CI: `.github/workflows/ci.yml` gained a real `e2e` job (install → `playwright install --with-deps chromium firefox` → `pnpm --filter web test:e2e`). It has not run yet — the first real run happens on push in Phase 11.
 
-## 10. Phase 11 — Deploy (2026-11-25, incomplete: blocked on auth)
+## 10. Phase 11 — Deploy (2026-11-25, DONE — deployed and live-verified)
 
-**Status: no push, no deploy, no CI run yet — and none is claimed.**
+**Status: deployed, CI green, live-verified.**
 
+- **Repo:** https://github.com/elaheabdali/ela-coffee (PUBLIC, branch
+  `master`). Pushed 2026-11-25; the owner's README edit on GitHub was
+  rebased in cleanly.
 - **Real bug fixed before the first push:** `.github/workflows/ci.yml`
   listened for pushes to `main`, but every commit in this repo is on
   `master` — so CI would never have run. Fixed to `branches: [master]`
-  (with an explanatory comment in the file). Local verification after
-  the fix: install ✅, typecheck ✅ (0 errors), lint ✅ (0 errors, 1
-  pre-existing warning), unit tests ✅ **224 in 30 files**, build ✅.
-- **Blocker:** neither `gh` nor the Vercel MCP connector is
-  authenticated in this environment, no tokens are set, and no saved
-  GitHub login exists in the Vault. Creating the repo
-  (`github.com/elaheabdali/ela-coffee`, **private** — template licence
-  evidence still open, see `docs/fa/phase-11-deploy.md` §8) and the
-  Vercel project both need the user to sign in in a browser. The
-  Phase 11 commit is local only; there is no remote yet.
-- **What is ready:** `docs/fa/phase-11-deploy.md` (Persian tutorial:
-  repo + CI + Vercel wiring, preview vs production, env-var table,
-  Neon steps, private-vs-public note, Lighthouse command).
-- **Still unverified:** CI `check` + `e2e` jobs (first real run on
-  push), first real `pnpm audit` result, production URL + live checks
-  (/fa, /en, /api/menu, sitemap, robots, 404, security headers),
-  Lighthouse ≥95 mobile.
+  (with an explanatory comment in the file).
+- **First CI run (45574778160):** e2e ✅ 58 passed, but the check job
+  failed on `pnpm audit --audit-level high` — 2 high vulnerabilities
+  via Prisma's `@prisma/config` (`deepmerge-ts` 7.1.5, GHSA-ggr8-5vv4-36mx;
+  `effect` 3.21.0, GHSA-7589-6fvf-x4pw). Updating Prisma to 6.19.3 did
+  not help; fixed with pnpm overrides in the root `package.json`
+  (`deepmerge-ts ^8.0.0`, `effect ^3.22.1`; lockfile now 8.0.2 / 3.22.5).
+- **Second CI run (45576282908): SUCCESS — both jobs green.** Check
+  (typecheck / lint / 224 unit tests / build) incl. `pnpm audit`
+  "No known vulnerabilities found"; e2e 58 passed in 3.0m.
+- **Vercel:** project `ela-coffee-yi88`, deployment
+  `dpl_22oo98WVrFXyBy7bKJLYWzhL4qbG`, branch `master`, Hobby team
+  "elaheabdali's projects", Root Directory `apps/web`, Build
+  `pnpm --filter web build`. Vercel assigned the project name, so the
+  production domain is **https://ela-coffee-yi88.vercel.app** (not
+  `ela-coffee.vercel.app`); `NEXT_PUBLIC_SITE_URL` is set to it in
+  Vercel, and the code default in `src/lib/seo.ts` was updated to match
+  in Phase 12. `DATABASE_URL` and `PAYMENT_PROVIDER` are unset —
+  production runs on the seed-JSON/in-memory fallback (orders reset on
+  redeploy) with Mock payments. No Node version was set explicitly in
+  Vercel (no option presented); the build passed.
+- **Live verification on production (2026-11-25, by curl):** `/fa` 200
+  with Persian title + canonical on the production domain +
+  `og:locale fa_IR`; `/en` 200; `/api/menu` returns 12 drinks;
+  `sitemap.xml` valid with hreflang on the production domain;
+  `robots.txt` correct; `/fa/404` and `/en/404` return 404; security
+  headers present (CSP, HSTS, nosniff, Referrer-Policy,
+  Permissions-Policy, `X-Frame-Options: DENY`, no `X-Powered-By`).
+- **Still unverified:** Lighthouse ≥95 mobile (no Chrome in the build
+  sandbox — run `npx -y lighthouse https://ela-coffee-yi88.vercel.app/fa`
+  on a machine with Chrome and add the scores to §2).
+
+> **Note (2026-11-25, Phase 12 rebrand):** the site rebranded Kuro →
+> Ela after this deploy. The live checks above were run against the
+> Kuro-named build; the production title then was «کورو | لاته‌های یخی
+> دست‌ساز». After the rebrand the same checks were re-run locally
+> against the production build (title «الا | …», canonical on
+> `ela-coffee-yi88.vercel.app/fa`, `data-brand="ela"`, `/api/menu`
+> 12 drinks with `ela-*` ids) — the next production deploy carries the
+> renamed site.

@@ -20,7 +20,7 @@ export interface RevealProps {
  * of being stuck at opacity 0 (audit defect §8.7). If the browser has no
  * IntersectionObserver, content is revealed immediately.
  *
- * The animation itself lives in `globals.css` (`kuro-reveal-*` keyframes)
+ * The animation itself lives in `globals.css` (`ela-reveal-*` keyframes)
  * and honours `--reveal-delay`.
  */
 export function Reveal({

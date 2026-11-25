@@ -34,7 +34,7 @@ function renderBag() {
 const fakeOrder: OrderDTO = {
   id: "order-1",
   status: "RECEIVED",
-  items: [{ id: "item-1", drinkId: "kuro-caramel", qty: 2, priceToman: 195_000 }],
+  items: [{ id: "item-1", drinkId: "ela-caramel", qty: 2, priceToman: 195_000 }],
   customerName: "Test Taster",
   phone: "09123456789",
   totalToman: 390_000,
@@ -63,7 +63,7 @@ function mockOrderFetch() {
 beforeEach(() => {
   localStorage.clear();
   useBag.setState({ items: [], isOpen: false });
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
 });
 
 afterEach(() => {
@@ -85,7 +85,7 @@ describe("BagDrawer", () => {
   });
 
   it("shows filled rows with stepper and subtotal", () => {
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 2 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 2 }] });
     renderBag();
     expect(screen.getByText("Salted Caramel")).toBeInTheDocument();
     expect(screen.getByText("195,000 Toman")).toBeInTheDocument();
@@ -94,12 +94,12 @@ describe("BagDrawer", () => {
     expect(screen.getByText("Subtotal")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "+ Increase quantity" }));
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-caramel", qty: 3 }]);
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-caramel", qty: 3 }]);
     expect(screen.getAllByText("585,000 Toman")).toHaveLength(2);
   });
 
   it("removes the line when the stepper is stepped down to zero", () => {
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 1 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "− Decrease quantity" }));
     expect(useBag.getState().items).toEqual([]);
@@ -107,7 +107,7 @@ describe("BagDrawer", () => {
   });
 
   it("removes a line with the remove button", () => {
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 1 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "Remove from bag" }));
     expect(useBag.getState().items).toEqual([]);
@@ -117,8 +117,8 @@ describe("BagDrawer", () => {
     useBag.setState({
       isOpen: true,
       items: [
-        { drinkId: "kuro-caramel", qty: 1 },
-        { drinkId: "kuro-mocha", qty: 2 },
+        { drinkId: "ela-caramel", qty: 1 },
+        { drinkId: "ela-mocha", qty: 2 },
       ],
     });
     renderBag();
@@ -128,7 +128,7 @@ describe("BagDrawer", () => {
   });
 
   it("opens the checkout step from the bag", () => {
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 1 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
     expect(screen.getByRole("heading", { name: "Checkout" })).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe("BagDrawer", () => {
 
   it("places the order and shows live tracking on success", async () => {
     const fetchMock = mockOrderFetch();
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 2 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 2 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Test Taster" } });
@@ -157,7 +157,7 @@ describe("BagDrawer", () => {
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
-          items: [{ drinkId: "kuro-caramel", qty: 2 }],
+          items: [{ drinkId: "ela-caramel", qty: 2 }],
           customerName: "Test Taster",
           phone: "09123456789",
         }),
@@ -167,7 +167,7 @@ describe("BagDrawer", () => {
 
   it("shows a validation error for an invalid phone and never posts", async () => {
     const fetchMock = mockOrderFetch();
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 1 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Test Taster" } });
@@ -183,7 +183,7 @@ describe("BagDrawer", () => {
       ok: false,
       json: async () => ({ error: { code: "VALIDATION_ERROR", message: "Validation failed" } }),
     }) as typeof fetch;
-    useBag.setState({ isOpen: true, items: [{ drinkId: "kuro-caramel", qty: 1 }] });
+    useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 1 }] });
     renderBag();
     fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Test Taster" } });

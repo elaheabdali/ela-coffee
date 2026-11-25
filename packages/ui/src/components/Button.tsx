@@ -13,7 +13,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  // Accent (crema in kuro, green in midori) — the reference's main action.
+  // Accent (crema in ela, green in midori) — the reference's main action.
   primary: "bg-primary text-primary-foreground hover:brightness-110",
   // Quiet surface action.
   secondary: "bg-secondary text-foreground ring-1 ring-border hover:bg-accent",
@@ -31,7 +31,7 @@ const SIZES: Record<ButtonSize, string> = {
 
 /**
  * Action button. Colours come from the brand tokens (`--primary` /
- * `--primary-foreground`), so it follows the kuro → midori brand switch
+ * `--primary-foreground`), so it follows the ela → midori brand switch
  * automatically. Hover `scale-105` / active `scale-95` match the
  * reference's add-to-bag behaviour (audit §4); focus is always visible
  * via the global `:focus-visible` ring (audit defect §8.6).

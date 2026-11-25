@@ -7,7 +7,7 @@ import { DesignSystemCatalog } from "@/components/DesignSystemCatalog";
  * search results if a preview deployment is crawled.
  */
 export const metadata: Metadata = {
-  title: "Design system — Kuro Coffee",
+  title: "Design system — Ela Coffee",
   description: "Development-only catalogue of the ela-coffee design system.",
   robots: { index: false, follow: false },
 };

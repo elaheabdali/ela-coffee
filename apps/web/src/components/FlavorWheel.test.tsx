@@ -39,7 +39,7 @@ function renderWheel() {
 
 beforeEach(() => {
   window.localStorage.clear();
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   useFlavour.setState({ index: 0 });
   useBag.setState({ items: [], isOpen: false });
   document.documentElement.setAttribute("dir", "ltr");
@@ -71,7 +71,7 @@ describe("FlavorWheel", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Original")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Add Kuro Original to your bag, 180,000 Toman/ }),
+      screen.getByRole("button", { name: /Add Ela Original to your bag, 180,000 Toman/ }),
     ).toBeInTheDocument();
     expect(screen.getByText("1 / 6")).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "All flavors" })).toBeInTheDocument();
@@ -129,9 +129,9 @@ describe("FlavorWheel", () => {
 
   it("the price pill adds the current drink to the bag", () => {
     renderWheel();
-    fireEvent.click(screen.getByRole("button", { name: /Add Kuro Original to your bag/ }));
-    expect(useBag.getState().items).toEqual([{ drinkId: "kuro-original", qty: 1 }]);
-    expect(screen.getByRole("status")).toHaveTextContent("Kuro Original added to your bag.");
+    fireEvent.click(screen.getByRole("button", { name: /Add Ela Original to your bag/ }));
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
+    expect(screen.getByRole("status")).toHaveTextContent("Ela Original added to your bag.");
   });
 
   it("keeps the tile ring behind the cup photo (z-0 under the z-10 scene)", () => {
@@ -140,7 +140,7 @@ describe("FlavorWheel", () => {
     const ring = container.querySelector('[aria-hidden="true"].z-0');
     expect(ring).not.toBeNull();
     expect(ring?.querySelectorAll("img").length).toBeGreaterThan(0);
-    const scene = container.querySelector(".kuro-glass.z-10");
+    const scene = container.querySelector(".ela-glass.z-10");
     expect(scene).not.toBeNull();
     // Audit §3.5 frame: a 16:9 box anchored at --scene-top, not full-bleed.
     expect(scene?.className).toContain("top-(--scene-top)");
@@ -150,7 +150,7 @@ describe("FlavorWheel", () => {
 
   it("marks the hero scene image priority so it preloads for LCP", () => {
     const { container } = renderWheel();
-    const sceneImg = container.querySelector(".kuro-glass.z-10 img");
+    const sceneImg = container.querySelector(".ela-glass.z-10 img");
     expect(sceneImg?.getAttribute("data-priority")).toBe("true");
     // The scene frame is ~957 CSS px on mobile (audit §3.5 geometry),
     // so the sizes hint must cover the full viewport width.
@@ -171,7 +171,7 @@ describe("FlavorWheel", () => {
 
   it("gives the wheel region a visible focus ring (no outline-none)", () => {
     const { container } = renderWheel();
-    const stage = container.querySelector(".kuro-stage");
+    const stage = container.querySelector(".ela-stage");
     expect(stage).not.toBeNull();
     expect(stage?.className).not.toContain("outline-none");
     expect(stage?.getAttribute("tabindex")).toBe("0");

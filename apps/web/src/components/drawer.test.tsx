@@ -20,7 +20,7 @@ function renderDrawer(onClose = vi.fn()) {
 
 beforeEach(() => {
   localStorage.clear();
-  useBrand.setState({ brand: "kuro" });
+  useBrand.setState({ brand: "ela" });
   useMotion.setState({ paused: false });
 });
 
@@ -28,7 +28,7 @@ describe("MenuDrawer", () => {
   it("renders the wordmark, numbered links and the bottom bar", () => {
     renderDrawer();
     expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
-    expect(screen.getByText("kuro")).toBeInTheDocument();
+    expect(screen.getByText("ela")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Story/ })).toHaveAttribute("href", "#story");
     expect(screen.getByRole("link", { name: /Menu/ })).toHaveAttribute("href", "#menu");
     expect(screen.getByRole("link", { name: /How it's made/ })).toHaveAttribute("href", "#process");

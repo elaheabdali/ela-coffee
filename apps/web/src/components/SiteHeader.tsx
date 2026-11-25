@@ -68,7 +68,7 @@ export function SiteHeader() {
       <header
         className={
           scrolled
-            ? "fixed inset-x-0 top-0 z-40 bg-cream text-espresso shadow-kuro-card"
+            ? "fixed inset-x-0 top-0 z-40 bg-cream text-espresso shadow-ela-card"
             : "fixed inset-x-0 top-0 z-40 bg-transparent text-cream"
         }
       >
@@ -129,7 +129,7 @@ export function SiteHeader() {
                     <span
                       key={count}
                       data-testid="bag-count"
-                      className="animate-kuro-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
+                      className="animate-ela-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
                     >
                       {locale === "fa" ? toFaDigits(count) : count}
                     </span>

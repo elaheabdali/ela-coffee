@@ -65,7 +65,7 @@ describe("CSRF — same-origin check on mutations", () => {
       jsonRequest(
         `${SAME_ORIGIN}/api/orders`,
         {
-          items: [{ drinkId: "kuro-original", qty: 1 }],
+          items: [{ drinkId: "ela-original", qty: 1 }],
           customerName: "Test",
           phone: "09123456789",
         },
@@ -160,7 +160,7 @@ describe("CORS — no wildcard, ACAO only for our own origin", () => {
 describe("rate limits — hammering past the limit returns 429", () => {
   it("limits orders to 10/min with Retry-After", async () => {
     const body = {
-      items: [{ drinkId: "kuro-original", qty: 1 }],
+      items: [{ drinkId: "ela-original", qty: 1 }],
       customerName: "Test",
       phone: "09123456789",
     };
@@ -204,7 +204,7 @@ describe("honeypot — filled honeypot gets a silent 200 and creates nothing", (
   it("orders: no order is created", async () => {
     const response = await ordersPOST(
       jsonRequest(`${SAME_ORIGIN}/api/orders`, {
-        items: [{ drinkId: "kuro-original", qty: 1 }],
+        items: [{ drinkId: "ela-original", qty: 1 }],
         customerName: "Bot",
         phone: "09123456789",
         website: "spam",
@@ -268,7 +268,7 @@ describe("input sanitisation — user text can never carry HTML", () => {
   it("stores a sanitised customer name on the order, readable back via the API", async () => {
     const created = await ordersPOST(
       jsonRequest(`${SAME_ORIGIN}/api/orders`, {
-        items: [{ drinkId: "kuro-original", qty: 1 }],
+        items: [{ drinkId: "ela-original", qty: 1 }],
         customerName: "<script>alert(1)</script>Ali",
         phone: "09123456789",
       }),

@@ -25,30 +25,30 @@ import { BrandToggle } from "@/components/BrandToggle";
  * visual check here covers exactly what Phase 4 will consume.
  */
 
-const KURO_SWATCHES: Array<{ name: string; value: string }> = [
-  { name: "--background / --kuro-espresso", value: "#120b08" },
+const ELA_SWATCHES: Array<{ name: string; value: string }> = [
+  { name: "--background / --ela-espresso", value: "#120b08" },
   { name: "--foreground", value: "#f6eee3" },
   { name: "--card", value: "#1b120d" },
-  { name: "--primary / --kuro-crema", value: "#d9a066" },
-  { name: "--kuro-cream", value: "#f3ebe0" },
-  { name: "--kuro-roast", value: "#1e130d" },
+  { name: "--primary / --ela-crema", value: "#d9a066" },
+  { name: "--ela-cream", value: "#f3ebe0" },
+  { name: "--ela-roast", value: "#1e130d" },
   { name: "--muted-foreground", value: "#b9a690" },
   { name: "--destructive", value: "#e40014" },
 ];
 
 const MIDORI_SWATCHES: Array<{ name: string; value: string }> = [
-  { name: "--background / --kuro-espresso", value: "#0e180c" },
+  { name: "--background / --ela-espresso", value: "#0e180c" },
   { name: "--foreground", value: "#eef0e1" },
   { name: "--card", value: "#162212" },
-  { name: "--primary / --kuro-crema", value: "#a9c46c" },
-  { name: "--kuro-cream", value: "#eef0e1" },
-  { name: "--kuro-roast", value: "#172313" },
+  { name: "--primary / --ela-crema", value: "#a9c46c" },
+  { name: "--ela-cream", value: "#eef0e1" },
+  { name: "--ela-roast", value: "#172313" },
   { name: "--muted-foreground", value: "#a9b598" },
 ];
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 rounded-2xl bg-card p-6 shadow-kuro-card">
+    <section className="flex flex-col gap-4 rounded-2xl bg-card p-6 shadow-ela-card">
       <Eyebrow>{title}</Eyebrow>
       {children}
     </section>
@@ -98,7 +98,7 @@ export function DesignSystemCatalog() {
         <Section title={t("tokens")}>
           <p className="text-sm text-muted-foreground">{t("tokensNote")}</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {KURO_SWATCHES.map((swatch) => (
+            {ELA_SWATCHES.map((swatch) => (
               <figure key={swatch.name} className="flex flex-col gap-1">
                 <span
                   aria-hidden="true"
@@ -233,7 +233,7 @@ export function DesignSystemCatalog() {
               alt=""
               width={270}
               height={358}
-              className="kuro-reveal-media w-40 rounded-2xl"
+              className="ela-reveal-media w-40 rounded-2xl"
             />
           </Reveal>
         </Section>

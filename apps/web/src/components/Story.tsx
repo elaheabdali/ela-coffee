@@ -65,7 +65,7 @@ export function Story() {
           </dl>
         </div>
         <Reveal variant="image" className="lg:col-span-7">
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-kuro-card">
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-ela-card">
             <Image
               src={story.image}
               alt={isFa ? story.imageAltFa : story.imageAltEn}

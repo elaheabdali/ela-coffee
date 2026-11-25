@@ -21,7 +21,7 @@ for (const locale of LOCALE_LIST) {
     test("brand toggle flips html[data-brand] coffee ↔ matcha", async ({ page }) => {
       await gotoLocale(page, locale);
       const html = page.locator("html");
-      await expect(html).toHaveAttribute("data-brand", "kuro");
+      await expect(html).toHaveAttribute("data-brand", "ela");
 
       await page.getByRole("button", { name: t.brandCoffee, exact: true }).click();
       await expect(html).toHaveAttribute("data-brand", "midori");
@@ -32,7 +32,7 @@ for (const locale of LOCALE_LIST) {
       ).toBeVisible();
 
       await page.getByRole("button", { name: t.brandMatcha, exact: true }).click();
-      await expect(html).toHaveAttribute("data-brand", "kuro");
+      await expect(html).toHaveAttribute("data-brand", "ela");
     });
 
     test("wheel keyboard navigation moves the flavour counter", async ({ page }) => {

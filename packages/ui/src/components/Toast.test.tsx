@@ -40,9 +40,9 @@ describe("Toast", () => {
 
   it("re-triggers the bump animation when bumpKey changes", () => {
     const { rerender } = render(<Toast message="2 items" open bumpKey={1} durationMs={0} />);
-    expect(screen.getByText("2 items")).toHaveClass("animate-kuro-bump");
+    expect(screen.getByText("2 items")).toHaveClass("animate-ela-bump");
     rerender(<Toast message="3 items" open bumpKey={2} durationMs={0} />);
-    expect(screen.getByText("3 items")).toHaveClass("animate-kuro-bump");
+    expect(screen.getByText("3 items")).toHaveClass("animate-ela-bump");
   });
 });
 

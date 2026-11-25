@@ -14,7 +14,7 @@ import "./globals.css";
  */
 export default function GlobalNotFound() {
   return (
-    <html lang="fa" dir="rtl" data-brand="kuro">
+    <html lang="fa" dir="rtl" data-brand="ela">
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center gap-4 px-5 text-center">
           <p className="text-8xl font-black tracking-[-0.02em]">۴۰۴</p>

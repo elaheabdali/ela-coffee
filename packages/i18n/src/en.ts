@@ -18,7 +18,7 @@ export const en = {
     titleMatcha: "Choose your matcha",
     scrollCue: "Scroll to taste",
     marquee:
-      "Kuro Original • Salted Caramel • Vanilla Cream • Toasted Hazelnut • Dark Mocha • Brown Sugar Cinnamon •",
+      "Ela Original • Salted Caramel • Vanilla Cream • Toasted Hazelnut • Dark Mocha • Brown Sugar Cinnamon •",
     addToBag: "Add to bag",
     surpriseMe: "Surprise me",
     allFlavors: "All flavors",
@@ -117,7 +117,7 @@ export const en = {
     stayInTouch: "Stay in touch",
     stayInTouchBody: "New flavors land every season. Be the first to know.",
     backToTop: "Back to top",
-    rights: "© 2026 Kuro Coffee. All rights reserved.",
+    rights: "© 2026 Ela Coffee. All rights reserved.",
     contactTitle: "Contact",
     phone: "Phone",
     whatsapp: "WhatsApp",
@@ -167,7 +167,7 @@ export const en = {
     priceDemo: "Sample price (Toman, placeholder)",
   },
   designSystem: {
-    title: "Kuro design system",
+    title: "Ela design system",
     intro: "Component catalog — development only. Not linked from any navigation and not indexed.",
     tokens: "Tokens",
     tokensNote: "Values from audit §3; switching brand (coffee ↔ matcha) repaints every colour.",

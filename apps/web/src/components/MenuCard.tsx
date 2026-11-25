@@ -33,7 +33,7 @@ export function MenuCard({ drink, delayMs = 0 }: MenuCardProps) {
 
   return (
     <Reveal variant="fade-up" delayMs={delayMs}>
-      <article className="flex h-full flex-col gap-4 rounded-2xl bg-card p-4 text-foreground shadow-kuro-card ring-1 ring-border">
+      <article className="flex h-full flex-col gap-4 rounded-2xl bg-card p-4 text-foreground shadow-ela-card ring-1 ring-border">
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl">
           <Image
             src={drink.image}

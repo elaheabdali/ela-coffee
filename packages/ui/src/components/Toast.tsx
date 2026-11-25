@@ -21,7 +21,7 @@ export interface ToastProps {
   /** Auto-dismiss delay in milliseconds. Set 0 to disable auto-dismiss. */
   durationMs?: number;
   /**
-   * Changing this value re-triggers the `kuro-bump` animation
+   * Changing this value re-triggers the `ela-bump` animation
    * (audit §4, .48s) — used when a count the toast refers to changes.
    */
   bumpKey?: string | number;
@@ -54,13 +54,13 @@ export function Toast({
       role="status"
       aria-live="polite"
       className={cn(
-        "animate-kuro-dialog-in pointer-events-auto rounded-full bg-card px-5 py-3 text-sm font-medium text-foreground shadow-kuro-lift ring-1 ring-border",
+        "animate-ela-dialog-in pointer-events-auto rounded-full bg-card px-5 py-3 text-sm font-medium text-foreground shadow-ela-lift ring-1 ring-border",
         className,
       )}
     >
       <span
         key={bumpKey}
-        className={bumpKey !== undefined ? "animate-kuro-bump inline-block" : undefined}
+        className={bumpKey !== undefined ? "animate-ela-bump inline-block" : undefined}
       >
         {message}
       </span>

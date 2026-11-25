@@ -18,7 +18,7 @@ export interface BrandToggleProps {
  */
 export function BrandToggle({ coffeeLabel, matchaLabel }: BrandToggleProps) {
   const { brand, setBrand } = useBrand();
-  const toggle = () => setBrand(brand === "kuro" ? "midori" : "kuro");
+  const toggle = () => setBrand(brand === "ela" ? "midori" : "ela");
 
   return (
     <button
@@ -27,8 +27,8 @@ export function BrandToggle({ coffeeLabel, matchaLabel }: BrandToggleProps) {
       aria-pressed={brand === "midori"}
       className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent"
     >
-      {brand === "kuro" ? <Coffee size={16} /> : <Leaf size={16} />}
-      {brand === "kuro" ? coffeeLabel : matchaLabel}
+      {brand === "ela" ? <Coffee size={16} /> : <Leaf size={16} />}
+      {brand === "ela" ? coffeeLabel : matchaLabel}
     </button>
   );
 }
