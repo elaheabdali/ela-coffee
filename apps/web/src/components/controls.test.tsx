@@ -93,7 +93,7 @@ describe("FlavorControls", () => {
     expect(screen.getByText("Caffeine")).toBeInTheDocument();
     expect(screen.getByText("150 mg")).toBeInTheDocument();
     expect(screen.getByText("Price")).toBeInTheDocument();
-    expect(screen.getByText("180,000 Toman")).toBeInTheDocument();
+    expect(screen.getByText("180,000 T")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add to bag" })).toBeInTheDocument();
   });
 

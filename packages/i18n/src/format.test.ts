@@ -7,7 +7,7 @@ describe("formatToman", () => {
   });
 
   it("formats Toman with Latin digits in en", () => {
-    expect(formatToman(180000, "en")).toBe("180,000 Toman");
+    expect(formatToman(180000, "en")).toBe("180,000 T");
   });
 
   it("defaults to fa", () => {
@@ -73,6 +73,6 @@ describe("normalizeDigits", () => {
 describe("formatToman", () => {
   it("formats zero", () => {
     expect(formatToman(0, "fa")).toBe("۰ تومان");
-    expect(formatToman(0, "en")).toBe("0 Toman");
+    expect(formatToman(0, "en")).toBe("0 T");
   });
 });

@@ -72,7 +72,7 @@ export function BrandToggle({
           type="button"
           onClick={() => setBrand("ela")}
           aria-pressed={brand === "ela"}
-          className={`inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-colors ${FOCUS} ${segment(brand === "ela")}`}
+          className={`inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-[scale,color,background-color] active:scale-95 ${FOCUS} ${segment(brand === "ela")}`}
         >
           <Coffee size={16} aria-hidden="true" />
           {coffeeLabel}
@@ -81,7 +81,7 @@ export function BrandToggle({
           type="button"
           onClick={() => setBrand("midori")}
           aria-pressed={brand === "midori"}
-          className={`inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-colors ${FOCUS} ${segment(brand === "midori")}`}
+          className={`inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-[scale,color,background-color] active:scale-95 ${FOCUS} ${segment(brand === "midori")}`}
         >
           <Leaf size={16} aria-hidden="true" />
           {matchaLabel}
@@ -123,7 +123,7 @@ export function BrandToggle({
       type="button"
       onClick={toggle}
       aria-pressed={brand === "midori"}
-      className={`inline-flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent ${FOCUS}`}
+      className={`inline-flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[scale,background-color] hover:bg-accent active:scale-95 ${FOCUS}`}
     >
       {brand === "ela" ? <Coffee size={16} /> : <Leaf size={16} />}
       {brand === "ela" ? coffeeLabel : matchaLabel}

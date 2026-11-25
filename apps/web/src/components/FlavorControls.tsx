@@ -47,7 +47,7 @@ export function FlavorControls() {
   const drink = BRANDS[brand].drinks[index];
 
   const iconButtonClass =
-    "relative grid size-9 cursor-pointer place-items-center rounded-[0.85rem] text-cream/75 transition-colors duration-200 hover:bg-cream/10 hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema sm:size-10";
+    "relative grid size-9 cursor-pointer place-items-center rounded-[0.85rem] text-cream/75 transition-[scale,background-color,color] duration-200 hover:bg-cream/10 hover:text-cream active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema sm:size-10";
   const badgeClass =
     "animate-ela-bump absolute -end-1.5 -top-1.5 grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-full bg-crema px-1 text-[0.625rem] font-bold leading-none text-espresso ring-2 ring-espresso";
 

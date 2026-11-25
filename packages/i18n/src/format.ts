@@ -23,13 +23,14 @@ export function normalizeDigits(value: string): string {
  * Format an amount in Toman.
  * fa → Persian digits with thousands separators + "تومان"
  *    (e.g. 180000 → "۱۸۰٬۰۰۰ تومان").
- * en → Latin digits + "Toman" (e.g. 180000 → "180,000 Toman").
+ * en → Latin digits + "T" (e.g. 180000 → "180,000 T", fix batch 5:
+ *    the user asked for the short unit in English).
  */
 export function formatToman(amountToman: number, locale: Locale = "fa"): string {
   if (locale === "fa") {
     return `${new Intl.NumberFormat("fa-IR").format(amountToman)} تومان`;
   }
-  return `${new Intl.NumberFormat("en-US").format(amountToman)} Toman`;
+  return `${new Intl.NumberFormat("en-US").format(amountToman)} T`;
 }
 
 /** Format a date in the Jalali (Persian) calendar. */

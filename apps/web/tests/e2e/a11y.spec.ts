@@ -72,6 +72,12 @@ for (const locale of LOCALE_LIST) {
       await gotoLocale(page, locale);
       await page.getByRole("button", { name: t.tastingNotes }).click();
       await expect(page.getByRole("dialog", { name: t.drinkName })).toBeVisible();
+      // Let the dialog's 0.2 s enter animation finish before axe
+      // measures: mid-fade, the description text reads at part opacity
+      // and fails colour contrast (same flake pattern as the reveals
+      // in scrollThroughPage above; fix batch 5 restored the
+      // `ela-dialog-in` keyframes, so the animation genuinely runs now).
+      await page.waitForTimeout(400);
       const results = await new AxeBuilder({ page }).analyze();
       expect(results.violations).toEqual([]);
     });
@@ -112,6 +118,8 @@ for (const locale of LOCALE_LIST) {
       await gotoMidori(page);
       await page.getByRole("button", { name: t.tastingNotes }).click();
       await expect(page.getByRole("dialog", { name: t.drinkNameMidori })).toBeVisible();
+      // Same 0.2 s enter-animation settle as the ela dialog test above.
+      await page.waitForTimeout(400);
       const results = await new AxeBuilder({ page }).analyze();
       expect(results.violations).toEqual([]);
     });

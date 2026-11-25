@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { Check } from "lucide-react";
 import { cn } from "../cn";
 
 export interface ToastProps {
@@ -29,9 +30,12 @@ export interface ToastProps {
 }
 
 /**
- * Bottom-centre dark pill toast (the reference's "added to your bag"
- * feedback, audit §2). `role="status"` + `aria-live="polite"` announce it
- * to screen readers without interrupting them.
+ * Bottom-centre toast (the reference's "added to your bag" feedback,
+ * audit §2). `role="status"` + `aria-live="polite"` announce it to
+ * screen readers without interrupting them. Cream pill + check icon
+ * (fix batch 5): the old dark-on-dark pill was easy to miss over the
+ * busy menu photos, so the toast now reads as the reference's own
+ * "Added" confirmation — crema-on-cream like the hero chip's check.
  */
 export function Toast({
   message,
@@ -54,10 +58,16 @@ export function Toast({
       role="status"
       aria-live="polite"
       className={cn(
-        "animate-ela-dialog-in pointer-events-auto rounded-full bg-card px-5 py-3 text-sm font-medium text-foreground shadow-ela-lift ring-1 ring-border",
+        "animate-ela-dialog-in pointer-events-auto inline-flex items-center gap-2 rounded-full bg-cream px-4 py-2.5 text-sm font-semibold text-espresso shadow-ela-lift ring-1 ring-espresso/20",
         className,
       )}
     >
+      <span
+        aria-hidden="true"
+        className="inline-flex shrink-0 items-center justify-center rounded-full bg-espresso p-1 text-cream"
+      >
+        <Check size={14} />
+      </span>
       <span
         key={bumpKey}
         className={bumpKey !== undefined ? "animate-ela-bump inline-block" : undefined}

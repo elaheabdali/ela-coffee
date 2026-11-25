@@ -39,7 +39,7 @@ export function Stepper({
   const canIncrease = max === undefined || value < max;
 
   const buttonClass =
-    "inline-flex size-9 items-center justify-center rounded-full text-lg leading-none ring-1 ring-border transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40";
+    "inline-flex size-9 items-center justify-center rounded-full text-lg leading-none ring-1 ring-border transition-[scale,background-color] hover:bg-accent active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <div className={cn("inline-flex items-center gap-3", className)}>

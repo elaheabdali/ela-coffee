@@ -342,8 +342,8 @@ export function FlavorWheel() {
                     aria-pressed={isCurrent}
                     className={
                       isCurrent
-                        ? "rounded-full bg-cream px-4 py-1.5 text-sm font-semibold text-espresso shadow-ela-card"
-                        : "rounded-full bg-espresso/45 px-4 py-1.5 text-sm font-medium text-cream ring-1 ring-cream/25 backdrop-blur-md transition-colors hover:bg-cream/10"
+                        ? "rounded-full bg-cream px-4 py-1.5 text-sm font-semibold text-espresso shadow-ela-card transition-[scale,background-color] active:scale-95"
+                        : "rounded-full bg-espresso/45 px-4 py-1.5 text-sm font-medium text-cream ring-1 ring-cream/25 backdrop-blur-md transition-[scale,background-color] hover:bg-cream/10 active:scale-95"
                     }
                   >
                     {isFa ? featuredDrink.shortFa : featuredDrink.shortEn}
@@ -380,8 +380,8 @@ export function FlavorWheel() {
                   aria-current={i === index}
                   className={
                     i === index
-                      ? "h-2 w-6 rounded-full bg-cream transition-all"
-                      : "h-2 w-2 rounded-full bg-cream/40 transition-all hover:bg-cream/70"
+                      ? "h-2 w-6 rounded-full bg-cream transition-all active:scale-125"
+                      : "h-2 w-2 rounded-full bg-cream/40 transition-all hover:bg-cream/70 active:scale-125"
                   }
                 />
               ))}
@@ -391,7 +391,7 @@ export function FlavorWheel() {
           {/* Scroll cue, bottom-end. */}
           <a
             href="#story"
-            className="absolute bottom-6 end-6 z-30 inline-flex items-center gap-2 text-sm text-muted-foreground"
+            className="absolute bottom-6 end-6 z-30 inline-flex items-center gap-2 text-sm text-muted-foreground transition-[scale] active:scale-95"
           >
             {tHero("scrollCue")}
             <ChevronDown size={16} className="animate-ela-scroll-cue" />

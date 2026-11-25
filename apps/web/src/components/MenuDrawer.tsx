@@ -114,7 +114,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
           type="button"
           onClick={onClose}
           aria-label={tDrawer("close")}
-          className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-cream/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+          className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full transition-[scale,background-color] hover:bg-cream/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
         >
           <X size={24} aria-hidden="true" />
         </button>
@@ -132,7 +132,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
                 <a
                   href={link.href}
                   onClick={onClose}
-                  className="group inline-flex items-baseline gap-4 rounded-lg font-display text-4xl font-bold leading-tight transition-colors hover:text-crema sm:text-5xl"
+                  className="group inline-flex items-baseline gap-4 rounded-lg font-display text-4xl font-bold leading-tight transition-[scale,color] hover:text-crema active:scale-95 sm:text-5xl"
                 >
                   <span className="font-mono text-base font-normal text-muted-foreground">
                     {number}
@@ -157,7 +157,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
             onClick={toggle}
             aria-pressed={paused}
             aria-label={pauseLabel}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[scale,background-color] hover:bg-accent active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
           >
             {paused ? (
               <Play size={16} aria-hidden="true" />

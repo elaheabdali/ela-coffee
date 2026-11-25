@@ -201,7 +201,7 @@ export function BagDrawer() {
             type="button"
             onClick={handleClose}
             aria-label={tDialog("close")}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-[scale,background-color,color] hover:bg-accent hover:text-foreground active:scale-95"
           >
             <X size={20} aria-hidden="true" />
           </button>

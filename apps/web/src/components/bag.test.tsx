@@ -88,14 +88,14 @@ describe("BagDrawer", () => {
     useBag.setState({ isOpen: true, items: [{ drinkId: "ela-caramel", qty: 2 }] });
     renderBag();
     expect(screen.getByText("Salted Caramel")).toBeInTheDocument();
-    expect(screen.getByText("195,000 Toman")).toBeInTheDocument();
-    // Line total and subtotal are both 390,000 Toman at qty 2.
-    expect(screen.getAllByText("390,000 Toman")).toHaveLength(2);
+    expect(screen.getByText("195,000 T")).toBeInTheDocument();
+    // Line total and subtotal are both 390,000 T at qty 2.
+    expect(screen.getAllByText("390,000 T")).toHaveLength(2);
     expect(screen.getByText("Subtotal")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "+ Increase quantity" }));
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-caramel", qty: 3 }]);
-    expect(screen.getAllByText("585,000 Toman")).toHaveLength(2);
+    expect(screen.getAllByText("585,000 T")).toHaveLength(2);
   });
 
   it("removes the line when the stepper is stepped down to zero", () => {
@@ -150,7 +150,7 @@ describe("BagDrawer", () => {
 
     expect(await screen.findByText("Track your order")).toBeInTheDocument();
     expect(screen.getByText("Order received")).toBeInTheDocument();
-    expect(screen.getAllByText("390,000 Toman").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("390,000 T").length).toBeGreaterThan(0);
     expect(useBag.getState().items).toEqual([]);
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/orders",

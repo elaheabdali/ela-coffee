@@ -130,7 +130,7 @@ export function Dialog({
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-[scale,background-color,color] hover:bg-accent hover:text-foreground active:scale-95"
           >
             <svg
               aria-hidden="true"

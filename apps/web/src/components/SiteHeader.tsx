@@ -155,7 +155,7 @@ export function SiteHeader() {
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      className="rounded-full px-3.5 py-2 text-sm font-medium text-cream/70 transition-colors hover:bg-cream/[0.07] hover:text-cream focus-visible:outline-2 focus-visible:outline-crema"
+                      className="rounded-full px-3.5 py-2 text-sm font-medium text-cream/70 transition-[scale,color,background-color] hover:bg-cream/[0.07] hover:text-cream active:scale-95 focus-visible:outline-2 focus-visible:outline-crema"
                     >
                       {tNav(link.labelKey)}
                     </a>
@@ -171,12 +171,12 @@ export function SiteHeader() {
                 <BrandToggle
                   variant="icon"
                   {...brandToggleProps}
-                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.85rem] border border-transparent bg-cream/[0.06] text-crema backdrop-blur-none transition-colors hover:bg-espresso/70 ${FOCUS} sm:hidden`}
+                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.85rem] border border-transparent bg-cream/[0.06] text-crema backdrop-blur-none transition-[scale,background-color] hover:bg-espresso/70 active:scale-95 ${FOCUS} sm:hidden`}
                 />
                 <LocaleSwitcher className="border border-transparent bg-cream/[0.06] backdrop-blur-none hover:bg-cream/10" />
                 <a
                   href="#join"
-                  className={`hidden rounded-full bg-cream px-4 py-2.5 text-sm font-semibold text-espresso transition-colors hover:bg-white ${FOCUS} sm:inline-flex`}
+                  className={`hidden rounded-full bg-cream px-4 py-2.5 text-sm font-semibold text-espresso transition-[scale,background-color] hover:bg-white active:scale-95 ${FOCUS} sm:inline-flex`}
                 >
                   {tNav("join")}
                 </a>
@@ -188,7 +188,7 @@ export function SiteHeader() {
                     aria-haspopup="dialog"
                     aria-expanded={bagOpen}
                     onClick={openBag}
-                    className={`relative grid size-10 cursor-pointer place-items-center rounded-[0.9rem] bg-cream/[0.06] text-cream transition-colors hover:bg-cream/10 ${FOCUS}`}
+                    className={`relative grid size-10 cursor-pointer place-items-center rounded-[0.9rem] bg-cream/[0.06] text-cream transition-[scale,background-color] hover:bg-cream/10 active:scale-95 ${FOCUS}`}
                   >
                     <ShoppingBag size={16} aria-hidden="true" />
                     {bagBadge}
@@ -201,7 +201,7 @@ export function SiteHeader() {
                   title={tDrawer("menu")}
                   aria-haspopup="dialog"
                   aria-expanded={drawerOpen}
-                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-cream/[0.06] text-cream/80 backdrop-blur-none transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS} lg:hidden`}
+                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-cream/[0.06] text-cream/80 backdrop-blur-none transition-[scale,background-color,color] hover:bg-espresso/70 hover:text-cream active:scale-95 ${FOCUS} lg:hidden`}
                 >
                   <Menu size={16} aria-hidden="true" />
                 </button>
@@ -231,7 +231,7 @@ export function SiteHeader() {
               <BrandToggle
                 variant="icon"
                 {...brandToggleProps}
-                className={`grid size-9 cursor-pointer place-items-center rounded-[0.85rem] border border-cream/10 bg-espresso/45 text-crema backdrop-blur-md transition-colors hover:bg-espresso/70 ${FOCUS} max-[379px]:hidden lg:hidden`}
+                className={`grid size-9 cursor-pointer place-items-center rounded-[0.85rem] border border-cream/10 bg-espresso/45 text-crema backdrop-blur-md transition-[scale,background-color] hover:bg-espresso/70 active:scale-95 ${FOCUS} max-[379px]:hidden lg:hidden`}
               />
               <LocaleSwitcher className="border border-cream/10 bg-espresso/45 backdrop-blur-md hover:bg-espresso/70" />
               <button
@@ -240,7 +240,7 @@ export function SiteHeader() {
                 aria-pressed={paused}
                 aria-label={pauseLabel}
                 title={pauseLabel}
-                className={`hidden size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS} sm:grid`}
+                className={`hidden size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-[scale,background-color,color] hover:bg-espresso/70 hover:text-cream active:scale-95 ${FOCUS} sm:grid`}
               >
                 {paused ? (
                   <Play size={16} aria-hidden="true" />
@@ -255,7 +255,7 @@ export function SiteHeader() {
                 title={tDrawer("menu")}
                 aria-haspopup="dialog"
                 aria-expanded={drawerOpen}
-                className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS}`}
+                className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-[scale,background-color,color] hover:bg-espresso/70 hover:text-cream active:scale-95 ${FOCUS}`}
               >
                 <Menu size={16} aria-hidden="true" />
               </button>

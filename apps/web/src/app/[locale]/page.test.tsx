@@ -129,7 +129,7 @@ describe("home page (Phase 4)", () => {
       </NextIntlClientProvider>,
     );
 
-    expect(screen.getAllByText("180,000 Toman").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("180,000 T").length).toBeGreaterThan(0);
     const text = document.body.textContent ?? "";
     expect(text).not.toMatch(/[\u0600-\u06FF]/);
   });

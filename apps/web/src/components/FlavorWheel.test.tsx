@@ -71,7 +71,7 @@ describe("FlavorWheel", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Original")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Add Ela Original to your bag, 180,000 Toman/ }),
+      screen.getByRole("button", { name: /Add Ela Original to your bag, 180,000 T/ }),
     ).toBeInTheDocument();
     expect(screen.getByText("1 / 6")).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "All flavors" })).toBeInTheDocument();

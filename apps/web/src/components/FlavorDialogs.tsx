@@ -62,7 +62,7 @@ export function AllFlavorsDialog({ open, onClose }: AllFlavorsDialogProps) {
                   onClose();
                 }}
                 aria-current={isCurrent ? "true" : undefined}
-                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-start transition-colors hover:bg-accent"
+                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-start transition-[scale,background-color] hover:bg-accent active:scale-[0.98]"
               >
                 <Image
                   src={drink.image}

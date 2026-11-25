@@ -11,13 +11,13 @@ describe("Price", () => {
 
   it("formats Toman with Latin digits in en", () => {
     render(<Price amountToman={180000} locale="en" />);
-    expect(screen.getByText("180,000 Toman")).toBeInTheDocument();
+    expect(screen.getByText("180,000 T")).toBeInTheDocument();
   });
 
   it("shows a struck-through original price when given", () => {
     render(<Price amountToman={180000} originalPriceToman={210000} locale="en" />);
-    expect(screen.getByText("180,000 Toman")).toBeInTheDocument();
-    const original = screen.getByText("210,000 Toman");
+    expect(screen.getByText("180,000 T")).toBeInTheDocument();
+    const original = screen.getByText("210,000 T");
     expect(original.tagName).toBe("S");
     expect(original).toHaveClass("line-through");
   });

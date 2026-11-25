@@ -63,7 +63,7 @@ export function LocaleSwitcher({ className = "" }: LocaleSwitcherProps) {
       onClick={onSwitch}
       aria-label={ariaLabel}
       title={ariaLabel}
-      className={`group inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-[0.9rem] px-3 text-xs font-semibold text-cream transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema ${className}`}
+      className={`group inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-[0.9rem] px-3 text-xs font-semibold text-cream transition-[scale,background-color] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema ${className}`}
     >
       <Globe
         size={16}
