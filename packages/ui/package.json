@@ -14,6 +14,7 @@
   "dependencies": {
     "@ela-coffee/i18n": "workspace:*",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.556.0",
     "tailwind-merge": "^3.3.1"
   },
   "peerDependencies": {

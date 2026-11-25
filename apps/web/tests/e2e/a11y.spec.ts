@@ -27,7 +27,12 @@ async function scrollThroughPage(page: Page): Promise<void> {
     });
   });
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(800);
+  // Let every reveal finish before axe measures: reveals can carry a
+  // 450 ms delay plus a ~1 s animation, and axe measuring mid-reveal
+  // reads a part-opacity colour as a contrast failure (the Phase 10
+  // flake: 4.31 measured mid-animation in fa). 800 ms was not always
+  // enough under full-suite load; 1500 ms is.
+  await page.waitForTimeout(1500);
 }
 
 /**
@@ -67,6 +72,46 @@ for (const locale of LOCALE_LIST) {
       await gotoLocale(page, locale);
       await page.getByRole("button", { name: t.tastingNotes }).click();
       await expect(page.getByRole("dialog", { name: t.drinkName })).toBeVisible();
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations).toEqual([]);
+    });
+  });
+}
+
+for (const locale of LOCALE_LIST) {
+  // Fix batch 4: the midori theme tokens (green background/crema) were
+  // never applied before — `html[data-brand="matcha"]` never matched
+  // the real "midori" brand value — so axe must also run in midori
+  // mode, where text/background tokens change.
+  test.describe(`axe midori /${locale}`, () => {
+    const t = LOCALES[locale];
+
+    async function gotoMidori(page: Page): Promise<void> {
+      await gotoLocale(page, locale);
+      await page.getByRole("button", { name: t.brandMatcha, exact: true }).click();
+      await expect(page.locator("html")).toHaveAttribute("data-brand", "midori");
+      await page.waitForTimeout(800);
+    }
+
+    test("static page has zero axe violations", async ({ page }) => {
+      await gotoMidori(page);
+      await scrollThroughPage(page);
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations).toEqual([]);
+    });
+
+    test("menu drawer open has zero axe violations", async ({ page }) => {
+      await gotoMidori(page);
+      await page.getByRole("button", { name: t.drawerMenu, exact: true }).click();
+      await expect(page.getByRole("dialog", { name: t.drawerMenu })).toBeVisible();
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations).toEqual([]);
+    });
+
+    test("tasting-notes dialog open has zero axe violations", async ({ page }) => {
+      await gotoMidori(page);
+      await page.getByRole("button", { name: t.tastingNotes }).click();
+      await expect(page.getByRole("dialog", { name: t.drinkNameMidori })).toBeVisible();
       const results = await new AxeBuilder({ page }).analyze();
       expect(results.violations).toEqual([]);
     });

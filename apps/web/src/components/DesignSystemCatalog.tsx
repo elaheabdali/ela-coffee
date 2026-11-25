@@ -17,6 +17,7 @@ import {
   useToast,
 } from "@ela-coffee/ui";
 import { BrandToggle } from "@/components/BrandToggle";
+import { useBrand } from "@/stores/brand";
 
 /**
  * Development-only design-system catalogue.
@@ -73,6 +74,7 @@ export function DesignSystemCatalog() {
   const tDialog = useTranslations("dialog");
   const locale = useLocale();
   const priceLocale = locale === "en" ? "en" : "fa";
+  const { brand } = useBrand();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [qty, setQty] = useState(2);
@@ -216,7 +218,11 @@ export function DesignSystemCatalog() {
 
         <Section title={t("marquee")}>
           <div className="overflow-hidden rounded-xl border border-border bg-secondary py-3">
-            <Marquee items={marqueeItems} ariaLabel={t("marquee")} />
+            <Marquee
+              items={marqueeItems}
+              separator={brand === "midori" ? "leaf" : "bean"}
+              ariaLabel={t("marquee")}
+            />
           </div>
         </Section>
 

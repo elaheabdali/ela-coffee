@@ -12,7 +12,7 @@
 ## 1. Tokens
 
 All tokens live in `apps/web/src/app/globals.css`: raw values in `:root`
-(ela) and `html[data-brand="matcha"]` (midori), exposed to Tailwind through
+(ela) and `html[data-brand="midori"]` (midori), exposed to Tailwind through
 `@theme inline`. Switching brand is a runtime variable swap — no rebuild.
 
 ### 1.1 Colour
@@ -101,7 +101,7 @@ Strict TypeScript, no `any`.
 | `Toast` / `ToastProvider` / `useToast` | `Toast`: `message`, `open`, `onClose?`, `durationMs` (4000), `bumpKey?`; `showToast(message, durationMs?)` | Bottom-centre dark pill, `role="status"` + `aria-live="polite"`, auto-dismiss; `bumpKey` change re-triggers `ela-bump`                                                             |
 | `Reveal`                               | `variant`, `delayMs`, `children`                                                                           | `fade-up` / `fade` / `image`; IntersectionObserver adds `data-revealed`; `--reveal-delay`; **no-JS fallback: content never stuck hidden** (audit defect §8.7)                       |
 | `WordReveal`                           | `text`, `as` (`h1`/`h2`/`h3`/`p`/`span`), `variant`, `delayMs`                                             | Word-by-word `.ela-word` / `.ela-word-inner`, 65 ms stagger via `--i`; `soft` variant (blur 10px, 1.1s); `aria-label` carries the full text so screen readers hear it with spaces |
-| `Marquee`                              | `items: string[]`, `separator` (`•`), `ariaLabel?`                                                         | 48s linear infinite, duplicated content, `translate -50%`; duplicate copy `aria-hidden`; direction reverses in RTL                                                                  |
+| `Marquee`                              | `items: string[]`, `separator` (`bean` / `leaf`), `ariaLabel?`                                             | 48s linear infinite, four identical lists, `translate -50%`; copies 2–4 `aria-hidden`; bean (coffee) or leaf (matcha) separator icon; direction reverses in RTL                     |
 
 ### Usage examples
 
@@ -140,7 +140,7 @@ showToast("Salted Caramel added to your bag.");
 - **Stepper:** value in `<output aria-live="polite">`, buttons disabled at bounds.
 - **WordReveal:** `aria-label` with the full text (separate word spans would
   otherwise collapse to e.g. "Sixicedlattes" for screen readers).
-- **Marquee:** duplicate copy is `aria-hidden`, so each item is announced once.
+- **Marquee:** copies 2–4 are `aria-hidden`, so each item is announced once.
 - **Reveal:** no-JS / observer-failure fallback — content stays visible.
 - **Reduced motion:** all animations disabled under `prefers-reduced-motion: reduce`;
   `data-motion="paused"` pauses float / marquee / scroll cue.

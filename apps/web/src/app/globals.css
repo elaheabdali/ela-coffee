@@ -3,7 +3,7 @@
  *
  * Tokens come verbatim from the reference audit (docs/reference-audit.md §3).
  * Brand switching is a runtime variable swap: `:root` is ela (coffee),
- * `html[data-brand="matcha"]` is midori (matcha). Tailwind v4 utilities
+ * `html[data-brand="midori"]` is midori (matcha). Tailwind v4 utilities
  * read these through `@theme inline`, so a brand switch repaints every
  * utility without rebuilding CSS.
  *
@@ -54,7 +54,7 @@
   --sidebar-primary: #d9a066;
 }
 
-html[data-brand="matcha"] {
+html[data-brand="midori"] {
   --background: #0e180c;
   --foreground: #eef0e1;
   --card: #162212;

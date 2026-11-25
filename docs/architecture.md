@@ -267,7 +267,7 @@ class ZarinpalPayment implements PaymentPort {
 
 Tailwind v4 `@theme` with the exact audit values: `--color-espresso #120b08`,
 `--color-cream #f3ebe0`, `--color-crema #d9a066`, `--color-roast #1e130d`,
-matcha overrides under `html[data-brand=matcha]` (`#0e180c / #eef0e1 /
+matcha overrides under `html[data-brand=midori]` (`#0e180c / #eef0e1 /
 #a9c46c`), `--radius .75rem`, type scale xs–5xl, Fraunces/Manrope/Geist Mono/
 Vazirmatn. Animation keyframes re-implemented 1:1 from the audit table
 (`ela-wheel-in 1.6s`, `ela-pour 1.2s`, `ela-float 7s`, `ela-marquee 48s`,

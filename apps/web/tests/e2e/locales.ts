@@ -30,6 +30,8 @@ export interface LocaleStrings {
   chipAddMocha: string;
   /** Flavour dot for Dark Mocha. */
   dotMocha: string;
+  /** First drink in midori mode (the tasting-notes dialog name). */
+  drinkNameMidori: string;
   bagOpen: string;
   bagTitle: string;
   bagEmpty: string;
@@ -84,6 +86,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     chipAdd: "«الا اورجینال» را به سبد اضافه کن",
     chipAddMocha: "«موکای تلخ» را به سبد اضافه کن",
     dotMocha: "موکای تلخ",
+    drinkNameMidori: "میدوری اورجینال",
     bagOpen: "باز کردن سبد",
     bagTitle: "سبد تو",
     bagEmpty: "سبدت خالی است",
@@ -134,6 +137,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     chipAdd: "Add Ela Original to your bag",
     chipAddMocha: "Add Dark Mocha to your bag",
     dotMocha: "Dark Mocha",
+    drinkNameMidori: "Midori Original",
     bagOpen: "Open bag",
     bagTitle: "Your bag",
     bagEmpty: "Your bag is empty",

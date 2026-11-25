@@ -69,12 +69,20 @@ export function FlavorWheel() {
 
   const data = BRANDS[brand];
   const drink = data.drinks[index];
-  // Persistent "in the bag" state for the price chip: while the current
-  // drink has a quantity in the bag, the chip shows a check instead of
-  // the bag icon (fix batch 3 — the reference's ~2s transient check
-  // is not copied; the state lasts as long as the item is in the bag).
-  const inBagQty = useBag((s) => s.items.find((item) => item.drinkId === drink.id)?.qty ?? 0);
-  const inBag = inBagQty > 0;
+  // Brief "just added" confirmation on the price chip (fix batch 4):
+  // the check shows for 1.5 s after a click, then the bag icon returns
+  // so the drink can be added again. The drink id is stored with the
+  // state, so switching flavour within the 1.5 s never leaks the check
+  // onto another drink — the chip only shows it while the ids match.
+  const [justAddedId, setJustAddedId] = useState<string | null>(null);
+  const justAddedTimerRef = useRef<number | null>(null);
+  useEffect(() => {
+    return () => {
+      if (justAddedTimerRef.current !== null) {
+        window.clearTimeout(justAddedTimerRef.current);
+      }
+    };
+  }, []);
   const featured = data.drinks.filter((d) => d.featured);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -175,6 +183,14 @@ export function FlavorWheel() {
   const handleAddToBag = () => {
     addToBag(drink.id);
     notifyAdded(isFa ? drink.nameFa : drink.nameEn);
+    setJustAddedId(drink.id);
+    if (justAddedTimerRef.current !== null) {
+      window.clearTimeout(justAddedTimerRef.current);
+    }
+    justAddedTimerRef.current = window.setTimeout(() => {
+      justAddedTimerRef.current = null;
+      setJustAddedId(null);
+    }, 1500);
   };
 
   const priceText = formatToman(drink.priceToman, isFa ? "fa" : "en");
@@ -296,7 +312,7 @@ export function FlavorWheel() {
               className="mt-1 flex flex-col items-center gap-1 rounded-[1.25rem] bg-cream px-4 py-2 text-espresso shadow-ela-lift transition-transform hover:scale-105 active:scale-95 max-sm:absolute max-sm:left-1/2 max-sm:top-(--chip-y) max-sm:z-30 max-sm:mt-0 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
             >
               <span className="font-mono text-sm font-bold">{priceText}</span>
-              {inBag ? (
+              {justAddedId === drink.id ? (
                 <span className="inline-flex items-center justify-center rounded-full bg-crema p-2 text-espresso">
                   <Check size={18} aria-hidden />
                 </span>

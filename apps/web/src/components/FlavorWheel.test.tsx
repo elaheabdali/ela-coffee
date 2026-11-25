@@ -141,36 +141,64 @@ describe("FlavorWheel", () => {
     expect(chip.querySelector(".lucide-check")).toBeNull();
   });
 
-  it("shows a persistent check on the price pill while the drink is in the bag", () => {
-    useBag.setState({ items: [{ drinkId: "ela-original", qty: 1 }] });
-    renderWheel();
-    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
-    expect(chip.querySelector(".lucide-check")).not.toBeNull();
-    expect(chip.querySelector(".lucide-shopping-bag")).toBeNull();
-    // The price text and the add action are unchanged.
-    expect(chip).toHaveTextContent("180,000 Toman");
+  it("shows a brief check after clicking the price pill, then reverts to the bag icon", () => {
+    vi.useFakeTimers();
+    try {
+      renderWheel();
+      const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+      fireEvent.click(chip);
+      expect(chip.querySelector(".lucide-check")).not.toBeNull();
+      expect(chip.querySelector(".lucide-shopping-bag")).toBeNull();
+      act(() => {
+        vi.advanceTimersByTime(1500);
+      });
+      expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      expect(chip.querySelector(".lucide-check")).toBeNull();
+      // Only the icon reverts — the drink stays in the bag.
+      expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("clicking the price pill again adds another and keeps the check", () => {
-    renderWheel();
-    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
-    fireEvent.click(chip);
-    fireEvent.click(chip);
-    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
-    expect(chip.querySelector(".lucide-check")).not.toBeNull();
+  it("clicking the price pill again adds another and shows the check briefly again", () => {
+    vi.useFakeTimers();
+    try {
+      renderWheel();
+      const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+      fireEvent.click(chip);
+      act(() => {
+        vi.advanceTimersByTime(1500);
+      });
+      expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      fireEvent.click(chip);
+      expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
+      expect(chip.querySelector(".lucide-check")).not.toBeNull();
+      act(() => {
+        vi.advanceTimersByTime(1500);
+      });
+      expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      expect(chip.querySelector(".lucide-check")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("the price pill reverts to the bag icon once the drink leaves the bag", () => {
-    useBag.setState({ items: [{ drinkId: "ela-original", qty: 1 }] });
-    renderWheel();
-    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
-    expect(chip.querySelector(".lucide-check")).not.toBeNull();
-    // A store update outside an event needs act() to flush the re-render.
-    act(() => {
-      useBag.setState({ items: [] });
-    });
-    expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
-    expect(chip.querySelector(".lucide-check")).toBeNull();
+  it("switching flavour clears the check immediately", () => {
+    vi.useFakeTimers();
+    try {
+      renderWheel();
+      const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+      fireEvent.click(chip);
+      expect(chip.querySelector(".lucide-check")).not.toBeNull();
+      // Switch to Dark Mocha via its dot: the check must not leak over.
+      fireEvent.click(screen.getByRole("button", { name: "Dark Mocha" }));
+      const mochaChip = screen.getByRole("button", { name: /Add Dark Mocha to your bag/ });
+      expect(mochaChip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      expect(mochaChip.querySelector(".lucide-check")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("does not capture the pointer on pointerdown — only once a drag starts", () => {

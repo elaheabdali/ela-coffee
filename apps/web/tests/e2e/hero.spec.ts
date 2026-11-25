@@ -88,9 +88,10 @@ for (const locale of LOCALE_LIST) {
     // Fix batch 3: real Playwright clicks (not JS .click()) — the hero
     // region used to capture the pointer on pointerdown, which
     // retargeted the click to the region and swallowed it, so the chip
-    // never added anything. The chip now also shows a persistent check
-    // while its drink is in the bag.
-    test("hero price chip adds the drink — badge 1 and a check on the chip", async ({
+    // never added anything. Fix batch 4: the check is a brief
+    // confirmation — it reverts to the bag icon ~1.5 s after the click
+    // while the drink stays in the bag.
+    test("hero price chip adds the drink — badge 1, check briefly, then bag icon again", async ({
       page,
     }) => {
       await gotoLocale(page, locale);
@@ -99,6 +100,10 @@ for (const locale of LOCALE_LIST) {
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
       await expect(chip.locator(".lucide-check")).toHaveCount(1);
       await expect(chip.locator(".lucide-shopping-bag")).toHaveCount(0);
+      // The check reverts on its own; the badge stays.
+      await expect(chip.locator(".lucide-check")).toHaveCount(0);
+      await expect(chip.locator(".lucide-shopping-bag")).toHaveCount(1);
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
     });
 
     test("clicking a flavour dot changes the flavour", async ({ page }) => {
@@ -107,7 +112,7 @@ for (const locale of LOCALE_LIST) {
       await expect(page.getByRole("button", { name: t.chipAddMocha })).toBeVisible();
     });
 
-    test("a second chip click makes 2 in the bag and keeps the check", async ({ page }) => {
+    test("a second chip click makes 2 in the bag and shows the check briefly again", async ({ page }) => {
       await gotoLocale(page, locale);
       const chip = page.getByRole("button", { name: t.chipAdd });
       await chip.click();
@@ -115,6 +120,9 @@ for (const locale of LOCALE_LIST) {
       await chip.click();
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۲" : "2");
       await expect(chip.locator(".lucide-check")).toHaveCount(1);
+      await expect(chip.locator(".lucide-check")).toHaveCount(0);
+      await expect(chip.locator(".lucide-shopping-bag")).toHaveCount(1);
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۲" : "2");
     });
   });
 }

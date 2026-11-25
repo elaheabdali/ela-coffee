@@ -6,10 +6,14 @@ import { BRANDS } from "@/data/flavours";
 import { useBrand } from "@/stores/brand";
 
 /**
- * The flavour ticker between hero and story (audit §1.1): a tan strip
- * scrolling the current brand's drink names. Brand-aware, so it flips
- * to the matcha names (and the green crema) on brand switch. Direction
- * reverses in RTL via the globals.css rule.
+ * The flavour ticker between hero and story (audit §1.1): a crema
+ * strip scrolling the current brand's drink names, rebuilt to the
+ * reference's structure (fix batch 4) — four identical lists, 2xl/3xl
+ * Fraunces names, a bean (coffee) or leaf (matcha) separator. The
+ * band is aria-hidden: a decorative duplicate of the names in the
+ * menu section. No `relative z-10` (unlike the old band): nothing
+ * overlaps the strip — the hero's sticky stage is confined to its
+ * own 300vh section — so no stacking is needed.
  */
 export function BrandMarquee() {
   const { brand } = useBrand();
@@ -18,8 +22,11 @@ export function BrandMarquee() {
   const items = locale === "en" ? data.marqueeEn : data.marqueeFa;
 
   return (
-    <div className="relative z-10 border-y border-border bg-crema py-3 text-espresso">
-      <Marquee items={items} />
+    <div
+      aria-hidden="true"
+      className="overflow-hidden border-y border-espresso/10 bg-crema py-4 text-espresso sm:py-5"
+    >
+      <Marquee items={items} separator={brand === "midori" ? "leaf" : "bean"} />
     </div>
   );
 }
