@@ -9,6 +9,7 @@ import { BRANDS } from "@/data/flavours";
 import { useBrand } from "@/stores/brand";
 import { useMotion } from "@/stores/motion";
 import { BrandToggle } from "./BrandToggle";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
 export interface MenuDrawerProps {
   open: boolean;
@@ -29,8 +30,8 @@ const LINKS = [
 /**
  * Full-screen menu drawer (audit §2): dark overlay, wordmark top-left,
  * Close top-right, large serif numbered links, and a bottom bar with
- * the tagline, "Fresh every morning", the brand toggle and the motion
- * pause button. Focus trap + Esc + body scroll lock + focus return,
+ * the tagline, "Fresh every morning", the language switcher, the brand
+ * toggle and the motion pause button. Focus trap + Esc + body scroll lock + focus return,
  * following the same approach as the ui Dialog (this is full-screen,
  * not a centred modal, so Dialog itself is not used here).
  * No Modulify badge anywhere.
@@ -149,6 +150,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
           {tagline} <span className="text-cream">· {tDrawer("fresh")}</span>
         </p>
         <div className="flex items-center gap-2">
+          <LocaleSwitcher className="border border-cream/10 bg-cream/[0.06] backdrop-blur-none hover:bg-cream/10" />
           <BrandToggle coffeeLabel={tNav("brandCoffee")} matchaLabel={tNav("brandMatcha")} />
           <button
             type="button"

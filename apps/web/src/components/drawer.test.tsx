@@ -7,6 +7,14 @@ import { MenuDrawer } from "./MenuDrawer";
 import { useBrand } from "@/stores/brand";
 import { useMotion } from "@/stores/motion";
 
+// LocaleSwitcher uses next-intl navigation (usePathname/useRouter),
+// which needs the App Router context — same mock as header.test.tsx.
+const { replaceMock } = vi.hoisted(() => ({ replaceMock: vi.fn() }));
+vi.mock("@/i18n/navigation", () => ({
+  usePathname: () => "/",
+  useRouter: () => ({ replace: replaceMock }),
+}));
+
 function renderDrawer(onClose = vi.fn()) {
   return {
     onClose,
@@ -20,6 +28,7 @@ function renderDrawer(onClose = vi.fn()) {
 
 beforeEach(() => {
   localStorage.clear();
+  replaceMock.mockClear();
   useBrand.setState({ brand: "ela" });
   useMotion.setState({ paused: false });
 });
@@ -38,6 +47,10 @@ describe("MenuDrawer", () => {
     expect(screen.getByText(/Fresh every morning/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Coffee/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pause floating motion" })).toBeInTheDocument();
+    // Language switcher in the drawer bottom bar (en: offers Persian).
+    expect(
+      screen.getByRole("button", { name: "Switch language to Persian" }),
+    ).toBeInTheDocument();
   });
 
   it("closes on Escape", () => {
