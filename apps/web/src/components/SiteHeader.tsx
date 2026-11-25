@@ -59,8 +59,12 @@ const BAG_BADGE =
  * Only one state is mounted at a time (no duplicate interactive
  * elements in the DOM); the entering state replays the reference's
  * 500 ms fade + -4px slide as a mount animation
- * (`animate-ela-header-in`, globals.css). The scroll trigger is
- * unchanged (`scrollY > innerHeight - 120`).
+ * (`animate-ela-header-in`, globals.css). The scroll trigger matches
+ * the reference: the pill appears only once the 300vh sticky hero
+ * has been scrolled through (`scrollY > heroHeight - innerHeight`,
+ * measured live off the #hero section); before that the hero nav
+ * stays, even mid-wheel. Without a #hero on the page (header unit
+ * tests render it alone) it falls back to `innerHeight - 120`.
  *
  * RTL: the reference is LTR-only, so its physical paddings/offsets
  * are written as logical ones here (`ps-5 pe-2`, `-end-1.5`) and the
@@ -84,11 +88,24 @@ export function SiteHeader() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight - 120);
+      // Reference behaviour (user choice 2026-11-25): the pill shows
+      // only after the hero, not part-way through the wheel. The
+      // hero is a 300vh section with a sticky 100svh stage, so its
+      // sticky phase ends at heroHeight - viewportHeight.
+      const hero = document.getElementById("hero");
+      const threshold = hero
+        ? hero.offsetHeight - window.innerHeight
+        : window.innerHeight - 120;
+      setScrolled(window.scrollY > threshold);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // The threshold is viewport- and hero-height dependent (vh).
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   const count = bagCount(items);

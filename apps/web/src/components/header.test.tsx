@@ -92,6 +92,28 @@ describe("SiteHeader", () => {
     );
   });
 
+  it("keeps the hero nav mid-hero and shows the pill only past the hero", () => {
+    // Fake the 300vh hero section (jsdom has no layout): with
+    // innerHeight 768 and a 2700px hero the pill threshold is 1932.
+    const hero = document.createElement("section");
+    hero.id = "hero";
+    Object.defineProperty(hero, "offsetHeight", { value: 2700, configurable: true });
+    document.body.appendChild(hero);
+    try {
+      renderHeader();
+      // Mid-hero (scrollY 1000, still inside the wheel): hero nav.
+      Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
+      fireEvent.scroll(window);
+      expect(screen.queryByRole("link", { name: "Story" })).not.toBeInTheDocument();
+      // Past the hero (scrollY 2000 > 1932): the pill appears.
+      Object.defineProperty(window, "scrollY", { value: 2000, configurable: true });
+      fireEvent.scroll(window);
+      expect(screen.getByRole("link", { name: "Story" })).toBeInTheDocument();
+    } finally {
+      hero.remove();
+    }
+  });
+
   it("switches brand from the segmented toggle in the scrolled pill", () => {
     renderHeader();
     Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
