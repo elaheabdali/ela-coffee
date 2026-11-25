@@ -8,6 +8,8 @@ export interface WordRevealProps {
   /** Heading text — split on spaces, one word per animated span. */
   text: string;
   as?: WordRevealAs;
+  /** Optional id (e.g. so a section's `aria-labelledby` can point at it). */
+  id?: string;
   /**
    * `soft` uses the `.ela-words-soft` variant (blur 10px, translate
    * .45em, 1.1s — audit §4) instead of the masked word-up.
@@ -28,6 +30,7 @@ export interface WordRevealProps {
 export function WordReveal({
   text,
   as = "h2",
+  id,
   variant = "default",
   delayMs = 0,
   className,
@@ -55,6 +58,7 @@ export function WordReveal({
   const needsSrText = !isHeading && words.length > 1;
   return (
     <Tag
+      id={id}
       style={style}
       aria-label={isHeading ? text : undefined}
       className={cn(variant === "soft" && "ela-words-soft", className)}

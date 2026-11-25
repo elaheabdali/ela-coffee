@@ -94,6 +94,8 @@ export interface BrandData {
     titleFa: string;
     bodyEn: string[];
     bodyFa: string[];
+    /** Floating badge card over the story image (reference markup). */
+    badge: { valueEn: string; valueFa: string; captionEn: string; captionFa: string };
     stats: Stat[];
     image: string;
     imageAltEn: string;
@@ -416,22 +418,27 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Ela starts black. The rest is up to you.",
       titleFa: "الا سیاه شروع می‌شود. بقیه‌اش با توست.",
       bodyEn: [
-        "We started with one stubborn idea: a perfect black espresso is the foundation of every great iced latte. So we built everything around the shot.",
-        "Then we make our flavors the slow way, every morning, from real caramel, real vanilla bean, toasted hazelnut and dark chocolate. No powders. No shortcuts.",
+        "We started with one stubborn idea: a perfect black espresso is the foundation of every great iced latte. So we roast two single origin coffees in small batches and pull every shot to order.",
+        "Then we make our flavors the slow way, every morning, from real caramel, real vanilla bean, toasted hazelnuts and dark chocolate. Pick one above, or keep it classic. Either way, it starts black.",
       ],
       bodyFa: [
-        "از یک ایدهٔ سرسخت شروع کردیم: یک اسپرسوی سیاهِ بی‌نقص، پایهٔ هر آیس‌لاتهٔ عالی است. پس همه‌چیز را دور شات ساختیم. — TODO(review)",
-        "بعد طعم‌ها را هر صبح، به روش کند و از کارامل واقعی، دانهٔ وانیل واقعی، فندق برشته و شکلات تلخ می‌سازیم. بدون پودر. بدون میان‌بر. — TODO(review)",
+        "از یک ایدهٔ سرسخت شروع کردیم: یک اسپرسوی سیاهِ بی‌نقص، پایهٔ هر آیس‌لاتهٔ عالی است. پس دو قهوهٔ تک‌خاستگاه را در دسته‌های کوچک برشته می‌کنیم و هر شات را به سفارش می‌گیریم. — TODO(review)",
+        "بعد طعم‌ها را هر صبح، به روش کند، از کارامل واقعی، دانهٔ وانیل واقعی، فندق برشته و شکلات تلخ می‌سازیم. یکی را بالا انتخاب کن، یا کلاسیک بمان. به‌هرحال، سیاه شروع می‌شود. — TODO(review)",
       ],
+      badge: {
+        valueEn: "7 days",
+        valueFa: "۷ روز",
+        captionEn: "Every roast rests before we brew it",
+        captionFa: "هر برشته پیش از دم‌آوری استراحت می‌کند",
+      },
       stats: [
-        { valueEn: "7 days", valueFa: "۷ روز", labelEn: "Every roast rests before we brew it", labelFa: "هر برشته پیش از دم‌آوری استراحت می‌کند" },
         { valueEn: "2", valueFa: "۲", labelEn: "Single origins, roasted every week", labelFa: "دو خاستگاه تک‌منبع، هفته‌ای یک‌بار برشته می‌شود" },
         { valueEn: "6", valueFa: "۶", labelEn: "Flavors made in house each morning", labelFa: "طعمِ ساخته‌شده در خانه، هر صبح" },
         { valueEn: "0", valueFa: "۰", labelEn: "Powders or artificial syrups", labelFa: "پودر یا سیروپ مصنوعی" },
       ],
       image: "/images/story/bean.webp",
-      imageAltEn: "A single dark roasted coffee bean on cream",
-      imageAltFa: "یک دانهٔ قهوهٔ تیره‌برشته روی زمینهٔ کرم",
+      imageAltEn: "A single dark roasted coffee bean",
+      imageAltFa: "یک دانهٔ قهوهٔ تیره‌برشته",
     },
     menu: {
       titleEn: "Six iced lattes. One perfect shot.",
@@ -533,25 +540,30 @@ export const BRANDS: Record<Brand, BrandData> = {
     story: {
       eyebrowEn: "Our story",
       eyebrowFa: "داستان ما",
-      titleEn: "Midori means green. The rest is up to you.",
-      titleFa: "میدوری یعنی سبز. بقیه‌اش با توست.",
+      titleEn: "Midori means green. We take that seriously.",
+      titleFa: "میدوری یعنی سبز. ما این را جدی می‌گیریم. — TODO(review)",
       bodyEn: [
-        "Our matcha comes from shaded tea gardens in Uji and Nishio, where the leaves grow slowly under cover and turn a deep, vivid green.",
-        "Then we pair it with fresh fruit, coconut and vanilla, whisked with care every morning. No powders. No shortcuts.",
+        "Our matcha comes from shaded tea gardens in Uji and Nishio, stone-milled into a fine, vivid powder just weeks before it reaches the counter.",
+        "We whisk every cup to order and pair it with real fruit, never syrup from a bottle. Pick a flavor above, or keep it pure. Either way, it starts green.",
       ],
       bodyFa: [
-        "ماچای ما از باغ‌های چایِ سایه‌دارِ اوجی و نیشیو می‌آید؛ برگ‌ها آرام زیر پوشش رشد می‌کنند و سبزِ عمیق و زنده می‌شوند. — TODO(review)",
-        "بعد آن را با میوهٔ تازه، نارگیل و وانیل جفت می‌کنیم و هر صبح با دقت هم می‌زنیم. بدون پودر. بدون میان‌بر. — TODO(review)",
+        "ماچای ما از باغ‌های چایِ سایه‌دارِ اوجی و نیشیو می‌آید؛ با آسیاب‌سنگی به پودری ریز و زنده تبدیل می‌شود، فقط چند هفته پیش از رسیدن به پیشخوان. — TODO(review)",
+        "هر فنجان را به سفارش هم می‌زنیم و با میوهٔ واقعی جفت می‌کنیم، هرگز سیروپِ بطری. یک طعم را بالا انتخاب کن، یا خالص نگهش دار. به‌هرحال، سبز شروع می‌شود. — TODO(review)",
       ],
+      badge: {
+        valueEn: "21 days",
+        valueFa: "۲۱ روز",
+        captionEn: "Our tea grows in shade before harvest",
+        captionFa: "چای ما پیش از برداشت در سایه رشد می‌کند. — TODO(review)",
+      },
       stats: [
-        { valueEn: "21 days", valueFa: "۲۱ روز", labelEn: "Every leaf is shaded before harvest", labelFa: "هر برگ پیش از برداشت سایه می‌بیند" },
-        { valueEn: "2", valueFa: "۲", labelEn: "Gardens we source from", labelFa: "دو باغی که از آن‌ها می‌گیریم" },
-        { valueEn: "6", valueFa: "۶", labelEn: "Flavors whisked fresh each morning", labelFa: "طعمِ تازه‌هم‌زده، هر صبح" },
-        { valueEn: "0", valueFa: "۰", labelEn: "Added colours or powders", labelFa: "رنگ یا پودرِ افزوده" },
+        { valueEn: "2", valueFa: "۲", labelEn: "Tea gardens in Japan we source from", labelFa: "باغ‌های چای ژاپن که از آن‌ها می‌گیریم. — TODO(review)" },
+        { valueEn: "6", valueFa: "۶", labelEn: "Fruit pairings made fresh each morning", labelFa: "جفت‌های میوه‌ای که هر صبح تازه آماده می‌شوند. — TODO(review)" },
+        { valueEn: "0", valueFa: "۰", labelEn: "Added colors or powdered mixes", labelFa: "رنگِ افزوده یا مخلوطِ پودری. — TODO(review)" },
       ],
       image: "/images/tea.webp",
-      imageAltEn: "Whisked matcha and tea leaves",
-      imageAltFa: "ماچای هم‌زده و برگ چای",
+      imageAltEn: "A cup of green tea on a saucer beside a sprig of leaves",
+      imageAltFa: "یک فنجان چای سبز روی نعلبکی کنار یک شاخه برگ",
     },
     menu: {
       titleEn: "Six iced matchas. One perfect whisk.",

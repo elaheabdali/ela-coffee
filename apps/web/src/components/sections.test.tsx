@@ -83,12 +83,48 @@ afterEach(() => {
 
 describe("Story", () => {
   it.each([
-    ["fa", "الا سیاه شروع می‌شود. بقیه‌اش با توست.", "۷ روز"],
-    ["en", "Ela starts black. The rest is up to you.", "7 days"],
-  ] as const)("renders the heading in %s", (locale, heading, stat) => {
-    renderWithLocale(<Story />, locale);
-    expect(screen.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
-    expect(screen.getByText(stat)).toBeInTheDocument();
+    ["fa", "ela", "الا سیاه شروع می‌شود. بقیه‌اش با توست.", "۷ روز"],
+    ["en", "ela", "Ela starts black. The rest is up to you.", "7 days"],
+    ["fa", "midori", /میدوری یعنی سبز\. ما این را جدی می‌گیریم\./, "۲۱ روز"],
+    ["en", "midori", "Midori means green. We take that seriously.", "21 days"],
+  ] as const)(
+    "renders the %s heading and badge in %s",
+    (locale, brand, heading, badge) => {
+      useBrand.setState({ brand });
+      renderWithLocale(<Story />, locale);
+      expect(screen.getByRole("heading", { level: 2, name: heading })).toBeInTheDocument();
+      // The days value is the floating badge over the image (reference
+      // markup), not a stat.
+      expect(screen.getByText(badge)).toBeInTheDocument();
+    },
+  );
+
+  it("renders exactly three stats with the reference labels (en)", () => {
+    for (const [brand, labels] of [
+      [
+        "ela",
+        [
+          "Single origins, roasted every week",
+          "Flavors made in house each morning",
+          "Powders or artificial syrups",
+        ],
+      ],
+      [
+        "midori",
+        [
+          "Tea gardens in Japan we source from",
+          "Fruit pairings made fresh each morning",
+          "Added colors or powdered mixes",
+        ],
+      ],
+    ] as const) {
+      useBrand.setState({ brand });
+      const { unmount } = renderWithLocale(<Story />, "en");
+      for (const label of labels) {
+        expect(screen.getByText(label)).toBeInTheDocument();
+      }
+      unmount();
+    }
   });
 
   it("keeps the stats dt/dd directly in the dl (axe definition-list / dlitem)", () => {
@@ -103,8 +139,8 @@ describe("Story", () => {
         true,
       );
     }
-    expect(dl?.querySelectorAll("dt")).toHaveLength(4);
-    expect(dl?.querySelectorAll("dd")).toHaveLength(4);
+    expect(dl?.querySelectorAll("dt")).toHaveLength(3);
+    expect(dl?.querySelectorAll("dd")).toHaveLength(3);
   });
 });
 

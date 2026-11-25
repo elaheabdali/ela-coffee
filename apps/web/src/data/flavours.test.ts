@@ -50,7 +50,7 @@ describe("flavours dataset", () => {
     }
   });
 
-  it("flags exactly the 32 uncertain Persian strings with TODO(review)", () => {
+  it("flags exactly the 37 uncertain Persian strings with TODO(review)", () => {
     const flagged: string[] = [];
     const walk = (value: unknown): void => {
       if (typeof value === "string") {
@@ -63,8 +63,11 @@ describe("flavours dataset", () => {
     };
     walk(BRANDS);
     // 12 drink descriptions + 4 story bodies + 2 menu intros +
-    // 8 process bodies + 2 origins intros + 4 origin-card intros.
-    expect(flagged).toHaveLength(32);
+    // 8 process bodies + 2 origins intros + 4 origin-card intros +
+    // 1 midori story title + 1 midori badge caption + 3 midori stat
+    // labels (fix batch 6 — the reference wording for the midori story
+    // was restored, so its new Persian strings are unreviewed too).
+    expect(flagged).toHaveLength(37);
     for (const s of flagged) {
       expect(s).toMatch(/[\u0600-\u06FF]/);
     }
@@ -113,7 +116,10 @@ describe("flavours dataset", () => {
       expect(data.origins.cards).toHaveLength(2);
       expect(data.marqueeEn).toHaveLength(6);
       expect(data.cutouts).toHaveLength(4);
-      expect(data.story.stats).toHaveLength(4);
+      // Reference story markup: exactly three stats; the days value
+      // lives in the floating badge over the image, not in the stats.
+      expect(data.story.stats).toHaveLength(3);
+      expect(data.story.badge.valueEn).toMatch(/days$/);
     }
   });
 
