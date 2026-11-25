@@ -12,6 +12,8 @@ export const en = {
     join: "Join the list",
     brandCoffee: "Coffee",
     brandMatcha: "Matcha",
+    switchToEnglish: "Switch language to English",
+    switchToPersian: "Switch language to Persian",
   },
   hero: {
     title: "Choose your coffee",

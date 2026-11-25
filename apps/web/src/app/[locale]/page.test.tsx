@@ -13,6 +13,15 @@ vi.mock("next/image", () => ({
   ),
 }));
 
+// The page renders SiteHeader, whose LocaleSwitcher uses next-intl
+// navigation (usePathname/useRouter) — that needs the App Router
+// context, so answer it from a mock (see header.test.tsx, which
+// asserts on the replace() call with its own mock).
+vi.mock("@/i18n/navigation", () => ({
+  usePathname: () => "/",
+  useRouter: () => ({ replace: vi.fn() }),
+}));
+
 vi.mock("next-intl/server", () => ({
   getTranslations: async (namespace?: string) => (key: string) => `${namespace ?? "?"}.${key}`,
   setRequestLocale: () => undefined,

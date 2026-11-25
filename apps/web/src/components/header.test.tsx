@@ -17,6 +17,16 @@ vi.mock("next/image", () => ({
   ),
 }));
 
+// LocaleSwitcher uses next-intl navigation (usePathname/useRouter),
+// which needs the App Router context — answer it from a mock so the
+// header tests stay router-free. The mock records replace() calls so
+// the locale-switch test can assert the target locale.
+const { replaceMock } = vi.hoisted(() => ({ replaceMock: vi.fn() }));
+vi.mock("@/i18n/navigation", () => ({
+  usePathname: () => "/",
+  useRouter: () => ({ replace: replaceMock }),
+}));
+
 function renderHeader() {
   // Phase 6: SiteHeader renders BagDrawer, which uses useMutation.
   const queryClient = new QueryClient({
@@ -33,6 +43,7 @@ function renderHeader() {
 
 beforeEach(() => {
   localStorage.clear();
+  replaceMock.mockClear();
   useBag.setState({ items: [], isOpen: false });
   useBrand.setState({ brand: "ela" });
   useFlavour.setState({ index: 0 });
@@ -59,7 +70,7 @@ describe("SiteHeader", () => {
     expect(screen.getByTestId("bag-count")).toHaveTextContent("1");
   });
 
-  it("switches to the scrolled cream bar after scrolling past the hero", () => {
+  it("switches to the scrolled floating pill after scrolling past the hero", () => {
     renderHeader();
     Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
     fireEvent.scroll(window);
@@ -67,6 +78,48 @@ describe("SiteHeader", () => {
     expect(screen.getByRole("link", { name: "How it's made" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Join the list" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open bag" })).toBeInTheDocument();
+    // The pill shows both brands as a segmented control (reference
+    // scrolled navbar), not the single toggle button of the hero.
+    expect(screen.getByRole("button", { name: "Coffee" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Matcha" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Coffee" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Matcha" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+  });
+
+  it("switches brand from the segmented toggle in the scrolled pill", () => {
+    renderHeader();
+    Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
+    fireEvent.scroll(window);
+    fireEvent.click(screen.getByRole("button", { name: "Matcha" }));
+    expect(useBrand.getState().brand).toBe("midori");
+    expect(screen.getByRole("link", { name: "midori" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Matcha" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("shows a language switcher in both states that navigates to the other locale", () => {
+    renderHeader();
+    // Hero state (en): the switcher offers Persian (ISO code "FA").
+    const switcher = screen.getByRole("button", { name: "Switch language to Persian" });
+    expect(switcher).toBeInTheDocument();
+    expect(switcher).toHaveTextContent("FA");
+    fireEvent.click(switcher);
+    expect(replaceMock).toHaveBeenCalledWith("/", { locale: "fa" });
+
+    // Scrolled state: the switcher is in the pill too.
+    Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
+    fireEvent.scroll(window);
+    expect(
+      screen.getByRole("button", { name: "Switch language to Persian" }),
+    ).toBeInTheDocument();
   });
 
   it("opens the menu drawer from the hamburger button", async () => {

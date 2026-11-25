@@ -11,6 +11,7 @@ import { useBrand } from "@/stores/brand";
 import { useMotion } from "@/stores/motion";
 import { BrandToggle } from "./BrandToggle";
 import { FlavorControls } from "./FlavorControls";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
 /**
  * The drawers are interaction-only (menu, checkout): they load on
@@ -25,11 +26,16 @@ const MenuDrawer = dynamic(() => import("./MenuDrawer").then((m) => m.MenuDrawer
  * Fixed site header (audit §2/§7), with two states driven by scroll:
  *
  * HERO (top of the page, transparent): wordmark left, the glass icon
- * pill centre, brand toggle + motion pause + hamburger right. Below
- * `sm` only the icon pill and the hamburger show.
+ * pill centre, locale switcher + brand toggle + motion pause +
+ * hamburger right. Below `sm` only the icon pill, the locale switcher
+ * and the hamburger show.
  *
- * SCROLLED (past the hero): a cream bar with the wordmark, text links,
- * brand toggle, a Join pill and a bag button with a count badge.
+ * SCROLLED (past the hero): a dark floating pill (max-w-1600px,
+ * rounded-full, `bg-header`) with the wordmark, text links, the
+ * segmented Coffee/Matcha toggle, a locale switcher, a cream Join
+ * pill and a bag button with a count badge — matching the reference
+ * scrolled navbar (user feedback 2026-11-25, reference screenshot:
+ * dark pill, both brand buttons, cream Join pill).
  *
  * The menu drawer and the bag drawer are mounted here, once.
  */
@@ -65,23 +71,16 @@ export function SiteHeader() {
       >
         {tNav("skip")}
       </a>
-      <header
-        className={
-          scrolled
-            ? "fixed inset-x-0 top-0 z-40 bg-cream text-espresso shadow-ela-card"
-            : "fixed inset-x-0 top-0 z-40 bg-transparent text-cream"
-        }
-      >
-        <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <a
-            href="#hero"
-            className="font-display text-2xl font-black tracking-[-0.02em] sm:text-3xl"
-          >
-            {BRANDS[brand].wordmark}
-          </a>
-
-          {scrolled ? (
-            <>
+      <header className="fixed inset-x-0 top-0 z-40">
+        {scrolled ? (
+          <div className="mx-auto w-full max-w-[1600px] px-3 pt-4 sm:px-6">
+            <div className="flex items-center justify-between gap-4 rounded-full bg-header px-4 py-3 text-cream shadow-ela-card sm:px-6">
+              <a
+                href="#hero"
+                className="font-display text-2xl font-black tracking-[-0.02em] sm:text-3xl"
+              >
+                {BRANDS[brand].wordmark}
+              </a>
               <nav aria-label={tNav("menu")} className="hidden items-center gap-6 lg:flex">
                 <a
                   href="#story"
@@ -108,13 +107,15 @@ export function SiteHeader() {
               <div className="flex items-center gap-2">
                 <span className="max-sm:hidden">
                   <BrandToggle
+                    variant="segmented"
                     coffeeLabel={tNav("brandCoffee")}
                     matchaLabel={tNav("brandMatcha")}
                   />
                 </span>
+                <LocaleSwitcher />
                 <a
                   href="#join"
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-base font-medium text-primary-foreground transition hover:brightness-110 max-sm:hidden"
+                  className="inline-flex items-center justify-center rounded-full bg-cream px-5 py-2.5 text-base font-medium text-espresso transition hover:brightness-110 max-sm:hidden"
                 >
                   {tNav("join")}
                 </a>
@@ -122,7 +123,7 @@ export function SiteHeader() {
                   type="button"
                   aria-label={tBag("open")}
                   onClick={openBag}
-                  className="relative inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-espresso/10"
+                  className="relative inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
                 >
                   <ShoppingBag size={20} aria-hidden="true" />
                   {count > 0 ? (
@@ -136,44 +137,51 @@ export function SiteHeader() {
                   ) : null}
                 </button>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <FlavorControls />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="max-sm:hidden">
-                  <BrandToggle
-                    coffeeLabel={tNav("brandCoffee")}
-                    matchaLabel={tNav("brandMatcha")}
-                  />
-                </span>
-                <button
-                  type="button"
-                  onClick={toggle}
-                  aria-pressed={paused}
-                  aria-label={pauseLabel}
-                  className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10 max-sm:hidden"
-                >
-                  {paused ? (
-                    <Play size={20} aria-hidden="true" />
-                  ) : (
-                    <Pause size={20} aria-hidden="true" />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDrawerOpen(true)}
-                  aria-label={tDrawer("menu")}
-                  className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
-                >
-                  <Menu size={20} aria-hidden="true" />
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        ) : (
+          <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 text-cream sm:px-6">
+            <a
+              href="#hero"
+              className="font-display text-2xl font-black tracking-[-0.02em] sm:text-3xl"
+            >
+              {BRANDS[brand].wordmark}
+            </a>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <FlavorControls />
+            </div>
+            <div className="flex items-center gap-2">
+              <LocaleSwitcher />
+              <span className="max-sm:hidden">
+                <BrandToggle
+                  coffeeLabel={tNav("brandCoffee")}
+                  matchaLabel={tNav("brandMatcha")}
+                />
+              </span>
+              <button
+                type="button"
+                onClick={toggle}
+                aria-pressed={paused}
+                aria-label={pauseLabel}
+                className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10 max-sm:hidden"
+              >
+                {paused ? (
+                  <Play size={20} aria-hidden="true" />
+                ) : (
+                  <Pause size={20} aria-hidden="true" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                aria-label={tDrawer("menu")}
+                className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
+              >
+                <Menu size={20} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        )}
       </header>
       {drawerOpen ? <MenuDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} /> : null}
       {bagOpen ? <BagDrawer /> : null}

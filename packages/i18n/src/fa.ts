@@ -13,6 +13,8 @@ export const fa = {
     join: "عضویت در فهرست",
     brandCoffee: "قهوه",
     brandMatcha: "ماچا",
+    switchToEnglish: "تغییر زبان به انگلیسی",
+    switchToPersian: "تغییر زبان به فارسی",
   },
   hero: {
     title: "قهوه‌ات را انتخاب کن",

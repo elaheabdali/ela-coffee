@@ -36,6 +36,11 @@
   --ela-espresso: #120b08;
   --ela-roast: #1e130d;
   --ela-crema: #d9a066;
+  /* Scrolled-header pill surface (post-Phase-12 fix, user feedback):
+     a mid-dark surface, sampled from the reference's matcha pill
+     (#394135) with a warm brown analog for ela — clearly darker than
+     the page cream, clearly lighter than near-black espresso. */
+  --header: #493b2c;
   --ela-stage-glow: #2b1a10;
   --ela-stage-mid: #180f0a;
   --ela-stage-edge: #0e0906;
@@ -64,6 +69,9 @@ html[data-brand="matcha"] {
   --ela-espresso: #0e180c;
   --ela-roast: #172313;
   --ela-crema: #a9c46c;
+  /* Scrolled-header pill surface: sampled from the reference site's
+     scrolled navbar screenshot (dark olive pill, #394135). */
+  --header: #394135;
   --ela-stage-glow: #26361b;
   --ela-stage-mid: #142010;
   --ela-stage-edge: #0a1108;
@@ -96,6 +104,7 @@ html[data-brand="matcha"] {
   --color-espresso: var(--ela-espresso);
   --color-cream: var(--ela-cream);
   --color-roast: var(--ela-roast);
+  --color-header: var(--header);
   --color-crema: var(--ela-crema);
   --color-stage-glow: var(--ela-stage-glow);
   --color-stage-mid: var(--ela-stage-mid);
