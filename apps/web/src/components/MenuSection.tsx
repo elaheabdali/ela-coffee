@@ -80,7 +80,9 @@ export function MenuSection() {
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-5 py-24 sm:px-12 lg:px-16">
         <div className="flex flex-col gap-4">
           <Reveal variant="fade-up">
-            <Eyebrow>{tMenu("eyebrow")}</Eyebrow>
+            {/* text-espresso/70: see Story.tsx — the muted token fails
+                AA on cream (1.99:1). */}
+            <Eyebrow className="text-espresso/70">{tMenu("eyebrow")}</Eyebrow>
           </Reveal>
           <WordReveal
             as="h2"

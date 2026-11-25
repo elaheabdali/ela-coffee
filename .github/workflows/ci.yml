@@ -29,14 +29,26 @@ jobs:
       # the first real result comes from this job.
       - run: pnpm audit --audit-level high
 
-  # PLACEHOLDER (Phase 2): no Playwright tests exist yet, so this job is
-  # intentionally a no-op that only records the fact. It becomes a real
-  # `pnpm exec playwright test` step in Phase 10 (Testing & debugging),
-  # when the E2E suite and the visual-regression baseline are written.
-  # It is kept as a separate job now so the Phase 10 change is a one-line
-  # edit, not a workflow redesign.
-  e2e-smoke:
-    name: e2e smoke (placeholder until Phase 10)
+  # Playwright E2E + visual regression (Phase 10): the suite runs on
+  # Chromium here (E2E_BROWSER=chromium) because GitHub Actions has
+  # Chrome — locally the functional project runs on the cached
+  # Firefox instead (see playwright.config.ts). The visual project
+  # always runs on Firefox, so the committed baselines in
+  # tests/visual/baseline/ are comparable everywhere.
+  e2e:
+    name: e2e (Playwright)
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Playwright smoke tests land in Phase 10 — no E2E suite exists yet in Phase 2."
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter web exec playwright install --with-deps chromium firefox
+      - run: pnpm --filter web test:e2e
+        env:
+          E2E_BROWSER: chromium

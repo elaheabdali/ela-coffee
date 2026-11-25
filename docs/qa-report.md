@@ -190,3 +190,27 @@ npx -y lighthouse http://localhost:3105/fa --only-categories=performance,accessi
   --output=html --output-path=/tmp/lh-fa.html \
   --chrome-flags="--headless --no-sandbox"
 ```
+
+## 9. Phase 10 — E2E + visual regression (2026-11-24)
+
+Playwright 1.65.1, Firefox (cached `firefox-1572`) locally, Chromium for
+the functional project in CI (`E2E_BROWSER=chromium`).
+
+| Suite | Result |
+| --- | --- |
+| Unit (Vitest) | **224 tests, 30 files** — unchanged from Phase 9 |
+| E2E functional (`--project=e2e`) | **48 tests** — hero, bag + checkout, forms, SEO/error, axe — all green in both locales |
+| Visual (`--project=visual`) | **10 tests** — hero + full page at 360/768/1024/1440/1920 px × fa/en, 2% pixel tolerance, baselines in `apps/web/tests/visual/baseline/` (20 PNGs, 37 MB). **Baselines were deleted and regenerated from the fixed build** (the old ones showed the pre-fix dark-on-dark menu cards — `--update-snapshots` alone had not rewritten them because the diff stayed under the 2% tolerance; see `docs/fa/phase-10-testing.md` §3). Run twice back-to-back after regeneration: 10/10 both times, no false diffs. |
+| Axe (in E2E) | 0 violations on the static page, menu drawer open, and tasting-notes dialog open, per locale — **after the two contrast fixes below**. The a11y static test now scrolls through the page before running axe (Phase 9 method: measure the page as the user sees it). |
+
+Bugs found & fixed (full list in `docs/fa/phase-10-testing.md` §6):
+- **REAL APP BUG — menu-card contrast 1.05:1:** drink names and prices were dark text (`text-espresso`) inherited from the light `bg-cream` section on the dark `bg-card` card — nearly invisible. Fixed by adding `text-foreground` to the `MenuCard` article (`MenuCard.tsx`). MenuCard was the only `bg-card` without `text-foreground` in the codebase.
+- **REAL APP BUG — section-eyebrow contrast 1.99:1:** the Story/Menu/Origins eyebrows used `--muted-foreground` (`#b9a690`, designed for dark backgrounds: 8.28:1 on espresso) on cream. Fixed with `text-espresso/70` (6.88:1) at the three call sites. The Phase 9 contrast table had no cream-background row for this token, which is how it was missed.
+- **Why Phase 9 missed them is unexplained:** both contrasts are deterministic, not timing-dependent; Phase 9 reported axe 0 violations in all 8 states with color-contrast "incomplete". Phase 10's E2E run is what surfaced them — recorded honestly, without re-litigating Phase 9's result.
+- **Test-side fix — Firefox lazy loading:** a fast scroll-through (600 px / 60 ms) jumps past Firefox's lazy-load trigger, so the 2nd menu row never started loading and the visual test timed out at 1440/1920 px. Fixed with a slow scroll (300 px / 250 ms) + a wait for all images to complete (60 s timeout). Not an app bug — the browser picks the correct 640w variant per `sizes`, and a warm cache loads in seconds.
+- **Baseline-regeneration lesson:** `--update-snapshots` only rewrites snapshots whose test failed; the contrast fix changed fewer than 2% of pixels by pixelmatch's measure (dark-on-dark differences count as similar), so the stale baselines kept passing. The 20 baselines were deleted and regenerated from the fixed build, then visually spot-checked (en-1440 menu, fa-360 hero).
+- **axe-core 4.14.1 crashes Firefox** when the tasting-notes dialog is open (`Page crashed` inside `AxeBuilder.analyze`); axe-core 4.10.2 analyses the same state cleanly. `@axe-core/playwright` is pinned to **4.10.2** — re-test before upgrading.
+- Other test-side fixes (not app bugs): Mock payment marks orders PAID immediately; the reservation Stepper's `<output>` has implicit `role=status`; API clients must send a same-origin `Origin` (CSRF); Playwright's role-name matching is substring-based.
+- **Not a bug:** unmatched routes render `global-not-found.tsx`, which is fa-first by design — `/en/does-not-exist` shows the Persian 404 with the English paragraph inline.
+
+CI: `.github/workflows/ci.yml` gained a real `e2e` job (install → `playwright install --with-deps chromium firefox` → `pnpm --filter web test:e2e`). It has not run yet — the first real run happens on push in Phase 11.

@@ -23,7 +23,13 @@ export function Story() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:px-12 lg:grid-cols-12 lg:px-16">
         <div className="flex flex-col gap-6 lg:col-span-5">
           <Reveal variant="fade-up">
-            <Eyebrow>{isFa ? story.eyebrowFa : story.eyebrowEn}</Eyebrow>
+            {/* text-espresso/70, not the Eyebrow default muted: the
+                muted token (#b9a690) is designed for dark backgrounds
+                and fails AA on cream (1.99:1); espresso/70 is 6.88:1
+                (Phase 9 contrast table). Same in Menu/Origins. */}
+            <Eyebrow className="text-espresso/70">
+              {isFa ? story.eyebrowFa : story.eyebrowEn}
+            </Eyebrow>
           </Reveal>
           <WordReveal
             as="h2"
