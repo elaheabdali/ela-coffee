@@ -17,10 +17,11 @@
  *
  * Images: the supplied WebP re-exports are canonical (audit §5.1).
  * Matcha has no dedicated hero-scene files in the supplied set, so the
- * fruit scenes double as the matcha scenes and `tea.webp` stands in for
- * the Midori Original scene and the stone-grind step — both are flagged
- * PLACEHOLDER in the Phase 4 doc until the client supplies the real
- * matcha scenes.
+ * fruit scenes double as the matcha scenes — except Midori Original,
+ * whose real scene photo was supplied after launch
+ * (`/images/scenes/matcha-original.webp`). Only the stone-grind step
+ * still stands in with `tea.webp` (flagged PLACEHOLDER, with
+ * `imagePlaceholder: true`) until the client supplies the real photo.
  */
 
 export type Brand = "ela" | "midori";
@@ -275,8 +276,7 @@ const MATCHA_DRINKS: Drink[] = [
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Stone-ground", "Fresh cream", "Wildflower honey"],
     notesFa: ["آسیاب‌سنگی", "خامهٔ تازه", "عسل گل وحشی"],
-    // PLACEHOLDER: no Midori Original scene was supplied — tea.webp stands in.
-    image: "/images/tea.webp",
+    image: "/images/scenes/matcha-original.webp",
     featured: false,
   },
   {

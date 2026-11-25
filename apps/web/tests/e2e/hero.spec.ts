@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { gotoLocale, LOCALES, wheelStage, type Locale } from "./locales";
+import { bagCountBadge, gotoLocale, LOCALES, wheelStage, type Locale } from "./locales";
 
 const LOCALE_LIST: Locale[] = ["fa", "en"];
 
@@ -69,8 +69,7 @@ for (const locale of LOCALE_LIST) {
       await expect(drawer).toHaveCount(0);
     });
 
-    test("tasting-notes dialog shows exactly 3 notes for the current drink", async ({ page }) => {
-      await gotoLocale(page, locale);
+    test("tasting-notes dialog shows exactly 3 notes for the current drink", async ({ page }) => {      await gotoLocale(page, locale);
       await page.getByRole("button", { name: t.tastingNotes }).click();
       const dialog = page.getByRole("dialog", { name: t.drinkName });
       await expect(dialog).toBeVisible();
@@ -84,6 +83,38 @@ for (const locale of LOCALE_LIST) {
 
       await dialog.getByRole("button", { name: t.dialogClose }).click();
       await expect(dialog).toHaveCount(0);
+    });
+
+    // Fix batch 3: real Playwright clicks (not JS .click()) — the hero
+    // region used to capture the pointer on pointerdown, which
+    // retargeted the click to the region and swallowed it, so the chip
+    // never added anything. The chip now also shows a persistent check
+    // while its drink is in the bag.
+    test("hero price chip adds the drink — badge 1 and a check on the chip", async ({
+      page,
+    }) => {
+      await gotoLocale(page, locale);
+      const chip = page.getByRole("button", { name: t.chipAdd });
+      await chip.click();
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
+      await expect(chip.locator(".lucide-check")).toHaveCount(1);
+      await expect(chip.locator(".lucide-shopping-bag")).toHaveCount(0);
+    });
+
+    test("clicking a flavour dot changes the flavour", async ({ page }) => {
+      await gotoLocale(page, locale);
+      await page.getByRole("button", { name: t.dotMocha, exact: true }).click();
+      await expect(page.getByRole("button", { name: t.chipAddMocha })).toBeVisible();
+    });
+
+    test("a second chip click makes 2 in the bag and keeps the check", async ({ page }) => {
+      await gotoLocale(page, locale);
+      const chip = page.getByRole("button", { name: t.chipAdd });
+      await chip.click();
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
+      await chip.click();
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۲" : "2");
+      await expect(chip.locator(".lucide-check")).toHaveCount(1);
     });
   });
 }

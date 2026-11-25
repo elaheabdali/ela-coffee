@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
-import { ChevronDown, ShoppingBag } from "lucide-react";
+import { Check, ChevronDown, ShoppingBag } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { WordReveal } from "@ela-coffee/ui";
 import { formatToman, toFaDigits } from "@ela-coffee/i18n";
@@ -69,10 +69,18 @@ export function FlavorWheel() {
 
   const data = BRANDS[brand];
   const drink = data.drinks[index];
+  // Persistent "in the bag" state for the price chip: while the current
+  // drink has a quantity in the bag, the chip shows a check instead of
+  // the bag icon (fix batch 3 — the reference's ~2s transient check
+  // is not copied; the state lasts as long as the item is in the bag).
+  const inBagQty = useBag((s) => s.items.find((item) => item.drinkId === drink.id)?.qty ?? 0);
+  const inBag = inBagQty > 0;
   const featured = data.drinks.filter((d) => d.featured);
 
   const sectionRef = useRef<HTMLElement>(null);
-  const dragRef = useRef<{ id: number; startX: number; dx: number } | null>(null);
+  const dragRef = useRef<{ id: number; startX: number; dx: number; captured: boolean } | null>(
+    null,
+  );
   const lastManualRef = useRef(0);
   const [dragOffset, setDragOffset] = useState(0);
 
@@ -109,17 +117,28 @@ export function FlavorWheel() {
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    dragRef.current = { id: event.pointerId, startX: event.clientX, dx: 0 };
-    // jsdom (tests) has no setPointerCapture — guard it.
-    if (typeof event.currentTarget.setPointerCapture === "function") {
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
+    dragRef.current = { id: event.pointerId, startX: event.clientX, dx: 0, captured: false };
+    // Deliberately no setPointerCapture here: capturing on pointerdown
+    // retargets the following click to this region, so taps on the
+    // price chip, the dots and the featured buttons never fired their
+    // onClick (fix batch 3). Capture happens in handlePointerMove,
+    // once a real drag has started.
   };
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.id !== event.pointerId) return;
     drag.dx = event.clientX - drag.startX;
     setDragOffset(Math.max(-1, Math.min(1, drag.dx / 140)));
+    // Capture only once the pointer has moved 10px: a tap never moves
+    // that far, so its click still reaches the button it landed on,
+    // while a drag that leaves the element keeps working.
+    if (!drag.captured && Math.abs(drag.dx) > 10) {
+      drag.captured = true;
+      // jsdom (tests) has no setPointerCapture — guard it.
+      if (typeof event.currentTarget.setPointerCapture === "function") {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+    }
   };
   const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
@@ -277,9 +296,15 @@ export function FlavorWheel() {
               className="mt-1 flex flex-col items-center gap-1 rounded-[1.25rem] bg-cream px-4 py-2 text-espresso shadow-ela-lift transition-transform hover:scale-105 active:scale-95 max-sm:absolute max-sm:left-1/2 max-sm:top-(--chip-y) max-sm:z-30 max-sm:mt-0 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2"
             >
               <span className="font-mono text-sm font-bold">{priceText}</span>
-              <span className="inline-flex items-center justify-center rounded-full bg-espresso p-2 text-cream">
-                <ShoppingBag size={18} />
-              </span>
+              {inBag ? (
+                <span className="inline-flex items-center justify-center rounded-full bg-crema p-2 text-espresso">
+                  <Check size={18} aria-hidden />
+                </span>
+              ) : (
+                <span className="inline-flex items-center justify-center rounded-full bg-espresso p-2 text-cream">
+                  <ShoppingBag size={18} />
+                </span>
+              )}
             </button>
 
             {/* The reference's 4-of-6 hero button group (audit §8.8):

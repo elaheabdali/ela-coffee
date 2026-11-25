@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, act } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { ToastProvider } from "@ela-coffee/ui";
 import { en } from "@ela-coffee/i18n";
@@ -132,6 +132,66 @@ describe("FlavorWheel", () => {
     fireEvent.click(screen.getByRole("button", { name: /Add Ela Original to your bag/ }));
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
     expect(screen.getByRole("status")).toHaveTextContent("Ela Original added to your bag.");
+  });
+
+  it("shows the bag icon when the drink is not in the bag", () => {
+    renderWheel();
+    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+    expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+    expect(chip.querySelector(".lucide-check")).toBeNull();
+  });
+
+  it("shows a persistent check on the price pill while the drink is in the bag", () => {
+    useBag.setState({ items: [{ drinkId: "ela-original", qty: 1 }] });
+    renderWheel();
+    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+    expect(chip.querySelector(".lucide-check")).not.toBeNull();
+    expect(chip.querySelector(".lucide-shopping-bag")).toBeNull();
+    // The price text and the add action are unchanged.
+    expect(chip).toHaveTextContent("180,000 Toman");
+  });
+
+  it("clicking the price pill again adds another and keeps the check", () => {
+    renderWheel();
+    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+    fireEvent.click(chip);
+    fireEvent.click(chip);
+    expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
+    expect(chip.querySelector(".lucide-check")).not.toBeNull();
+  });
+
+  it("the price pill reverts to the bag icon once the drink leaves the bag", () => {
+    useBag.setState({ items: [{ drinkId: "ela-original", qty: 1 }] });
+    renderWheel();
+    const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
+    expect(chip.querySelector(".lucide-check")).not.toBeNull();
+    // A store update outside an event needs act() to flush the re-render.
+    act(() => {
+      useBag.setState({ items: [] });
+    });
+    expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
+    expect(chip.querySelector(".lucide-check")).toBeNull();
+  });
+
+  it("does not capture the pointer on pointerdown — only once a drag starts", () => {
+    renderWheel();
+    const stage = screen.getByRole("region", { name: "Choose your coffee" });
+    const capture = vi.fn();
+    (stage as unknown as { setPointerCapture: (id: number) => void }).setPointerCapture =
+      capture;
+    fireEvent.pointerDown(stage, { pointerId: 1, clientX: 300, button: 0 });
+    expect(capture).not.toHaveBeenCalled();
+    // A 5px wobble is still a tap: no capture, so the click reaches
+    // the button it landed on.
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 305 });
+    expect(capture).not.toHaveBeenCalled();
+    // Past 10px the drag starts and the pointer is captured, once.
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 320 });
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(capture).toHaveBeenCalledWith(1);
+    fireEvent.pointerMove(stage, { pointerId: 1, clientX: 340 });
+    expect(capture).toHaveBeenCalledTimes(1);
+    fireEvent.pointerUp(stage, { pointerId: 1, clientX: 340 });
   });
 
   it("keeps the tile ring behind the cup photo (z-0 under the z-10 scene)", () => {

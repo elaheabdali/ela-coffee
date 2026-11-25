@@ -24,6 +24,12 @@ export interface LocaleStrings {
   drinkNotes: string[];
   priceOne: string;
   priceTwo: string;
+  /** Hero price chip (add button) for the first drink, Ela Original. */
+  chipAdd: string;
+  /** Hero price chip for Dark Mocha (the dot-click target). */
+  chipAddMocha: string;
+  /** Flavour dot for Dark Mocha. */
+  dotMocha: string;
   bagOpen: string;
   bagTitle: string;
   bagEmpty: string;
@@ -75,6 +81,9 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     drinkNotes: ["کاکائوی تلخ", "بادام برشته", "شکر قهوه‌ای"],
     priceOne: "۱۸۰٬۰۰۰ تومان",
     priceTwo: "۳۶۰٬۰۰۰ تومان",
+    chipAdd: "«الا اورجینال» را به سبد اضافه کن",
+    chipAddMocha: "«موکای تلخ» را به سبد اضافه کن",
+    dotMocha: "موکای تلخ",
     bagOpen: "باز کردن سبد",
     bagTitle: "سبد تو",
     bagEmpty: "سبدت خالی است",
@@ -122,6 +131,9 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     drinkNotes: ["Dark cocoa", "Toasted almond", "Brown sugar"],
     priceOne: "180,000 Toman",
     priceTwo: "360,000 Toman",
+    chipAdd: "Add Ela Original to your bag",
+    chipAddMocha: "Add Dark Mocha to your bag",
+    dotMocha: "Dark Mocha",
     bagOpen: "Open bag",
     bagTitle: "Your bag",
     bagEmpty: "Your bag is empty",
