@@ -38,8 +38,9 @@
   --ela-crema: #d9a066;
   /* Scrolled-header pill surface (post-Phase-12 fix, user feedback):
      a mid-dark surface, sampled from the reference's matcha pill
-     (#394135) with a warm brown analog for ela — clearly darker than
-     the page cream, clearly lighter than near-black espresso. */
+     (#394135) with a warm brown analog for ela. NOTE (fix batch 2):
+     the scrolled pill itself now uses bg-espresso/80 exactly like the
+     reference — this token is kept for other dark surfaces. */
   --header: #493b2c;
   --ela-stage-glow: #2b1a10;
   --ela-stage-mid: #180f0a;
@@ -187,6 +188,13 @@ html[data-brand="matcha"] {
   --animate-ela-dialog-in: ela-dialog-in 0.2s ease-out both;
   --animate-ela-dialog-overlay-in: ela-dialog-overlay-in 0.2s ease-out both;
 
+  /* Header state swap (fix batch 2): the reference fades/slides its
+     scrolled pill in with transition-[translate,opacity] duration-500
+     ease-out. Our header mounts one state at a time (no duplicate
+     interactive elements in the DOM), so the entering pill/nav replays
+     the same 500 ms fade + -4px slide as a mount animation. */
+  --animate-ela-header-in: ela-header-in 0.5s ease-out both;
+
   @keyframes ela-wheel-in {
     from {
       --intro: -1.4;
@@ -318,6 +326,16 @@ html[data-brand="matcha"] {
       opacity: 1;
     }
   }
+  @keyframes ela-header-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.25rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -362,6 +380,23 @@ html[data-brand="matcha"] {
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+  }
+
+  /* Pointer cursor on every interactive element (fix batch 2):
+     Tailwind v4's preflight resets `button` to `cursor: default`, so
+     buttons looked inert even though they were clickable. This base
+     rule restores the pointer; component utilities (e.g.
+     `disabled:cursor-not-allowed` on Button/Stepper, `cursor-default`
+     on the Dialog overlay) still win because utilities beat base. */
+  button,
+  [role="button"],
+  a[href],
+  summary {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
   }
 }
 

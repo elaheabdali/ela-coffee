@@ -6,6 +6,7 @@
 export const fa = {
   nav: {
     skip: "پرش به محتوا",
+    main: "اصلی",
     story: "داستان ما",
     menu: "منو",
     process: "طرز تهیه",
@@ -13,6 +14,8 @@ export const fa = {
     join: "عضویت در فهرست",
     brandCoffee: "قهوه",
     brandMatcha: "ماچا",
+    switchToCoffee: "تغییر به قهوه",
+    switchToMatcha: "تغییر به ماچا",
     switchToEnglish: "تغییر زبان به انگلیسی",
     switchToPersian: "تغییر زبان به فارسی",
   },

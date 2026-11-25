@@ -105,14 +105,17 @@ describe("SiteHeader", () => {
     );
   });
 
-  it("shows a language switcher in both states that navigates to the other locale", () => {
+  it("shows a language switcher in both states that navigates to the other locale without scrolling", () => {
     renderHeader();
     // Hero state (en): the switcher offers Persian (ISO code "FA").
     const switcher = screen.getByRole("button", { name: "Switch language to Persian" });
     expect(switcher).toBeInTheDocument();
     expect(switcher).toHaveTextContent("FA");
     fireEvent.click(switcher);
-    expect(replaceMock).toHaveBeenCalledWith("/", { locale: "fa" });
+    // Bare pathname, no #hash carried over, and scroll:false — the
+    // old code appended window.location.hash, which jumped the page
+    // down to that anchor after switching (fix batch 2).
+    expect(replaceMock).toHaveBeenCalledWith("/", { locale: "fa", scroll: false });
 
     // Scrolled state: the switcher is in the pill too.
     Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
@@ -120,6 +123,39 @@ describe("SiteHeader", () => {
     expect(
       screen.getByRole("button", { name: "Switch language to Persian" }),
     ).toBeInTheDocument();
+  });
+
+  it("does not carry the URL hash when switching language", () => {
+    renderHeader();
+    window.location.hash = "#join";
+    fireEvent.click(screen.getByRole("button", { name: "Switch language to Persian" }));
+    expect(replaceMock).toHaveBeenCalledWith("/", { locale: "fa", scroll: false });
+    window.location.hash = "";
+  });
+
+  it("shows the single icon brand switch in both states", () => {
+    renderHeader();
+    // Hero state: the icon button offers the other brand (matcha).
+    const heroSwitch = screen.getByRole("button", { name: "Switch to matcha" });
+    expect(heroSwitch).toBeInTheDocument();
+    fireEvent.click(heroSwitch);
+    expect(useBrand.getState().brand).toBe("midori");
+    expect(screen.getByRole("link", { name: "midori" })).toBeInTheDocument();
+    // …and now it offers coffee again.
+    expect(screen.getByRole("button", { name: "Switch to coffee" })).toBeInTheDocument();
+  });
+
+  it("shows the single icon brand switch and a hamburger in the scrolled pill", async () => {
+    renderHeader();
+    Object.defineProperty(window, "scrollY", { value: 1000, configurable: true });
+    fireEvent.scroll(window);
+    expect(screen.getByRole("button", { name: "Switch to matcha" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Switch to matcha" }));
+    expect(useBrand.getState().brand).toBe("midori");
+    // The scrolled pill has its own hamburger (the reference's
+    // scrolled navbar), opening the same drawer.
+    fireEvent.click(screen.getByRole("button", { name: "Menu" }));
+    expect(await screen.findByRole("dialog", { name: "Menu" })).toBeInTheDocument();
   });
 
   it("opens the menu drawer from the hamburger button", async () => {

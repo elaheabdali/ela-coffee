@@ -22,20 +22,51 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 const BagDrawer = dynamic(() => import("./BagDrawer").then((m) => m.BagDrawer));
 const MenuDrawer = dynamic(() => import("./MenuDrawer").then((m) => m.MenuDrawer));
 
+/** Text links of the scrolled pill, in dictionary order. */
+const SCROLLED_LINKS = [
+  { href: "#story", labelKey: "story" },
+  { href: "#menu", labelKey: "menu" },
+  { href: "#process", labelKey: "process" },
+  { href: "#origins", labelKey: "origins" },
+] as const;
+
+/** Crema focus ring, as on the reference's header buttons/links. */
+const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema";
+
+/** Bag count badge (reference: crema pill, espresso ring, -1.5 offsets). */
+const BAG_BADGE =
+  "animate-ela-bump absolute -end-1.5 -top-1.5 grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-full bg-crema px-1 text-[0.625rem] font-bold leading-none text-espresso ring-2 ring-espresso";
+
 /**
- * Fixed site header (audit §2/§7), with two states driven by scroll:
+ * Fixed site header (audit §2/§7), rebuilt in fix batch 2 to match the
+ * reference navbar class-for-class (verified live against
+ * kuro-coffee-template.modulify.website, 1440px + 360px, hero +
+ * scrolled states). Two states, driven by scroll:
  *
- * HERO (top of the page, transparent): wordmark left, the glass icon
- * pill centre, locale switcher + brand toggle + motion pause +
- * hamburger right. Below `sm` only the icon pill, the locale switcher
- * and the hamburger show.
+ * HERO (top of the page): the reference's 3-column grid nav
+ * (`grid-cols-[1fr_auto_1fr]`) — wordmark left, the glass icon pill
+ * (FlavorControls) centred, and right: the segmented Coffee/Matcha
+ * toggle (lg+), the single icon brand switch (below lg), the locale
+ * switcher, the motion pause button (sm+) and the hamburger.
  *
- * SCROLLED (past the hero): a dark floating pill (max-w-1600px,
- * rounded-full, `bg-header`) with the wordmark, text links, the
- * segmented Coffee/Matcha toggle, a locale switcher, a cream Join
- * pill and a bag button with a count badge — matching the reference
- * scrolled navbar (user feedback 2026-11-25, reference screenshot:
- * dark pill, both brand buttons, cream Join pill).
+ * SCROLLED (past the hero): the reference's dark floating pill
+ * (`max-w-7xl rounded-[1.25rem] border-cream/10 bg-espresso/80
+ * backdrop-blur-xl`, `py-2 ps-5 pe-2`) with the wordmark, pill text
+ * links, the segmented toggle (sm+), the single icon brand switch
+ * (below sm), the locale switcher, the cream Join pill (sm+), the bag
+ * button with its count badge, and the hamburger (below lg).
+ *
+ * Only one state is mounted at a time (no duplicate interactive
+ * elements in the DOM); the entering state replays the reference's
+ * 500 ms fade + -4px slide as a mount animation
+ * (`animate-ela-header-in`, globals.css). The scroll trigger is
+ * unchanged (`scrollY > innerHeight - 120`).
+ *
+ * RTL: the reference is LTR-only, so its physical paddings/offsets
+ * are written as logical ones here (`ps-5 pe-2`, `-end-1.5`) and the
+ * fa layout mirrors. `font-display` is our Fraunces heading font —
+ * the reference's `font-heading font-soft` utilities do not exist in
+ * this project's Tailwind theme.
  *
  * The menu drawer and the bag drawer are mounted here, once.
  */
@@ -62,6 +93,24 @@ export function SiteHeader() {
 
   const count = bagCount(items);
   const pauseLabel = paused ? tHero("playMotion") : tHero("pauseMotion");
+  const wordmark = BRANDS[brand].wordmark;
+
+  const brandToggleProps = {
+    coffeeLabel: tNav("brandCoffee"),
+    matchaLabel: tNav("brandMatcha"),
+    groupLabel: tNav("menu"),
+    switchToCoffeeLabel: tNav("switchToCoffee"),
+    switchToMatchaLabel: tNav("switchToMatcha"),
+  };
+
+  const bagBadge =
+    count > 0 ? (
+      <span key={count} data-testid="bag-count" className={BAG_BADGE}>
+        {locale === "fa" ? toFaDigits(count) : count}
+      </span>
+    ) : null;
+
+  const openDrawer = () => setDrawerOpen(true);
 
   return (
     <>
@@ -71,116 +120,130 @@ export function SiteHeader() {
       >
         {tNav("skip")}
       </a>
-      <header className="fixed inset-x-0 top-0 z-40">
+      <header className="fixed inset-x-0 top-0 z-50">
         {scrolled ? (
-          <div className="mx-auto w-full max-w-[1600px] px-3 pt-4 sm:px-6">
-            <div className="flex items-center justify-between gap-4 rounded-full bg-header px-4 py-3 text-cream shadow-ela-card sm:px-6">
+          <div className="px-3 pt-3 sm:px-6">
+            <nav
+              aria-label={tNav("main")}
+              className="animate-ela-header-in mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-[1.25rem] border border-cream/10 bg-espresso/80 py-2 ps-5 pe-2 text-cream shadow-[0_18px_40px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl"
+            >
               <a
                 href="#hero"
-                className="font-display text-2xl font-black tracking-[-0.02em] sm:text-3xl"
+                className="rounded-md font-display text-[1.625rem] font-semibold leading-none tracking-[-0.04em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema"
               >
-                {BRANDS[brand].wordmark}
+                {wordmark}
               </a>
-              <nav aria-label={tNav("menu")} className="hidden items-center gap-6 lg:flex">
-                <a
-                  href="#story"
-                  className="text-sm font-medium transition-opacity hover:opacity-70"
-                >
-                  {tNav("story")}
-                </a>
-                <a href="#menu" className="text-sm font-medium transition-opacity hover:opacity-70">
-                  {tNav("menu")}
-                </a>
-                <a
-                  href="#process"
-                  className="text-sm font-medium transition-opacity hover:opacity-70"
-                >
-                  {tNav("process")}
-                </a>
-                <a
-                  href="#origins"
-                  className="text-sm font-medium transition-opacity hover:opacity-70"
-                >
-                  {tNav("origins")}
-                </a>
-              </nav>
+              <ul className="hidden items-center gap-1 lg:flex">
+                {SCROLLED_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      className="rounded-full px-3.5 py-2 text-sm font-medium text-cream/70 transition-colors hover:bg-cream/[0.07] hover:text-cream focus-visible:outline-2 focus-visible:outline-crema"
+                    >
+                      {tNav(link.labelKey)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
               <div className="flex items-center gap-2">
-                <span className="max-sm:hidden">
-                  <BrandToggle
-                    variant="segmented"
-                    coffeeLabel={tNav("brandCoffee")}
-                    matchaLabel={tNav("brandMatcha")}
-                  />
-                </span>
-                <LocaleSwitcher />
+                <BrandToggle
+                  variant="segmented"
+                  {...brandToggleProps}
+                  groupClassName="hidden border-transparent bg-cream/[0.06] backdrop-blur-none sm:inline-flex"
+                />
+                <BrandToggle
+                  variant="icon"
+                  {...brandToggleProps}
+                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.85rem] border border-transparent bg-cream/[0.06] text-crema backdrop-blur-none transition-colors hover:bg-espresso/70 ${FOCUS} sm:hidden`}
+                />
+                <LocaleSwitcher className="border border-transparent bg-cream/[0.06] backdrop-blur-none hover:bg-cream/10" />
                 <a
                   href="#join"
-                  className="inline-flex items-center justify-center rounded-full bg-cream px-5 py-2.5 text-base font-medium text-espresso transition hover:brightness-110 max-sm:hidden"
+                  className={`hidden rounded-full bg-cream px-4 py-2.5 text-sm font-semibold text-espresso transition-colors hover:bg-white ${FOCUS} sm:inline-flex`}
                 >
                   {tNav("join")}
                 </a>
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label={tBag("open")}
+                    title={tBag("open")}
+                    aria-haspopup="dialog"
+                    aria-expanded={bagOpen}
+                    onClick={openBag}
+                    className={`relative grid size-10 cursor-pointer place-items-center rounded-[0.9rem] bg-cream/[0.06] text-cream transition-colors hover:bg-cream/10 ${FOCUS}`}
+                  >
+                    <ShoppingBag size={16} aria-hidden="true" />
+                    {bagBadge}
+                  </button>
+                </div>
                 <button
                   type="button"
-                  aria-label={tBag("open")}
-                  onClick={openBag}
-                  className="relative inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
+                  onClick={openDrawer}
+                  aria-label={tDrawer("menu")}
+                  title={tDrawer("menu")}
+                  aria-haspopup="dialog"
+                  aria-expanded={drawerOpen}
+                  className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-cream/[0.06] text-cream/80 backdrop-blur-none transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS} lg:hidden`}
                 >
-                  <ShoppingBag size={20} aria-hidden="true" />
-                  {count > 0 ? (
-                    <span
-                      key={count}
-                      data-testid="bag-count"
-                      className="animate-ela-bump absolute -end-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[0.6875rem] font-bold text-primary-foreground"
-                    >
-                      {locale === "fa" ? toFaDigits(count) : count}
-                    </span>
-                  ) : null}
+                  <Menu size={16} aria-hidden="true" />
                 </button>
               </div>
-            </div>
+            </nav>
           </div>
         ) : (
-          <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 text-cream sm:px-6">
+          <nav
+            aria-label={tNav("main")}
+            className="animate-ela-header-in grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 pt-4 text-cream sm:gap-3 sm:px-8 sm:pt-6"
+          >
             <a
               href="#hero"
-              className="font-display text-2xl font-black tracking-[-0.02em] sm:text-3xl"
+              className="justify-self-start rounded-md font-display text-[1.5rem] font-semibold leading-none tracking-[-0.04em] text-cream focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-crema sm:text-[1.75rem]"
             >
-              {BRANDS[brand].wordmark}
+              {wordmark}
             </a>
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="relative">
               <FlavorControls />
             </div>
-            <div className="flex items-center gap-2">
-              <LocaleSwitcher />
-              <span className="max-sm:hidden">
-                <BrandToggle
-                  coffeeLabel={tNav("brandCoffee")}
-                  matchaLabel={tNav("brandMatcha")}
-                />
-              </span>
+            <div className="flex items-center gap-1.5 justify-self-end sm:gap-2">
+              <BrandToggle
+                variant="segmented"
+                {...brandToggleProps}
+                groupClassName="hidden border-cream/10 bg-espresso/45 backdrop-blur-md lg:inline-flex"
+              />
+              <BrandToggle
+                variant="icon"
+                {...brandToggleProps}
+                className={`grid size-9 cursor-pointer place-items-center rounded-[0.85rem] border border-cream/10 bg-espresso/45 text-crema backdrop-blur-md transition-colors hover:bg-espresso/70 ${FOCUS} max-[379px]:hidden lg:hidden`}
+              />
+              <LocaleSwitcher className="border border-cream/10 bg-espresso/45 backdrop-blur-md hover:bg-espresso/70" />
               <button
                 type="button"
                 onClick={toggle}
                 aria-pressed={paused}
                 aria-label={pauseLabel}
-                className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10 max-sm:hidden"
+                title={pauseLabel}
+                className={`hidden size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS} sm:grid`}
               >
                 {paused ? (
-                  <Play size={20} aria-hidden="true" />
+                  <Play size={16} aria-hidden="true" />
                 ) : (
-                  <Pause size={20} aria-hidden="true" />
+                  <Pause size={16} aria-hidden="true" />
                 )}
               </button>
               <button
                 type="button"
-                onClick={() => setDrawerOpen(true)}
+                onClick={openDrawer}
                 aria-label={tDrawer("menu")}
-                className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
+                title={tDrawer("menu")}
+                aria-haspopup="dialog"
+                aria-expanded={drawerOpen}
+                className={`grid size-10 cursor-pointer place-items-center rounded-[0.9rem] border border-cream/10 bg-espresso/45 text-cream/80 backdrop-blur-md transition-colors hover:bg-espresso/70 hover:text-cream ${FOCUS}`}
               >
-                <Menu size={20} aria-hidden="true" />
+                <Menu size={16} aria-hidden="true" />
               </button>
             </div>
-          </div>
+          </nav>
         )}
       </header>
       {drawerOpen ? <MenuDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} /> : null}

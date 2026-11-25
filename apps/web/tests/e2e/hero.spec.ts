@@ -23,15 +23,19 @@ for (const locale of LOCALE_LIST) {
       const html = page.locator("html");
       await expect(html).toHaveAttribute("data-brand", "ela");
 
-      await page.getByRole("button", { name: t.brandCoffee, exact: true }).click();
+      // The hero navbar is the reference's segmented control at this
+      // viewport (fix batch 2): click the inactive brand (Matcha),
+      // not the already-active Coffee — pressing the active segment
+      // is a no-op by design.
+      await page.getByRole("button", { name: t.brandMatcha, exact: true }).click();
       await expect(html).toHaveAttribute("data-brand", "midori");
       // The toggle now offers the other brand, and the hero title follows.
-      await expect(page.getByRole("button", { name: t.brandMatcha, exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: t.brandCoffee, exact: true })).toBeVisible();
       await expect(
         page.getByRole("heading", { name: locale === "fa" ? "ماچا‌ات را انتخاب کن" : "Choose your matcha" }),
       ).toBeVisible();
 
-      await page.getByRole("button", { name: t.brandMatcha, exact: true }).click();
+      await page.getByRole("button", { name: t.brandCoffee, exact: true }).click();
       await expect(html).toHaveAttribute("data-brand", "ela");
     });
 

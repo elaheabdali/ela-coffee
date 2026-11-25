@@ -5,6 +5,7 @@
 export const en = {
   nav: {
     skip: "Skip to content",
+    main: "Main",
     story: "Story",
     menu: "Menu",
     process: "How it's made",
@@ -12,6 +13,8 @@ export const en = {
     join: "Join the list",
     brandCoffee: "Coffee",
     brandMatcha: "Matcha",
+    switchToCoffee: "Switch to coffee",
+    switchToMatcha: "Switch to matcha",
     switchToEnglish: "Switch language to English",
     switchToPersian: "Switch language to Persian",
   },

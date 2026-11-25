@@ -113,7 +113,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
           type="button"
           onClick={onClose}
           aria-label={tDrawer("close")}
-          className="inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-cream/10"
+          className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-cream/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
         >
           <X size={24} aria-hidden="true" />
         </button>
@@ -155,7 +155,7 @@ export function MenuDrawer({ open, onClose }: MenuDrawerProps) {
             onClick={toggle}
             aria-pressed={paused}
             aria-label={pauseLabel}
-            className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-medium ring-1 ring-border transition-[background-color] hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
           >
             {paused ? (
               <Play size={16} aria-hidden="true" />
