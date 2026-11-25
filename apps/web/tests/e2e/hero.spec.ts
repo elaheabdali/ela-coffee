@@ -91,12 +91,27 @@ for (const locale of LOCALE_LIST) {
     // never added anything. Fix batch 4: the check is a brief
     // confirmation — it reverts to the bag icon ~1.5 s after the click
     // while the drink stays in the bag.
+    //
+    // Chromium CI flake (fix batch 4 follow-up): the chip floats
+    // (ela-float) and re-renders when the check appears, so its box
+    // moves between Playwright's locator resolution and the click —
+    // and Chromium's click then scrolls the page to chase it
+    // (scrollIntoViewIfNeeded, 93–416 px in local repro). That scroll
+    // fires the scroll-linked flavour handler, the flavour changes
+    // under the test, and this chip locator (bound to the first
+    // drink's name) stops matching — the check assertion fails
+    // although the bag itself got the item. `force: true` still
+    // dispatches real pointer/mouse events (so the batch-3
+    // pointer-capture behaviour is still exercised) but skips the
+    // scroll-into-view chase. A real tap never scrolls the page, so
+    // this is test-only: the component is unchanged. Firefox never
+    // scrolls here, which is why the same test passed 18/18 there.
     test("hero price chip adds the drink — badge 1, check briefly, then bag icon again", async ({
       page,
     }) => {
       await gotoLocale(page, locale);
       const chip = page.getByRole("button", { name: t.chipAdd });
-      await chip.click();
+      await chip.click({ force: true });
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
       await expect(chip.locator(".lucide-check")).toHaveCount(1);
       await expect(chip.locator(".lucide-shopping-bag")).toHaveCount(0);
@@ -108,16 +123,16 @@ for (const locale of LOCALE_LIST) {
 
     test("clicking a flavour dot changes the flavour", async ({ page }) => {
       await gotoLocale(page, locale);
-      await page.getByRole("button", { name: t.dotMocha, exact: true }).click();
+      await page.getByRole("button", { name: t.dotMocha, exact: true }).click({ force: true });
       await expect(page.getByRole("button", { name: t.chipAddMocha })).toBeVisible();
     });
 
     test("a second chip click makes 2 in the bag and shows the check briefly again", async ({ page }) => {
       await gotoLocale(page, locale);
       const chip = page.getByRole("button", { name: t.chipAdd });
-      await chip.click();
+      await chip.click({ force: true });
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
-      await chip.click();
+      await chip.click({ force: true });
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۲" : "2");
       await expect(chip.locator(".lucide-check")).toHaveCount(1);
       await expect(chip.locator(".lucide-check")).toHaveCount(0);
