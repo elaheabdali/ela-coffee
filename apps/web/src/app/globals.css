@@ -11,6 +11,19 @@
  * hand-rolled CSS keyframes + IntersectionObserver (`Reveal` in
  * @ela-coffee/ui). Durations/easings below are the reference's exact values.
  */
+/*!
+ * Vercel build-cache note (batch 9): the batch-9 plain-CSS rules in
+ * section 6 - ela-panel-in, ela-label-in, ela-price-in,
+ * kuro-contours, ela-tile-glass, reduced-motion ela-pour-mask -
+ * were missing from the production stylesheet served after the
+ * batch-9 deploy, although the local build of the same commit
+ * contains them, because Vercel reused the previous CSS. This note
+ * alone does not change the minified output, so the kuro-contours
+ * rule below was also moved after ela-tile-glass: a pure reorder of
+ * independent selectors, no visual change, to guarantee a new
+ * stylesheet hash. Do not remove this note or tidy the order without
+ * re-checking the live CSS for those selectors.
+ */
 @import "tailwindcss";
 
 /* NOTE (fix batch 5): do NOT add an `@source` directive for
@@ -783,21 +796,6 @@ html[data-motion="paused"] .animate-ela-scroll-cue {
   );
 }
 
-/*
- * Contour rings on the origin cards (fix batch 9): the reference's
- * `.kuro-contours` (ref-main.css) — the same repeating-radial
- * gradient, but the ring centre comes from `--contour-at` per card
- * (85% 115% / 15% -15%). `--kuro-crema` does not exist in our theme;
- * the equivalent token is `--ela-crema` (same value per brand).
- */
-.kuro-contours {
-  background-image: repeating-radial-gradient(
-    circle at var(--contour-at, 80% 120%),
-    transparent 0 22px,
-    color-mix(in srgb, var(--ela-crema) 11%, transparent) 22px 23px
-  );
-}
-
 /* Glass overlays: the photo layer sits at z-index 1 (audit §3.5). */
 .ela-glass {
   isolation: isolate;
@@ -858,6 +856,24 @@ html[data-motion="paused"] .animate-ela-scroll-cue {
    so the sprite cell stays un-darkened. */
 .ela-tile-glass {
   isolation: isolate;
+}
+
+/*
+ * Contour rings on the origin cards (fix batch 9): the reference's
+ * `.kuro-contours` (ref-main.css) — the same repeating-radial
+ * gradient, but the ring centre comes from `--contour-at` per card
+ * (85% 115% / 15% -15%). `--kuro-crema` does not exist in our theme;
+ * the equivalent token is `--ela-crema` (same value per brand).
+ * NOTE: this rule sits after .ela-tile-glass on purpose (see the
+ * Vercel build-cache note at the top of this file) — do not move it
+ * back above .ela-glass without re-checking the live CSS.
+ */
+.kuro-contours {
+  background-image: repeating-radial-gradient(
+    circle at var(--contour-at, 80% 120%),
+    transparent 0 22px,
+    color-mix(in srgb, var(--ela-crema) 11%, transparent) 22px 23px
+  );
 }
 
 /* ------------------------------------------------------------------ */
