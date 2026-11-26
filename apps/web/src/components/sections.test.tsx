@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "next-intl";
 import { ToastProvider } from "@ela-coffee/ui";
@@ -175,9 +175,11 @@ describe("MenuSection", () => {
 
   it("shows the price pill on the card image (en)", () => {
     renderWithQuery(<MenuSection />, "en");
-    // One pill per card, each showing its Toman price.
-    expect(screen.getByText("180,000 T")).toBeInTheDocument();
-    expect(screen.getByText("205,000 T")).toBeInTheDocument();
+    // One pill per card, each showing its Toman price — plus the same
+    // price in the card's Add button (fix batch 9), so each price
+    // text appears twice per card.
+    expect(screen.getAllByText("180,000 T")).toHaveLength(2);
+    expect(screen.getAllByText("205,000 T")).toHaveLength(2);
   });
 });
 
@@ -211,12 +213,36 @@ describe("Origins", () => {
 
   it("renders both origin cards with shares and facts", () => {
     renderWithLocale(<Origins />, "en");
-    expect(screen.getByRole("heading", { level: 3, name: "Huila, Colombia" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 3, name: "Sidama, Ethiopia" })).toBeInTheDocument();
+    // Reference markup: the h3 is the region only ("Huila"), the
+    // country is a separate line under it.
+    expect(screen.getByRole("heading", { level: 3, name: "Huila" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Sidama" })).toBeInTheDocument();
+    expect(screen.getByText("Colombia")).toBeInTheDocument();
+    expect(screen.getByText("Ethiopia")).toBeInTheDocument();
     expect(screen.getByText("60% of the blend")).toBeInTheDocument();
     expect(screen.getByText("40% of the blend")).toBeInTheDocument();
     expect(screen.getByText("1,700 m")).toBeInTheDocument();
     expect(screen.getByText("Natural")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Grown around 1,700 meters on the Andean slopes of southern Colombia, this washed coffee gives the blend its cocoa backbone and a long caramel finish.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the midori gardens with the reference's facts", () => {
+    useBrand.setState({ brand: "midori" });
+    renderWithLocale(<Origins />, "en");
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Two gardens, blended for balance." }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Uji" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Nishio" })).toBeInTheDocument();
+    expect(screen.getByText("Kyoto, Japan")).toBeInTheDocument();
+    expect(screen.getByText("Aichi, Japan")).toBeInTheDocument();
+    expect(screen.getByText("Umami, sweet grass")).toBeInTheDocument();
+    expect(screen.getByText("Floral, sweet pea")).toBeInTheDocument();
+    expect(screen.getByText("20 days")).toBeInTheDocument();
   });
 
   it("renders the fa share label with Persian digits", () => {
@@ -275,9 +301,27 @@ describe("JoinList", () => {
       "/api/newsletter",
       expect.objectContaining({
         method: "POST",
-        body: JSON.stringify({ email: "taster@example.com" }),
+        // The honeypot posts under the API's `website` field name;
+        // an empty `join-company` field maps to an empty string.
+        body: JSON.stringify({ email: "taster@example.com", website: "" }),
       }),
     );
+  });
+
+  it("renders the reference intro and the offscreen honeypot field", () => {
+    renderWithLocale(<JoinList />, "en");
+    expect(
+      screen.getByText(
+        "New flavors land every season. Leave your email and we'll tell you the day they reach the menu.",
+      ),
+    ).toBeInTheDocument();
+    const honeypot = document.querySelector("#join-company");
+    expect(honeypot).not.toBeNull();
+    expect(honeypot?.getAttribute("name")).toBe("join-company");
+    expect(honeypot?.getAttribute("type")).toBe("text");
+    expect(honeypot?.getAttribute("tabindex")).toBe("-1");
+    // The reservation form is kept below the crema card, inside #join.
+    expect(screen.getByRole("heading", { level: 3, name: "Book a table" })).toBeInTheDocument();
   });
 });
 
@@ -320,8 +364,9 @@ describe("MenuCard", () => {
     for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
       expect(screen.getByText(note)).toBeInTheDocument();
     }
-    // The price is a pill on the image, not a footer Price component.
-    expect(screen.getByText("180,000 T")).toBeInTheDocument();
+    // The price is a pill on the image, not a footer Price component —
+    // and, since fix batch 9, also a span in the Add button.
+    expect(screen.getAllByText("180,000 T")).toHaveLength(2);
     // The sprite thumbnail is the decorative sprite-sheet img.
     expect(screen.getByAltText("")).toBeInTheDocument();
 
@@ -337,11 +382,50 @@ describe("MenuCard", () => {
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
   });
 
+  it("shows a brief crema check after clicking Add, then reverts", () => {
+    vi.useFakeTimers();
+    try {
+      const drink = BRANDS.ela.drinks[0];
+      renderWithLocale(<MenuCard drink={drink} />, "en");
+      const addButton = screen.getByRole("button", {
+        name: "Add Ela Original to your bag, 180,000 T",
+      });
+
+      // Resting state: bag icon, "Add to bag", price span in the button.
+      expect(addButton.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      expect(addButton.querySelector(".lucide-check")).toBeNull();
+      expect(addButton).toHaveTextContent("Add to bag");
+      expect(addButton.querySelector("span.tabular-nums")).not.toBeNull();
+
+      fireEvent.click(addButton);
+      expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
+      // Added state: crema background, Check (strokeWidth 2.5), no price.
+      expect(addButton.querySelector(".lucide-check")).not.toBeNull();
+      expect(addButton.querySelector(".lucide-shopping-bag")).toBeNull();
+      expect(addButton).toHaveTextContent("Added to your bag");
+      expect(addButton.className).toContain("bg-crema");
+      expect(addButton.querySelector("span.tabular-nums")).toBeNull();
+
+      // After ~1.4 s it reverts on its own; the drink stays in the bag.
+      act(() => {
+        vi.advanceTimersByTime(1600);
+      });
+      expect(addButton.querySelector(".lucide-shopping-bag")).not.toBeNull();
+      expect(addButton.querySelector(".lucide-check")).toBeNull();
+      expect(addButton).toHaveTextContent("Add to bag");
+      expect(addButton.className).toContain("bg-cream");
+      expect(addButton.querySelector("span.tabular-nums")).not.toBeNull();
+      expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("renders the fa name, notes and price", () => {
     const drink = BRANDS.ela.drinks[0];
     renderWithLocale(<MenuCard drink={drink} />, "fa");
     expect(screen.getByRole("heading", { level: 3, name: "الا اورجینال" })).toBeInTheDocument();
     expect(screen.getByText("کاکائوی تلخ — TODO(review)")).toBeInTheDocument();
-    expect(screen.getByText("۱۸۰٬۰۰۰ تومان")).toBeInTheDocument();
+    expect(screen.getAllByText("۱۸۰٬۰۰۰ تومان")).toHaveLength(2);
   });
 });

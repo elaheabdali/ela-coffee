@@ -156,10 +156,20 @@ export async function getOrder(id: string): Promise<OrderDTO | null> {
   return order ? toOrderDTO(order) : null;
 }
 
-export async function updateOrderStatus(
-  id: string,
-  status: OrderStatus,
-): Promise<OrderDTO | null> {
+/**
+ * The payment callback resolves the order from the authority Zarinpal
+ * returns — the callback query carries no order id of its own.
+ */
+export async function getOrderByAuthority(authority: string): Promise<OrderDTO | null> {
+  if (!hasDatabase()) return memoryStore.getOrderByAuthority(authority);
+  const order = await getPrisma().order.findFirst({
+    where: { paymentAuthority: authority },
+    include: { items: true },
+  });
+  return order ? toOrderDTO(order) : null;
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<OrderDTO | null> {
   if (!hasDatabase()) return memoryStore.updateOrderStatus(id, status);
   try {
     const updated = await getPrisma().order.update({
@@ -198,9 +208,7 @@ export interface CreateReservationInput {
   guests: number;
 }
 
-export async function createReservation(
-  input: CreateReservationInput,
-): Promise<ReservationDTO> {
+export async function createReservation(input: CreateReservationInput): Promise<ReservationDTO> {
   if (!hasDatabase()) {
     const now = new Date().toISOString();
     return memoryStore.createReservation({

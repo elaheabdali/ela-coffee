@@ -236,6 +236,17 @@ class ZarinpalPayment implements PaymentPort {
   the UI can be tested end-to-end without a gateway.
 - `ZarinpalPayment` is implemented behind the same interface in Phase 6 and
   enabled only with `PAYMENT_PROVIDER=zarinpal` + sandbox merchant ID.
+  Batch 9 finished the flow around it: `GET /api/payments/callback`
+  verifies `Authority` + `Status` with the gateway (server-side order
+  total, Rial = Toman × 10), marks the order PAID / FAILED and redirects
+  to `/{locale}/payment/success` or `/{locale}/payment/failed`; the
+  checkout redirects the browser to the gateway URL when the order
+  response reports the payment as unverified. The configured mode is
+  the REAL sandbox (`ZARINPAL_SANDBOX=true`, test-UUID merchant ID —
+  no account, no real money); `ZARINPAL_SANDBOX=false` + the real
+  merchant ID switches to production with no code change. Full setup,
+  the live sandbox probe, and what is still unverified:
+  `docs/zarinpal-setup.md`.
 - **Never store card data.** The app never sees a card number: the user pays
   on Zarinpal's page and returns with an authority code; the app only stores
   the authority, the amount, and the verification result.

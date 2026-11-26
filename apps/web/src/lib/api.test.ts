@@ -190,8 +190,11 @@ describe("POST /api/orders", () => {
     // 2 × 195,000 — the forged total of 1 is ignored.
     expect(data.order.totalToman).toBe(390_000);
     expect(data.order.status).toBe("RECEIVED");
-    expect(data.order.payment).toBe("PAID");
-    expect(data.payment.verified).toBe(true);
+    // The order stays PENDING at creation (batch 9, item 6): payment
+    // is only marked PAID by the gateway callback after the customer
+    // pays — the Mock gateway simulates Zarinpal's StartPay page.
+    expect(data.order.payment).toBe("PENDING");
+    expect(data.payment.verified).toBe(false);
   });
 
   it("rejects an unknown drink id", async () => {

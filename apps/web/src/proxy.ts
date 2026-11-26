@@ -14,5 +14,8 @@ import { routing } from "./i18n/routing";
 export const proxy = createMiddleware(routing);
 
 export const config = {
-  matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
+  // The locale-less mock gateway (/payment/mock) must bypass the
+  // locale middleware: next-intl would otherwise redirect it to
+  // /fa/payment/mock, which does not exist (batch 9, item 6).
+  matcher: "/((?!api|_next|_vercel|payment|.*\\..*).*)",
 };

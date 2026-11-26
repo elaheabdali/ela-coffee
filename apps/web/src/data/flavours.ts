@@ -80,8 +80,12 @@ export interface ProcessStep {
 }
 
 export interface OriginCard {
+  /** Region name — the card h3 (reference: "Huila", "Uji"). */
   nameEn: string;
   nameFa: string;
+  /** Country/region line under the h3 (reference: "Colombia", "Kyoto, Japan"). */
+  regionEn: string;
+  regionFa: string;
   share: number;
   introEn: string;
   introFa: string;
@@ -537,16 +541,18 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Two origins, blended for depth.",
       titleFa: "دو خاستگاه، آمیخته برای عمق.",
       introEn:
-        "Our house espresso pairs a chocolate-heavy Colombian with a bright, floral Ethiopian, so it holds its own against ice and milk.",
+        "Our house espresso pairs a chocolate-heavy Colombian with a bright, floral Ethiopian, so it holds its own under milk, ice and every flavor on the menu.",
       introFa:
-        "اسپرسوی خانگی ما کلمبیای شکلاتی را با اتیوپیِ روشن و گلی جفت می‌کند تا زیر یخ و شیر کم نیاورد. — TODO(review)",
+        "اسپرسوی خانگی ما کلمبیای شکلاتیِ سنگین را با اتیوپیِ روشن و گلی جفت می‌کند تا زیر شیر، یخ و هر طعمی در منو کم نیاورد. — TODO(review)",
       cards: [
         {
-          nameEn: "Huila, Colombia",
-          nameFa: "هویلا، کلمبیا",
+          nameEn: "Huila",
+          nameFa: "هویلا",
+          regionEn: "Colombia",
+          regionFa: "کلمبیا",
           share: 60,
-          introEn: "Grown around 1,700 meters on the Andean slopes of southern Colombia, this washed coffee gives the blend its chocolatey backbone.",
-          introFa: "در ارتفاع حدود ۱٬۷۰۰ متریِ دامنهٔ آندِ جنوب کلمبیا رشد می‌کند؛ این قهوهٔ شسته، ستون شکلاتیِ ترکیب است. — TODO(review)",
+          introEn: "Grown around 1,700 meters on the Andean slopes of southern Colombia, this washed coffee gives the blend its cocoa backbone and a long caramel finish.",
+          introFa: "در ارتفاع حدود ۱٬۷۰۰ متریِ دامنهٔ آندِ جنوب کلمبیا رشد می‌کند؛ این قهوهٔ شسته ستون کاکائوییِ ترکیب را می‌سازد و پایانی طولانی از کارامل دارد. — TODO(review)",
           facts: [
             { labelEn: "Altitude", labelFa: "ارتفاع", valueEn: "1,700 m", valueFa: "۱٬۷۰۰ متر" },
             { labelEn: "Process", labelFa: "فرآوری", valueEn: "Washed", valueFa: "شسته" },
@@ -554,11 +560,13 @@ export const BRANDS: Record<Brand, BrandData> = {
           ],
         },
         {
-          nameEn: "Sidama, Ethiopia",
-          nameFa: "سیداما، اتیوپی",
+          nameEn: "Sidama",
+          nameFa: "سیداما",
+          regionEn: "Ethiopia",
+          regionFa: "اتیوپی",
           share: 40,
-          introEn: "From smallholder farms near 2,000 meters, this natural process coffee adds a lift of jasmine and blueberry.",
-          introFa: "از مزارع کوچک نزدیک ۲٬۰۰۰ متر؛ این قهوهٔ طبیعی، بلندیِ یاس و بلوبری اضافه می‌کند. — TODO(review)",
+          introEn: "From smallholder farms near 2,000 meters, this natural process coffee adds a lift of jasmine and blueberry that keeps every latte bright.",
+          introFa: "از مزارع کوچک نزدیک ۲٬۰۰۰ متر؛ این قهوهٔ طبیعی، بلندیِ یاس و بلوبری می‌افزاید که هر لاته را روشن نگه می‌دارد. — TODO(review)",
           facts: [
             { labelEn: "Altitude", labelFa: "ارتفاع", valueEn: "2,000 m", valueFa: "۲٬۰۰۰ متر" },
             { labelEn: "Process", labelFa: "فرآوری", valueEn: "Natural", valueFa: "طبیعی" },
@@ -664,32 +672,36 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Two gardens, blended for balance.",
       titleFa: "دو باغ، آمیخته برای تعادل.",
       introEn:
-        "We pair a deep, savory Uji matcha with a brighter Nishio matcha, so the drink is smooth, grassy and never bitter.",
+        "We pair a deep, savory Uji matcha with a brighter Nishio harvest, so every drink stays vivid under milk, ice and fruit.",
       introFa:
-        "ماچای عمیق و خوش‌طعم اوجی را با ماچای روشن‌تر نیشیو جفت می‌کنیم تا نوشیدنی نرم، علفی و هرگز تلخ نباشد. — TODO(review)",
+        "ماچای عمیق و خوش‌طعم اوجی را با برداشت روشن‌تر نیشیو جفت می‌کنیم تا هر نوشیدنی زیر شیر، یخ و میوه زنده بماند. — TODO(review)",
       cards: [
         {
-          nameEn: "Uji, Kyoto",
-          nameFa: "اوجی، کیوتو",
+          nameEn: "Uji",
+          nameFa: "اوجی",
+          regionEn: "Kyoto, Japan",
+          regionFa: "کیوتو، ژاپن",
           share: 60,
-          introEn: "A deep, savory matcha from Uji's shaded gardens, with a smooth, umami-rich finish.",
-          introFa: "ماچای عمیق و خوش‌طعم از باغ‌های سایه‌دار اوجی، با پایانی نرم و سرشار از اومامی. — TODO(review)",
+          introEn: "Grown in the misty hills south of Kyoto, where tea has been shaded and stone-milled for centuries, Uji matcha gives the blend its deep umami and creamy body.",
+          introFa: "در تپه‌های مه‌آلود جنوب کیوتو رشد می‌کند، جایی که چای قرن‌هاست در سایه می‌ماند و با آسیاب‌سنگی پودر می‌شود؛ ماچای اوجی عمق اومامی و بدنهٔ خامه‌ایِ ترکیب را می‌سازد. — TODO(review)",
           facts: [
-            { labelEn: "Shaded", labelFa: "سایه", valueEn: "21 days", valueFa: "۲۱ روز" },
             { labelEn: "Harvest", labelFa: "برداشت", valueEn: "First flush", valueFa: "برداشت اول" },
-            { labelEn: "Notes", labelFa: "نت‌ها", valueEn: "Umami, seaweed", valueFa: "اومامی، جلبک" },
+            { labelEn: "Shading", labelFa: "سایه", valueEn: "21 days", valueFa: "۲۱ روز" },
+            { labelEn: "Notes", labelFa: "نت‌ها", valueEn: "Umami, sweet grass", valueFa: "اومامی، علف شیرین — TODO(review)" },
           ],
         },
         {
-          nameEn: "Nishio, Aichi",
-          nameFa: "نیشیو، آیچی",
+          nameEn: "Nishio",
+          nameFa: "نیشیو",
+          regionEn: "Aichi, Japan",
+          regionFa: "آیچی، ژاپن",
           share: 40,
-          introEn: "A brighter matcha from Nishio's flat tea fields, with gentle grassy notes and a clean, fresh finish.",
-          introFa: "ماچای روشن‌تر از مزارع مسطح چای نیشیو، با نت‌های ملایم علفی و پایانی تمیز و تازه. — TODO(review)",
+          introEn: "From the river plains of Aichi, Nishio matcha adds a bright jade color and a clean, lightly floral finish that stays vivid under fruit.",
+          introFa: "از دشت‌های رودخانه‌ای آیچی؛ ماچای نیشیو رنگ یشمیِ روشن و پایانی تمیز و کمی گلی می‌افزاید که زیر میوه زنده می‌ماند. — TODO(review)",
           facts: [
-            { labelEn: "Shaded", labelFa: "سایه", valueEn: "20 days", valueFa: "۲۰ روز" },
             { labelEn: "Harvest", labelFa: "برداشت", valueEn: "First flush", valueFa: "برداشت اول" },
-            { labelEn: "Notes", labelFa: "نت‌ها", valueEn: "Grass, green apple", valueFa: "علف، سیب سبز" },
+            { labelEn: "Shading", labelFa: "سایه", valueEn: "20 days", valueFa: "۲۰ روز" },
+            { labelEn: "Notes", labelFa: "نت‌ها", valueEn: "Floral, sweet pea", valueFa: "گلی، نخود شیرین — TODO(review)" },
           ],
         },
       ],

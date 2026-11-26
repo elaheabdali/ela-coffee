@@ -15,6 +15,8 @@ export interface LocaleStrings {
   brandCoffee: string;
   brandMatcha: string;
   allFlavors: string;
+  /** Wheel group label ("Flavors"). */
+  flavors: string;
   tastingNotes: string;
   surpriseMe: string;
   counterInitial: string;
@@ -26,10 +28,15 @@ export interface LocaleStrings {
   priceTwo: string;
   /** Hero price chip (add button) for the first drink, Ela Original. */
   chipAdd: string;
-  /** Hero price chip for Dark Mocha (the dot-click target). */
+  /** Hero price chip for Dark Mocha (the tile-click target). */
   chipAddMocha: string;
-  /** Flavour dot for Dark Mocha. */
-  dotMocha: string;
+  /** Pill bag button with exactly 1 drink in the bag. */
+  bagButton: string;
+  /** Menu-card Add button for the first drink, Ela Original. */
+  cardAdd: string;
+  /** Menu-card Add button text while resting / after adding. */
+  cardAddToBag: string;
+  cardAdded: string;
   /** First drink in midori mode (the tasting-notes dialog name). */
   drinkNameMidori: string;
   bagOpen: string;
@@ -54,6 +61,8 @@ export interface LocaleStrings {
   drawerClose: string;
   dialogClose: string;
   dialogAddToBag: string;
+  /** Tasting-notes panel Add button while its transient state shows. */
+  dialogAddedToBag: string;
   navStory: string;
   joinSubmit: string;
   joinSuccess: string;
@@ -74,18 +83,22 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     brandCoffee: "قهوه",
     brandMatcha: "ماچا",
     allFlavors: "همهٔ طعم‌ها",
+    flavors: "طعم‌ها",
     tastingNotes: "یادداشت‌های طعم",
     surpriseMe: "سورپرایزم کن",
-    counterInitial: "۱ / ۶",
+    counterInitial: "۰۱ / ۰۶",
     // RTL: ArrowRight moves to the previous flavour (wraps 0 → 5).
-    counterAfterArrowRight: "۶ / ۶",
+    counterAfterArrowRight: "۰۶ / ۰۶",
     drinkName: "الا اورجینال",
     drinkNotes: ["کاکائوی تلخ — TODO(review)", "بادام برشته — TODO(review)", "شکر قهوه‌ای — TODO(review)"],
     priceOne: "۱۸۰٬۰۰۰ تومان",
     priceTwo: "۳۶۰٬۰۰۰ تومان",
     chipAdd: "«الا اورجینال» را به سبد اضافه کن",
     chipAddMocha: "«موکای تلخ» را به سبد اضافه کن",
-    dotMocha: "موکای تلخ",
+    cardAdd: "«الا اورجینال» را به سبد اضافه کن، ۱۸۰٬۰۰۰ تومان",
+    cardAddToBag: "افزودن به سبد",
+    cardAdded: "به سبد اضافه شد",
+    bagButton: "سبد تو, ۱ نوشیدنی",
     drinkNameMidori: "میدوری اورجینال",
     bagOpen: "باز کردن سبد",
     bagTitle: "سبد تو",
@@ -108,6 +121,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     drawerClose: "بستن منو",
     dialogClose: "بستن",
     dialogAddToBag: "افزودن به سبد",
+    dialogAddedToBag: "به سبد اضافه شد",
     navStory: "داستان ما",
     joinSubmit: "عضویت در فهرست",
     joinSuccess: "عضو فهرست شدی!",
@@ -125,18 +139,22 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     brandCoffee: "Coffee",
     brandMatcha: "Matcha",
     allFlavors: "All flavors",
+    flavors: "Flavors",
     tastingNotes: "Tasting notes",
     surpriseMe: "Surprise me",
-    counterInitial: "1 / 6",
+    counterInitial: "01 / 06",
     // LTR: ArrowRight moves to the next flavour (0 → 1).
-    counterAfterArrowRight: "2 / 6",
+    counterAfterArrowRight: "02 / 06",
     drinkName: "Ela Original",
     drinkNotes: ["Dark cocoa", "Toasted almond", "Brown sugar"],
     priceOne: "180,000 T",
     priceTwo: "360,000 T",
     chipAdd: "Add Ela Original to your bag",
     chipAddMocha: "Add Dark Mocha to your bag",
-    dotMocha: "Dark Mocha",
+    cardAdd: "Add Ela Original to your bag, 180,000 T",
+    cardAddToBag: "Add to bag",
+    cardAdded: "Added to your bag",
+    bagButton: "Your bag, 1 drink",
     drinkNameMidori: "Midori Original",
     bagOpen: "Open bag",
     bagTitle: "Your bag",
@@ -159,6 +177,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     drawerClose: "Close menu",
     dialogClose: "Close",
     dialogAddToBag: "Add to bag",
+    dialogAddedToBag: "Added to your bag",
     navStory: "Story",
     joinSubmit: "Join the list",
     joinSuccess: "You're on the list!",
@@ -184,6 +203,24 @@ export function wheelStage(page: Page, locale: Locale) {
   return page.getByRole("region", { name: LOCALES[locale].heroTitle });
 }
 
+/**
+ * Wait until the client has hydrated: the keyboard handler, the bag
+ * buttons and every other client effect live in passive effects, so
+ * a click or key pressed before hydration finishes is silently lost.
+ * The React fiber key appears when hydration starts, but the effects
+ * register after commit — so wait for the network to settle AND the
+ * fiber AND a short settle. Without this the hero/menu tests flake
+ * under load (fix batch 9).
+ */
+export async function waitForHydration(page: Page): Promise<void> {
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(() => {
+    const stage = document.querySelector('[data-testid="hero-stage"]');
+    return !!stage && Object.keys(stage).some((key) => key.startsWith("__reactFiber$"));
+  });
+  await page.waitForTimeout(500);
+}
+
 /** The bag-count badge (renders only when the bag is non-empty). */
 export function bagCountBadge(page: Page) {
   return page.getByTestId("bag-count").first();
@@ -196,14 +233,25 @@ export async function addCurrentFlavourViaDialog(page: Page, locale: Locale): Pr
   const dialog = page.getByRole("dialog", { name: t.drinkName });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: t.dialogAddToBag }).click();
+  // The panel stays open on add (reference behaviour) showing the
+  // transient "Added to your bag" state; Escape closes it.
+  await expect(dialog.getByRole("button", { name: t.dialogAddedToBag })).toBeVisible();
+  await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await expect(bagCountBadge(page)).toBeVisible();
 }
 
-/** Open the bag drawer (from the header pill) and return its dialog. */
+/**
+ * Open the bag drawer and return its dialog. The header pill's bag
+ * button opens the anchored bag panel (reference behaviour); the
+ * panel's Checkout button opens the drawer with the real order flow.
+ */
 export async function openBag(page: Page, locale: Locale) {
   const t = LOCALES[locale];
-  await page.getByRole("button", { name: t.bagOpen }).first().click();
+  await page.getByRole("button", { name: t.bagButton }).click();
+  const panel = page.getByRole("dialog", { name: t.bagTitle });
+  await expect(panel).toBeVisible();
+  await panel.getByRole("button", { name: t.checkoutTitle }).click();
   const dialog = page.getByRole("dialog", { name: t.bagTitle });
   await expect(dialog).toBeVisible();
   return dialog;

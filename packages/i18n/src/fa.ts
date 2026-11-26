@@ -32,6 +32,10 @@ export const fa = {
     pauseMotion: "توقف حرکت شناور",
     playMotion: "پخش حرکت",
     addToBagWithPrice: "«{name}» را به سبد اضافه کن — {price}",
+    flavors: "طعم‌ها",
+    chooseFlavor: "{name} را انتخاب کن",
+    flavorSelected: "«{name}» انتخاب شد — {price}",
+    flavorAdded: "«{name}» به سبدت اضافه شد",
   },
   menu: {
     eyebrow: "منو",
@@ -44,6 +48,10 @@ export const fa = {
   join: {
     eyebrow: "به فهرست بپیوند",
     title: "اولین نفر باش که طعم‌های تازه را می‌چشد.",
+    // NOTE: dictionaries must not carry TODO(review) — see
+    // dictionaries.test.ts ("no TODO markers"); the flag rule
+    // applies to the flavours.ts dataset strings only.
+    intro: "طعم‌های تازه هر فصل می‌رسند. ایمیلت را بگذار تا روزی که به منو می‌رسند، خبرت کنیم.",
     emailLabel: "نشانی ایمیل",
     emailHelper: "فقط وقتی طعم تازه‌ای می‌آید برایت می‌نویسیم.",
     submit: "عضویت در فهرست",
@@ -144,6 +152,11 @@ export const fa = {
     subtotal: "جمع اقلام",
     clear: "خالی کردن سبد",
     added: "به سبدت اضافه شد.",
+    emptyLabel: "سبد تو، خالی است",
+    oneDrink: "۱ نوشیدنی",
+    drinksCount: "{count} نوشیدنی",
+    removeOne: "کم کردن یک «{name}»",
+    addOneMore: "اضافه کردن یک «{name}» دیگر",
     open: "باز کردن سبد",
     decrease: "کم کردن تعداد",
     increase: "زیاد کردن تعداد",
@@ -155,6 +168,10 @@ export const fa = {
     caffeine: "کافئین",
     price: "قیمت",
     addToBag: "افزودن به سبد",
+    // Shared with the flavour-dialog Add button (batch 9) — see en.ts.
+    // No TODO(review) flag here: dictionaries.test.ts forbids TODO
+    // markers in any dictionary leaf.
+    addedToBag: "به سبد اضافه شد",
     close: "بستن",
   },
   drawer: {

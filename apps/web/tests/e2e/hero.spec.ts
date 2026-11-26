@@ -1,5 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
-import { bagCountBadge, gotoLocale, LOCALES, wheelStage, type Locale } from "./locales";
+import {
+  bagCountBadge,
+  gotoLocale,
+  LOCALES,
+  waitForHydration,
+  wheelStage,
+  type Locale,
+} from "./locales";
 
 const LOCALE_LIST: Locale[] = ["fa", "en"];
 
@@ -25,8 +32,12 @@ for (const locale of LOCALE_LIST) {
       // exact: the flavour dot "دارچین و شکر قهوه‌ای" contains "قهوه"
       // as a substring, so a loose name match resolves to 2 buttons.
       await expect(page.getByRole("button", { name: t.brandCoffee, exact: true })).toBeVisible();
-      // The scroll cue and the flavour dots are present.
-      await expect(page.getByRole("group", { name: t.allFlavors })).toBeVisible();
+      // The scroll cue and the flavour wheel are present. The wheel
+      // group itself is the reference's size-0 container (its tiles
+      // overflow it), so Playwright reports it hidden — assert a
+      // reachable tile is visible instead of the group.
+      await expect(page.getByRole("group", { name: t.flavors })).toHaveCount(1);
+      await expect(page.locator('button[data-slot="1"]')).toBeVisible();
     });
 
     test("brand toggle flips html[data-brand] coffee ↔ matcha", async ({ page }) => {
@@ -52,6 +63,11 @@ for (const locale of LOCALE_LIST) {
 
     test("wheel keyboard navigation moves the flavour counter", async ({ page }) => {
       await gotoLocale(page, locale);
+      // The keyboard handler lives in a client effect (the reference's
+      // window-level handler), so a key pressed before hydration
+      // finishes is lost. The stage itself is not focusable — the
+      // handler is window-level.
+      await waitForHydration(page);
       const stage = wheelStage(page, locale);
       await stage.focus();
       await page.keyboard.press("ArrowRight");
@@ -80,7 +96,7 @@ for (const locale of LOCALE_LIST) {
       await expect(drawer).toHaveCount(0);
     });
 
-    test("tasting-notes dialog shows exactly 3 notes for the current drink", async ({ page }) => {      await gotoLocale(page, locale);
+    test("tasting-notes panel shows exactly 3 notes for the current drink", async ({ page }) => {      await gotoLocale(page, locale);
       await page.getByRole("button", { name: t.tastingNotes }).click();
       const dialog = page.getByRole("dialog", { name: t.drinkName });
       await expect(dialog).toBeVisible();
@@ -89,10 +105,12 @@ for (const locale of LOCALE_LIST) {
       for (const note of t.drinkNotes) {
         await expect(dialog.getByText(note, { exact: true })).toBeVisible();
       }
-      // The dialog price matches the dataset price.
-      await expect(dialog.getByText(t.priceOne)).toBeVisible();
+      // The dialog price matches the dataset price (in the stats strip;
+      // the Add button shows the same price a second time).
+      await expect(dialog.locator("dl").getByText(t.priceOne)).toBeVisible();
 
-      await dialog.getByRole("button", { name: t.dialogClose }).click();
+      // The reference panel has no close button: Escape closes it.
+      await page.keyboard.press("Escape");
       await expect(dialog).toHaveCount(0);
     });
 
@@ -132,10 +150,40 @@ for (const locale of LOCALE_LIST) {
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
     });
 
-    test("clicking a flavour dot changes the flavour", async ({ page }) => {
+    test("clicking a flavour tile changes the flavour", async ({ page }) => {
       await gotoLocale(page, locale);
-      await page.getByRole("button", { name: t.dotMocha, exact: true }).click({ force: true });
+      // The tile's click handler is a client effect: a click before
+      // hydration finishes is silently lost (fix batch 9 — same race
+      // as the keyboard and menu-card tests).
+      await waitForHydration(page);
+      // Dark Mocha is index 4: at index 0 its reachable tile is slot -2
+      // (the +4 copy is unreachable, aria-hidden).
+      await page.locator('button[data-slot="-2"]').click({ force: true });
       await expect(heroChip(page, t.chipAddMocha)).toBeVisible();
+    });
+
+    test("menu card Add shows a brief check, hides the price, then reverts", async ({ page }) => {
+      await gotoLocale(page, locale);
+      // The card's click handler is a client effect: a click before
+      // hydration finishes is silently lost (fix batch 9).
+      await waitForHydration(page);
+      // The hero chip shares this button's accessible name, so scope
+      // to the #menu section to pick the card, not the chip.
+      const card = page.locator("#menu").getByRole("button", { name: t.cardAdd }).first();
+      await card.scrollIntoViewIfNeeded();
+      await card.click();
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
+      await expect(card.locator(".lucide-check")).toHaveCount(1);
+      await expect(card.locator(".lucide-shopping-bag")).toHaveCount(0);
+      await expect(card).toContainText(t.cardAdded);
+      await expect(card).toHaveClass(/bg-crema/);
+      await expect(card.locator("span.tabular-nums")).toHaveCount(0);
+      // The check reverts on its own after ~1.4 s; the drink stays.
+      await expect(card.locator(".lucide-check")).toHaveCount(0);
+      await expect(card.locator(".lucide-shopping-bag")).toHaveCount(1);
+      await expect(card).toContainText(t.cardAddToBag);
+      await expect(card.locator("span.tabular-nums")).toHaveCount(1);
+      await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
     });
 
     test("a second chip click makes 2 in the bag and shows the check briefly again", async ({ page }) => {

@@ -7,10 +7,14 @@
  * - The total is computed server-side from data-layer prices — any
  *   total sent by the client is stripped by Zod and ignored.
  * - A payment is created through PaymentPort (Mock by default: no
- *   network, no real money). In mock mode the verification is also
- *   simulated here, so payment becomes PAID; in Zarinpal mode the
- *   customer must pay on Zarinpal's page first and verification
- *   happens at the callback (not built in v1 — see the Phase 6 doc).
+ *   network, no real money). The order stays PENDING until the
+ *   customer pays on the gateway page and verification happens at
+ *   GET /api/payments/callback (batch 9, item 6), which marks the
+ *   order PAID / FAILED and redirects to the result page — the Mock
+ *   gateway (/payment/mock) simulates Zarinpal's StartPay page, and
+ *   the sandbox provider does the same against sandbox.zarinpal.com.
+ *   The client redirects to the gateway URL when the order response
+ *   reports the payment as unverified (see BagDrawer).
  * - Honeypot + in-memory rate limit (10/min per IP).
  */
 import { NextResponse } from "next/server";
@@ -98,18 +102,13 @@ export async function POST(request: Request): Promise<NextResponse> {
   const payment = await provider.createPayment(order);
   await updateOrderPayment(order.id, "PENDING", payment.authority);
 
-  // Mock mode only: simulate the customer returning from the gateway
-  // and the verification succeeding. Zarinpal mode leaves the payment
-  // PENDING until the real callback verifies it.
-  let verified = false;
-  if (process.env.PAYMENT_PROVIDER !== "zarinpal") {
-    const result = await provider.verifyPayment(payment.authority, order.totalToman);
-    verified = result.verified;
-    if (verified) {
-      const paid = await updateOrderPayment(order.id, "PAID", payment.authority);
-      if (paid) order = paid;
-    }
-  }
+  // The order stays PENDING here by design (batch 9, item 6): the
+  // payment is only marked PAID by GET /api/payments/callback after
+  // the customer pays on the gateway page and the gateway verifies
+  // it. Verifying immediately at creation would make the gateway
+  // — and the cancel path (Status=NOK → FAILED) — unreachable, and
+  // the Mock would no longer mirror the real Zarinpal flow.
+  const verified = false;
 
   return NextResponse.json(
     { order, payment: { authority: payment.authority, url: payment.url, verified } },

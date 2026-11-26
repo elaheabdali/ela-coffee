@@ -70,22 +70,26 @@ for (const locale of LOCALE_LIST) {
       await dialog.getByLabel(t.phoneLabel).fill("09123456789");
       await dialog.getByRole("button", { name: t.checkoutSubmit }).click();
 
-      // Tracking view: order number + RECEIVED status + server total.
-      // The client never sends a total — the total shown here is the
-      // one the server computed from its own prices (180,000 for one
-      // Ela Original), which is the point of this assertion. All
-      // assertions are scoped to the bag dialog: the hero behind it
-      // shows the same price text.
-      await expect(dialog.getByRole("heading", { name: t.trackingTitle })).toBeVisible();
-      await expect(dialog.getByText(t.orderNumberLabel)).toBeVisible();
-      const orderId = dialog.locator('span[dir="ltr"]', { hasText: /^[A-Za-z0-9_-]{8,}$/ }).first();
-      await expect(orderId).toBeVisible();
-      await expect(dialog.getByText(t.statusReceived)).toBeVisible();
-      // Line total + order total, both 180,000. The Mock payment
-      // completes the payment immediately (orders/route.ts), so the
-      // order shows as Paid — no real money moves.
-      await expect(dialog.getByText(t.priceOne)).toHaveCount(2);
-      await expect(dialog.getByText(t.paymentPaid)).toBeVisible();
+      // The checkout redirects to the Mock gateway (standing in for
+      // Zarinpal's StartPay page); paying there returns via the
+      // callback to the success page with the order id.
+      await expect(page.getByTestId("mock-pay-success")).toBeVisible();
+      await page.getByTestId("mock-pay-success").click();
+      await expect(page).toHaveURL(new RegExp(`/${locale}/payment/success\\?order=`));
+      const orderId = await page.locator("main span[dir='ltr']").first().innerText();
+      await expect(orderId).toMatch(/^[A-Za-z0-9_-]{8,}$/);
+
+      // The server computed the total from its own prices (180,000 for
+      // one Ela Original) and the callback marked the order PAID — the
+      // client never sent a total, which is the point of this assertion.
+      const created = await page.request.get(`/api/orders/${orderId}`);
+      expect(created.status()).toBe(200);
+      const data = (await created.json()) as {
+        order: { totalToman: number; payment: string; status: string };
+      };
+      expect(data.order.totalToman).toBe(180_000);
+      expect(data.order.payment).toBe("PAID");
+      expect(data.order.status).toBe("RECEIVED");
     });
 
     test("checkout rejects an invalid phone without creating an order", async ({ page }) => {

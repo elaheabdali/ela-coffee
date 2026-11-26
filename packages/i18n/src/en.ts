@@ -31,6 +31,10 @@ export const en = {
     pauseMotion: "Pause floating motion",
     playMotion: "Play motion",
     addToBagWithPrice: "Add {name} to your bag, {price}",
+    flavors: "Flavors",
+    chooseFlavor: "Choose {name}",
+    flavorSelected: "{name} selected, {price}",
+    flavorAdded: "{name} added to your bag",
   },
   menu: {
     eyebrow: "The menu",
@@ -43,6 +47,7 @@ export const en = {
   join: {
     eyebrow: "Join the list",
     title: "Be first to taste what's next.",
+    intro: "New flavors land every season. Leave your email and we'll tell you the day they reach the menu.",
     emailLabel: "Email address",
     emailHelper: "We only write when there's a new flavor.",
     submit: "Join the list",
@@ -143,6 +148,11 @@ export const en = {
     subtotal: "Subtotal",
     clear: "Clear bag",
     added: "added to your bag.",
+    emptyLabel: "Your bag, empty",
+    oneDrink: "1 drink",
+    drinksCount: "{count} drinks",
+    removeOne: "Remove one {name}",
+    addOneMore: "Add one more {name}",
     open: "Open bag",
     decrease: "Decrease quantity",
     increase: "Increase quantity",
@@ -154,6 +164,10 @@ export const en = {
     caffeine: "Caffeine",
     price: "Price",
     addToBag: "Add to bag",
+    // Shared with the flavour-dialog Add button (batch 9): the dialog
+    // keeps bg-cream and hides the price while active; the menu card
+    // switches to bg-crema instead.
+    addedToBag: "Added to your bag",
     close: "Close",
   },
   drawer: {
