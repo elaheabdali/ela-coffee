@@ -10,6 +10,12 @@ export interface RevealProps {
   /** Extra delay before the reveal animation, in milliseconds. */
   delayMs?: number;
   className?: string;
+  /**
+   * Element to render (fix batch 7): the menu grid is a `ul`, so its
+   * items must be `li` carrying `data-reveal="image"` exactly like the
+   * reference — a `div` between `ul` and `li` would break the list.
+   */
+  as?: "div" | "li";
 }
 
 /**
@@ -28,8 +34,9 @@ export function Reveal({
   variant = "fade-up",
   delayMs = 0,
   className = "",
+  as = "div",
 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -63,9 +70,10 @@ export function Reveal({
   // `data-revealed` is set imperatively by the effect above (not as a
   // React prop), so the attribute is never rendered by SSR — without JS
   // the element has no `data-reveal` and stays visible.
+  const Tag = as;
   return (
-    <div ref={ref} style={style} className={className}>
+    <Tag ref={ref as never} style={style} className={className}>
       {children}
-    </div>
+    </Tag>
   );
 }

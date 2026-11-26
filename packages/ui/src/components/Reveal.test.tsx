@@ -41,4 +41,17 @@ describe("Reveal", () => {
       "--reveal-delay: 450ms",
     );
   });
+
+  it("renders an li when as='li' (menu grid items, fix batch 7)", () => {
+    render(
+      <ul>
+        <Reveal as="li" variant="image">
+          <p>Item</p>
+        </Reveal>
+      </ul>,
+    );
+    const item = screen.getByText("Item");
+    expect(item.parentElement?.tagName).toBe("LI");
+    expect(item.parentElement).toHaveAttribute("data-reveal", "image");
+  });
 });

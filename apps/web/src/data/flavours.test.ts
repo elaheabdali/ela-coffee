@@ -50,7 +50,7 @@ describe("flavours dataset", () => {
     }
   });
 
-  it("flags exactly the 37 uncertain Persian strings with TODO(review)", () => {
+  it("flags exactly the 73 uncertain Persian strings with TODO(review)", () => {
     const flagged: string[] = [];
     const walk = (value: unknown): void => {
       if (typeof value === "string") {
@@ -62,12 +62,13 @@ describe("flavours dataset", () => {
       }
     };
     walk(BRANDS);
-    // 12 drink descriptions + 4 story bodies + 2 menu intros +
-    // 8 process bodies + 2 origins intros + 4 origin-card intros +
-    // 1 midori story title + 1 midori badge caption + 3 midori stat
-    // labels (fix batch 6 — the reference wording for the midori story
-    // was restored, so its new Persian strings are unreviewed too).
-    expect(flagged).toHaveLength(37);
+    // 12 drink descriptions + 36 tasting notes + 4 story bodies +
+    // 2 menu intros + 8 process bodies + 2 origins intros +
+    // 4 origin-card intros + 1 midori story title + 1 midori badge
+    // caption + 3 midori stat labels. The tasting notes were never
+    // flagged before fix batch 7; the menu rebuild restored the
+    // reference's note wording, so all 36 fa notes are unreviewed.
+    expect(flagged).toHaveLength(73);
     for (const s of flagged) {
       expect(s).toMatch(/[\u0600-\u06FF]/);
     }
@@ -127,5 +128,37 @@ describe("flavours dataset", () => {
     for (const drink of ALL_DRINKS) {
       expect(drink.image).toMatch(/^\/images\//);
     }
+  });
+
+  it("gives every drink a sprite-sheet cell on its brand's sheet (fix batch 7)", () => {
+    // The reference crops one cell of a 3×2 sprite sheet per card:
+    // inner span 390% × 260% with left in {-15, -145, -275} and
+    // top in {-15, -145} (percent). The offsets are keyed by drink,
+    // not by index, so reordering never remaps a tile.
+    const xs = new Set([-15, -145, -275]);
+    const ys = new Set([-15, -145]);
+    for (const drink of ALL_DRINKS) {
+      expect(xs.has(drink.sprite.x)).toBe(true);
+      expect(ys.has(drink.sprite.y)).toBe(true);
+    }
+    expect(BRANDS.ela.spriteSheet).toBe("/images/ingredients.webp");
+    // Midori's sheet is the cream-background version keyed from the
+    // supplied blue-key art (fix7-check/key-v2-cream.py): the raw
+    // v2-key sheet is the same 6 ingredients on a blue screen, while
+    // the reference sheet — and the thumbnails — are on cream.
+    expect(BRANDS.midori.spriteSheet).toBe("/images/ingredients-v2.webp");
+    // Each brand shows 6 different cells, one per drink.
+    for (const brand of ["ela", "midori"] as const) {
+      const cells = BRANDS[brand].drinks.map((d) => `${d.sprite.x},${d.sprite.y}`);
+      expect(new Set(cells).size).toBe(6);
+    }
+  });
+
+  it("offers Coconut milk for matcha and Almond for coffee (fix batch 7)", () => {
+    const milk = (brand: "ela" | "midori") =>
+      BRANDS[brand].makeItYours.find((g) => g.labelEn === "Milk");
+    expect(milk("ela")?.optionsEn).toEqual(["Whole", "Oat", "Almond"]);
+    expect(milk("midori")?.optionsEn).toEqual(["Whole", "Oat", "Coconut"]);
+    expect(milk("midori")?.optionsFa).toEqual(["کامل", "جو دوسر", "نارگیل"]);
   });
 });

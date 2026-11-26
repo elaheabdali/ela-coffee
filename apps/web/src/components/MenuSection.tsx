@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ArrowUpRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Eyebrow, Reveal, WordReveal } from "@ela-coffee/ui";
 import { ALL_DRINKS, BRANDS } from "@/data/flavours";
@@ -10,9 +11,19 @@ import { useBrand } from "@/stores/brand";
 import { MenuCard } from "@/components/MenuCard";
 
 /**
- * Menu section (#menu) — cream section (audit §1.1/§1.2).
- * Six cards from the brand dataset, the wheel link back to #hero,
- * then "Make it yours" with the customisation groups from the data.
+ * Menu section (#menu) — rebuilt class-for-class from the reference
+ * markup (fix batch 7): DARK section (`bg-background`, dark brown in
+ * ela, dark green in midori) with cream text, a header row with the
+ * "Spin the flavor wheel" pill link, six dark `bg-roast` cards, and
+ * the "Make it yours" panel as one bordered box with comma-joined
+ * options.
+ *
+ * Deliberate deviations from the reference's literal classes:
+ * - `font-display` is our theme's Fraunces (the reference's
+ *   `font-heading font-soft` has no equivalent token here).
+ * - The wheel-link arrow uses `rtl:-scale-x-100` so it mirrors in fa;
+ *   the codebase had no prior `rtl:` icon convention to follow.
+ * - "Make it yours" options are joined with ", " in en and "، " in fa.
  *
  * Phase 6: the cards read prices/notes from GET /api/menu via
  * TanStack Query. The static dataset is the placeholderData, so the
@@ -76,64 +87,67 @@ export function MenuSection() {
   }, [data.drinks, menuData]);
 
   return (
-    <section id="menu" className="bg-cream text-espresso">
-      <div className="mx-auto flex max-w-7xl flex-col gap-10 px-5 py-24 sm:px-12 lg:px-16">
-        <div className="flex flex-col gap-4">
-          <Reveal variant="fade-up">
-            {/* text-espresso/70: see Story.tsx — the muted token fails
-                AA on cream (1.99:1). */}
-            <Eyebrow className="text-espresso/70">{tMenu("eyebrow")}</Eyebrow>
-          </Reveal>
-          <WordReveal
-            as="h2"
-            text={isFa ? menu.titleFa : menu.titleEn}
-            className="font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-black tracking-[-0.02em]"
-          />
-          <Reveal variant="fade-up" delayMs={300}>
-            <p className="max-w-2xl leading-relaxed text-espresso/80">
-              {isFa ? menu.introFa : menu.introEn}
-            </p>
-          </Reveal>
-          <Reveal variant="fade-up" delayMs={450}>
+    <section id="menu" aria-labelledby="menu-title" className="bg-background py-24 text-cream lg:py-32">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <Reveal variant="fade-up">
+              <Eyebrow className="tracking-[0.2em] text-crema">{tMenu("eyebrow")}</Eyebrow>
+            </Reveal>
+            <WordReveal
+              as="h2"
+              id="menu-title"
+              text={isFa ? menu.titleFa : menu.titleEn}
+              delayMs={80}
+              className="mt-4 text-balance font-display text-[clamp(2.25rem,5vw,3.75rem)] font-medium leading-[1.02] tracking-[-0.03em]"
+            />
+            <Reveal variant="fade-up" delayMs={260}>
+              <p className="mt-5 text-base leading-relaxed text-cream/65 sm:text-lg">
+                {isFa ? menu.introFa : menu.introEn}
+              </p>
+            </Reveal>
+          </div>
+          <Reveal variant="fade-up" delayMs={350} className="shrink-0">
             <a
               href="#hero"
-              className="w-fit font-medium text-espresso underline decoration-crema decoration-2 underline-offset-4"
+              className="inline-flex w-fit items-center gap-2 rounded-full border border-cream/15 px-5 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
             >
               {tMenu("spinWheel")}
+              <ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
             </a>
           </Reveal>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {drinks.map((drink, index) => (
-            <MenuCard key={drink.id} drink={drink} delayMs={(index % 3) * 150} />
+            <MenuCard key={drink.id} drink={drink} delayMs={(index % 3) * 110} />
           ))}
-        </div>
+        </ul>
 
-        <Reveal variant="fade-up">
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-2xl font-bold">{tMenu("makeItYours")}</h3>
-            <p className="text-sm leading-relaxed text-espresso/70">{tMenu("makeItYoursNote")}</p>
+        <Reveal
+          variant="fade-up"
+          className="mt-16 grid gap-8 rounded-[1.75rem] border border-cream/10 bg-cream/[0.03] p-6 sm:grid-cols-3 sm:p-8 lg:grid-cols-[1.4fr_repeat(3,1fr)] lg:items-center"
+        >
+          <div className="sm:col-span-3 lg:col-span-1">
+            <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">
+              {tMenu("makeItYours")}
+            </h3>
+            <p className="mt-2 text-sm text-cream/60">{tMenu("makeItYoursNote")}</p>
           </div>
-        </Reveal>
-        <div className="grid gap-8 sm:grid-cols-3">
           {data.makeItYours.map((group) => (
-            <Reveal key={group.labelEn} variant="fade-up" delayMs={300}>
-              <div className="flex flex-col gap-3">
-                <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-espresso/60">
-                  {isFa ? group.labelFa : group.labelEn}
-                </h4>
-                <ul className="flex flex-col gap-1.5">
-                  {(isFa ? group.optionsFa : group.optionsEn).map((option) => (
-                    <li key={option} className="text-base">
-                      {option}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
+            <div key={group.labelEn}>
+              {/* text-cream/60, not the reference's cream/45: cream/45
+                  measures 4.02:1 on the panel and fails WCAG AA (4.5:1);
+                  cream/60 is 6.20:1. Same rule as the story eyebrow. */}
+              <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-cream/60">
+                {isFa ? group.labelFa : group.labelEn}
+              </p>
+              <p className="mt-2 text-sm text-cream/85">
+                {(isFa ? group.optionsFa : group.optionsEn).join(isFa ? "، " : ", ")}
+              </p>
+            </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

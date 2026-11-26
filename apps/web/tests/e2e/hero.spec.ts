@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { bagCountBadge, gotoLocale, LOCALES, wheelStage, type Locale } from "./locales";
 
 const LOCALE_LIST: Locale[] = ["fa", "en"];
@@ -6,6 +6,17 @@ const LOCALE_LIST: Locale[] = ["fa", "en"];
 for (const locale of LOCALE_LIST) {
   test.describe(`hero /${locale}`, () => {
     const t = LOCALES[locale];
+
+    // Fix batch 7: the menu card's Add button shares the hero chip's
+    // aria-label prefix ("Add {name} to your bag, {price}" — the
+    // reference uses the same label in both places), so an unscoped
+    // chip locator resolves to 2 buttons. Scope to the hero region
+    // (labelled by the hero title) to pick the chip, not the card.
+    function heroChip(page: Page, name: string) {
+      return page
+        .getByRole("region", { name: t.heroTitle })
+        .getByRole("button", { name });
+    }
 
     test("page loads with the hero heading and the first flavour", async ({ page }) => {
       await gotoLocale(page, locale);
@@ -110,7 +121,7 @@ for (const locale of LOCALE_LIST) {
       page,
     }) => {
       await gotoLocale(page, locale);
-      const chip = page.getByRole("button", { name: t.chipAdd });
+      const chip = heroChip(page, t.chipAdd);
       await chip.click({ force: true });
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
       await expect(chip.locator(".lucide-check")).toHaveCount(1);
@@ -124,12 +135,12 @@ for (const locale of LOCALE_LIST) {
     test("clicking a flavour dot changes the flavour", async ({ page }) => {
       await gotoLocale(page, locale);
       await page.getByRole("button", { name: t.dotMocha, exact: true }).click({ force: true });
-      await expect(page.getByRole("button", { name: t.chipAddMocha })).toBeVisible();
+      await expect(heroChip(page, t.chipAddMocha)).toBeVisible();
     });
 
     test("a second chip click makes 2 in the bag and shows the check briefly again", async ({ page }) => {
       await gotoLocale(page, locale);
-      const chip = page.getByRole("button", { name: t.chipAdd });
+      const chip = heroChip(page, t.chipAdd);
       await chip.click({ force: true });
       await expect(bagCountBadge(page)).toHaveText(locale === "fa" ? "۱" : "1");
       await chip.click({ force: true });

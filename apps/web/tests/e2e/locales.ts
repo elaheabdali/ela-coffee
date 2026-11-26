@@ -80,7 +80,7 @@ export const LOCALES: Record<Locale, LocaleStrings> = {
     // RTL: ArrowRight moves to the previous flavour (wraps 0 → 5).
     counterAfterArrowRight: "۶ / ۶",
     drinkName: "الا اورجینال",
-    drinkNotes: ["کاکائوی تلخ", "بادام برشته", "شکر قهوه‌ای"],
+    drinkNotes: ["کاکائوی تلخ — TODO(review)", "بادام برشته — TODO(review)", "شکر قهوه‌ای — TODO(review)"],
     priceOne: "۱۸۰٬۰۰۰ تومان",
     priceTwo: "۳۶۰٬۰۰۰ تومان",
     chipAdd: "«الا اورجینال» را به سبد اضافه کن",

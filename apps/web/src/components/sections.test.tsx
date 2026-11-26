@@ -159,9 +159,25 @@ describe("MenuSection", () => {
     expect(screen.getByRole("heading", { level: 3, name: "Dark Mocha" })).toBeInTheDocument();
     expect(screen.getByText("Make it yours")).toBeInTheDocument();
     expect(screen.getByText("Every swap is free. Just ask when you order.")).toBeInTheDocument();
-    expect(screen.getByText("Whole")).toBeInTheDocument();
-    expect(screen.getByText("Unsweetened")).toBeInTheDocument();
-    expect(screen.getByText("20 oz")).toBeInTheDocument();
+    // Options are one comma-joined line per group (reference markup),
+    // not separate list items.
+    expect(screen.getByText("Whole, Oat, Almond")).toBeInTheDocument();
+    expect(screen.getByText("Full, Half, Unsweetened")).toBeInTheDocument();
+    expect(screen.getByText("12 oz, 16 oz, 20 oz")).toBeInTheDocument();
+  });
+
+  it("links the flavor wheel pill to #hero", () => {
+    renderWithQuery(<MenuSection />, "en");
+    expect(
+      screen.getByRole("link", { name: /Spin the flavor wheel/ }),
+    ).toHaveAttribute("href", "#hero");
+  });
+
+  it("shows the price pill on the card image (en)", () => {
+    renderWithQuery(<MenuSection />, "en");
+    // One pill per card, each showing its Toman price.
+    expect(screen.getByText("180,000 T")).toBeInTheDocument();
+    expect(screen.getByText("205,000 T")).toBeInTheDocument();
   });
 });
 
@@ -304,11 +320,20 @@ describe("MenuCard", () => {
     for (const note of ["Dark cocoa", "Toasted almond", "Brown sugar"]) {
       expect(screen.getByText(note)).toBeInTheDocument();
     }
+    // The price is a pill on the image, not a footer Price component.
+    expect(screen.getByText("180,000 T")).toBeInTheDocument();
+    // The sprite thumbnail is the decorative sprite-sheet img.
+    expect(screen.getByAltText("")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
+    // The button's accessible name is its aria-label (reference:
+    // "Add Kuro Original to your bag, $5.40", Toman here).
+    const addButton = screen.getByRole("button", {
+      name: "Add Ela Original to your bag, 180,000 T",
+    });
+    fireEvent.click(addButton);
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
 
-    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
+    fireEvent.click(addButton);
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
   });
 
@@ -316,6 +341,7 @@ describe("MenuCard", () => {
     const drink = BRANDS.ela.drinks[0];
     renderWithLocale(<MenuCard drink={drink} />, "fa");
     expect(screen.getByRole("heading", { level: 3, name: "الا اورجینال" })).toBeInTheDocument();
-    expect(screen.getByText("کاکائوی تلخ")).toBeInTheDocument();
+    expect(screen.getByText("کاکائوی تلخ — TODO(review)")).toBeInTheDocument();
+    expect(screen.getByText("۱۸۰٬۰۰۰ تومان")).toBeInTheDocument();
   });
 });

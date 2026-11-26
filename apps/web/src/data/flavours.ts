@@ -50,6 +50,13 @@ export interface Drink {
   notesFa: string[];
   /** Scene image under /images/scenes/. */
   image: string;
+  /**
+   * Sprite-sheet cell for the menu-card thumbnail (fix batch 7):
+   * percent offsets of the 390% × 260% inner span inside the 56px
+   * tile — one of (-15|-145|-275, -15|-145) per the reference markup.
+   * Keyed by drink, not by index, so reordering never remaps a tile.
+   */
+  sprite: { x: number; y: number };
   /** In the reference's 4-of-6 hero button group (audit §8.8). */
   featured: boolean;
 }
@@ -128,6 +135,17 @@ export interface BrandData {
   marqueeFa: string[];
   /** Floating ingredient cut-outs for the hero (transparent WebP, keyed from the blue-screen key art). */
   cutouts: { src: string; altEn: string; altFa: string }[];
+  /**
+   * Ingredient sprite sheet for the menu-card thumbnails (fix batch 7).
+   * ela: /images/ingredients.webp — the reference's own cream sheet,
+   * verified cell-for-cell against the reference's ingredients.jpg.
+   * midori: /images/ingredients-v2-key.webp — the supplied v2 key art:
+   * the same 6 matcha ingredients in the same 3×2 layout (verified by
+   * per-cell hue match after masking the background), photographed on
+   * the blue keying screen instead of cream, so the thumbnail cells
+   * show a blue background where the reference shows cream.
+   */
+  spriteSheet: string;
   /** Customisation groups under "Make it yours". */
   makeItYours: { labelEn: string; labelFa: string; optionsEn: string[]; optionsFa: string[] }[];
 }
@@ -150,8 +168,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Dark cocoa", "Toasted almond", "Brown sugar"],
-    notesFa: ["کاکائوی تلخ", "بادام برشته", "شکر قهوه‌ای"],
+    notesFa: ["کاکائوی تلخ — TODO(review)", "بادام برشته — TODO(review)", "شکر قهوه‌ای — TODO(review)"],
     image: "/images/scenes/original.webp",
+    sprite: { x: -15, y: -15 },
     featured: false,
   },
   {
@@ -171,8 +190,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Burnt sugar", "Butterscotch", "Sea salt"],
-    notesFa: ["شکر سوخته", "کره و شکر قهوه‌ای", "نمک دریا"],
+    notesFa: ["شکر سوخته — TODO(review)", "کره و شکر قهوه‌ای — TODO(review)", "نمک دریا — TODO(review)"],
     image: "/images/scenes/caramel-latte.webp",
+    sprite: { x: -145, y: -15 },
     featured: true,
   },
   {
@@ -191,8 +211,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Vanilla bean", "Fresh cream", "Wildflower honey"],
-    notesFa: ["دانهٔ وانیل", "خامهٔ تازه", "عسل گل وحشی"],
+    notesFa: ["دانهٔ وانیل — TODO(review)", "خامهٔ تازه — TODO(review)", "عسل گل وحشی — TODO(review)"],
     image: "/images/scenes/vanilla-latte.webp",
+    sprite: { x: -275, y: -15 },
     featured: true,
   },
   {
@@ -211,8 +232,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Roasted hazelnut", "Praline", "Milk chocolate"],
-    notesFa: ["فندق برشته", "پرالین", "شکلات شیری"],
+    notesFa: ["فندق برشته — TODO(review)", "پرالین — TODO(review)", "شکلات شیری — TODO(review)"],
     image: "/images/scenes/hazelnut-latte.webp",
+    sprite: { x: -15, y: -145 },
     featured: false,
   },
   {
@@ -232,8 +254,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Dark chocolate", "Black cherry", "Cocoa nib"],
-    notesFa: ["شکلات تلخ", "گیلاس سیاه", "دانهٔ کاکائو"],
+    notesFa: ["شکلات تلخ — TODO(review)", "گیلاس سیاه — TODO(review)", "دانهٔ کاکائو — TODO(review)"],
     image: "/images/scenes/mocha-latte.webp",
+    sprite: { x: -145, y: -145 },
     featured: true,
   },
   {
@@ -253,8 +276,9 @@ const COFFEE_DRINKS: Drink[] = [
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Molasses", "Ceylon cinnamon", "Toffee"],
-    notesFa: ["ملاس", "دارچین سیلان", "تافی"],
+    notesFa: ["ملاس — TODO(review)", "دارچین سیلان — TODO(review)", "تافی — TODO(review)"],
     image: "/images/scenes/cinnamon-latte.webp",
+    sprite: { x: -275, y: -145 },
     featured: true,
   },
 ];
@@ -269,16 +293,17 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Original",
     shortFa: "اورجینال",
     descriptionEn:
-      "Ceremonial-grade matcha whisked smooth and poured over ice and cold whole milk. Bright, creamy and grassy-sweet.",
+      "Ceremonial grade matcha whisked to order and poured over ice and cold milk. Grassy, sweet and silky.",
     descriptionFa:
-      "ماچای تشریفاتیِ هم‌زده روی یخ و شیر سرد. روشن، خامه‌ای و سبزِ شیرین. — TODO(review)",
+      "ماچای درجهٔ تشریفاتی که به سفارش هم زده و روی یخ و شیر سرد ریخته می‌شود. علفی، شیرین و ابریشمی. — TODO(review)",
     priceToman: 195_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
-    notesEn: ["Stone-ground", "Fresh cream", "Wildflower honey"],
-    notesFa: ["آسیاب‌سنگی", "خامهٔ تازه", "عسل گل وحشی"],
+    notesEn: ["Fresh grass", "Sweet cream", "Umami"],
+    notesFa: ["علف تازه — TODO(review)", "خامهٔ شیرین — TODO(review)", "اومامی — TODO(review)"],
     image: "/images/scenes/matcha-original.webp",
+    sprite: { x: -15, y: -15 },
     featured: false,
   },
   {
@@ -290,16 +315,17 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Blueberry",
     shortFa: "بلوبری",
     descriptionEn:
-      "Wild blueberries folded into whisked matcha and cold milk. Jammy, bright and a little tart.",
-    descriptionFa: "بلوبری وحشی با ماچای هم‌زده و شیر سرد. مربایی، روشن و کمی ترش. — TODO(review)",
+      "Wild blueberry compote stirred into cold milk under a layer of whisked matcha. Mellow and berry sweet.",
+    descriptionFa: "کمپوت بلوبری وحشی در شیر سرد، زیر لایه‌ای از ماچای هم‌زده. ملایم و شیرینِ توتی. — TODO(review)",
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     // Single source of truth: the reference card showed only 2 notes here.
     notesEn: ["Wild blueberry", "Vanilla", "Green tea"],
-    notesFa: ["بلوبری وحشی", "وانیل", "چای سبز"],
+    notesFa: ["بلوبری وحشی — TODO(review)", "وانیل — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/blueberry.webp",
+    sprite: { x: -275, y: -15 },
     featured: true,
   },
   {
@@ -311,15 +337,16 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Cherry",
     shortFa: "گیلاس",
     descriptionEn:
-      "Dark cherry compote stirred into whisked matcha and cold milk. Deep, tart and quietly sweet.",
-    descriptionFa: "کمپوت گیلاس تلخ با ماچای هم‌زده و شیر سرد. عمیق، ترش و آرام شیرین. — TODO(review)",
+      "Dark cherry syrup and a pinch of sakura salt beneath whisked matcha and cold milk.",
+    descriptionFa: "سیروپ گیلاس تلخ و کمی نمک ساکورا، زیر ماچای هم‌زده و شیر سرد. — TODO(review)",
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
-    notesEn: ["Dark cherry", "Wildflower honey", "Green tea"],
-    notesFa: ["گیلاس تلخ", "عسل گل وحشی", "چای سبز"],
+    notesEn: ["Dark cherry", "Sakura", "Almond"],
+    notesFa: ["گیلاس تلخ — TODO(review)", "ساکورا — TODO(review)", "بادام — TODO(review)"],
     image: "/images/scenes/cherry.webp",
+    sprite: { x: -145, y: -145 },
     featured: true,
   },
   {
@@ -331,15 +358,16 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Coconut",
     shortFa: "نارگیل",
     descriptionEn:
-      "Toasted coconut and cream swirled into whisked matcha. Soft, tropical and smooth.",
-    descriptionFa: "نارگیل برشته و خامه در ماچای هم‌زده. نرم، استوایی و لطیف. — TODO(review)",
+      "Toasted coconut milk and a touch of cane sugar make this our creamiest, softest matcha.",
+    descriptionFa: "شیر نارگیل برشته و کمی شکر نیشکر، این را خامه‌ای‌ترین و نرم‌ترین ماچای ما می‌کند. — TODO(review)",
     priceToman: 200_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
-    notesEn: ["Toasted coconut", "Fresh cream", "Vanilla"],
-    notesFa: ["نارگیل برشته", "خامهٔ تازه", "وانیل"],
+    notesEn: ["Toasted coconut", "Cane sugar", "Matcha"],
+    notesFa: ["نارگیل برشته — TODO(review)", "شکر نیشکر — TODO(review)", "ماچا — TODO(review)"],
     image: "/images/scenes/coconut.webp",
+    sprite: { x: -275, y: -145 },
     featured: false,
   },
   {
@@ -351,15 +379,16 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Blackberry",
     shortFa: "شاه‌توت",
     descriptionEn:
-      "Ripe blackberry folded into whisked matcha and cold milk. Berry-bright and mellow.",
-    descriptionFa: "شاه‌توت رسیده با ماچای هم‌زده و شیر سرد. توتیِ روشن و ملایم. — TODO(review)",
+      "Tart blackberries muddled with wildflower honey, layered under matcha and oat milk.",
+    descriptionFa: "شاه‌توت‌های ترش که با عسل گل وحشی له شده‌اند، لایه‌به‌لایه زیر ماچا و شیر جو دوسر. — TODO(review)",
     priceToman: 210_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
     notesEn: ["Blackberry", "Wildflower honey", "Green tea"],
-    notesFa: ["شاه‌توت", "عسل گل وحشی", "چای سبز"],
+    notesFa: ["شاه‌توت — TODO(review)", "عسل گل وحشی — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/blackberry.webp",
+    sprite: { x: -15, y: -145 },
     featured: true,
   },
   {
@@ -371,38 +400,55 @@ const MATCHA_DRINKS: Drink[] = [
     shortEn: "Strawberry",
     shortFa: "توت‌فرنگی",
     descriptionEn:
-      "Fresh strawberries whipped into whisked matcha and cold milk. Sweet, soft and pink.",
-    descriptionFa: "توت‌فرنگی تازه با ماچای هم‌زده و شیر سرد. شیرین، نرم و صورتی. — TODO(review)",
+      "Crushed ripe strawberries and cold milk under a layer of whisked matcha. Bright, jammy and soft.",
+    descriptionFa: "توت‌فرنگی‌های رسیدهٔ له‌شده و شیر سرد، زیر لایه‌ای از ماچای هم‌زده. روشن، مربایی و نرم. — TODO(review)",
     priceToman: 205_000,
     caffeineMg: 70,
     size: "16 oz iced",
     sizeFa: "۱۶ انس، سرد",
-    notesEn: ["Strawberry", "Vanilla", "Fresh cream"],
-    notesFa: ["توت‌فرنگی", "وانیل", "خامهٔ تازه"],
+    notesEn: ["Ripe strawberry", "Cream", "Green tea"],
+    notesFa: ["توت‌فرنگی رسیده — TODO(review)", "خامه — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/strawberry.webp",
+    sprite: { x: -145, y: -15 },
     featured: true,
   },
 ];
 
-const MAKE_IT_YOURS: BrandData["makeItYours"] = [
+const MAKE_IT_YOURS_SWEETNESS: BrandData["makeItYours"][number] = {
+  labelEn: "Sweetness",
+  labelFa: "شیرینی",
+  optionsEn: ["Full", "Half", "Unsweetened"],
+  optionsFa: ["کامل", "نصف", "بدون شکر"],
+};
+
+const MAKE_IT_YOURS_SIZE: BrandData["makeItYours"][number] = {
+  labelEn: "Size",
+  labelFa: "اندازه",
+  optionsEn: ["12 oz", "16 oz", "20 oz"],
+  optionsFa: ["۱۲ انس", "۱۶ انس", "۲۰ انس"],
+};
+
+/** Milk differs per brand (reference menu markup): coffee offers Almond, matcha offers Coconut. */
+const MAKE_IT_YOURS_ELA: BrandData["makeItYours"] = [
   {
     labelEn: "Milk",
     labelFa: "شیر",
     optionsEn: ["Whole", "Oat", "Almond"],
     optionsFa: ["کامل", "جو دوسر", "بادام"],
   },
+  MAKE_IT_YOURS_SWEETNESS,
+  MAKE_IT_YOURS_SIZE,
+];
+
+const MAKE_IT_YOURS_MIDORI: BrandData["makeItYours"] = [
   {
-    labelEn: "Sweetness",
-    labelFa: "شیرینی",
-    optionsEn: ["Full", "Half", "Unsweetened"],
-    optionsFa: ["کامل", "نصف", "بدون شکر"],
+    labelEn: "Milk",
+    labelFa: "شیر",
+    optionsEn: ["Whole", "Oat", "Coconut"],
+    optionsFa: ["کامل", "جو دوسر", "نارگیل"],
   },
-  {
-    labelEn: "Size",
-    labelFa: "اندازه",
-    optionsEn: ["12 oz", "16 oz", "20 oz"],
-    optionsFa: ["۱۲ انس", "۱۶ انس", "۲۰ انس"],
-  },
+  MAKE_IT_YOURS_SWEETNESS,
+  MAKE_IT_YOURS_SIZE,
 ];
 
 export const BRANDS: Record<Brand, BrandData> = {
@@ -444,9 +490,9 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Six iced lattes. One perfect shot.",
       titleFa: "شش آیس‌لاته. یک شات بی‌نقص.",
       introEn:
-        "Every drink starts with a double shot of Ela espresso over ice and cold milk, then one of our house flavors.",
+        "Every drink starts with a double shot of Ela espresso over ice and cold milk, then one of our house-made flavors.",
       introFa:
-        "هر نوشیدنی با دابل‌شات اسپرسوی الا روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
+        "هر نوشیدنی با دابل‌شات اسپرسوی الا روی یخ و شیر سرد شروع می‌شود، بعد یکی از طعم‌های خانگیِ ما. — TODO(review)",
     },
     process: {
       eyebrowEn: "How it's made",
@@ -529,7 +575,8 @@ export const BRANDS: Record<Brand, BrandData> = {
       { src: "/images/cutouts/coffee-caramel.webp", altEn: "Salted caramel", altFa: "کارامل نمکی" },
       { src: "/images/cutouts/coffee-vanilla.webp", altEn: "Vanilla flower and pods", altFa: "گل و غلاف وانیل" },
     ],
-    makeItYours: MAKE_IT_YOURS,
+    spriteSheet: "/images/ingredients.webp",
+    makeItYours: MAKE_IT_YOURS_ELA,
   },
   midori: {
     brand: "midori",
@@ -569,9 +616,9 @@ export const BRANDS: Record<Brand, BrandData> = {
       titleEn: "Six iced matchas. One perfect whisk.",
       titleFa: "شش آیس‌ماچا. یک هم‌زدن بی‌نقص.",
       introEn:
-        "Every drink starts with whisked ceremonial matcha over ice and cold milk, then one of our house flavors.",
+        "Every drink starts with ceremonial matcha whisked to order over ice and cold milk, then one of our fresh fruit pairings.",
       introFa:
-        "هر نوشیدنی با ماچای تشریفاتیِ هم‌زده روی یخ و شیر سرد شروع می‌شود، بعد یک طعم خانگی. — TODO(review)",
+        "هر نوشیدنی با ماچای تشریفاتیِ هم‌زده به سفارش روی یخ و شیر سرد شروع می‌شود، بعد یکی از ترکیب‌های میوه‌ای تازهٔ ما. — TODO(review)",
     },
     process: {
       eyebrowEn: "How it's made",
@@ -655,7 +702,12 @@ export const BRANDS: Record<Brand, BrandData> = {
       { src: "/images/cutouts/matcha-cherry.webp", altEn: "Dark cherries", altFa: "گیلاس تلخ" },
       { src: "/images/cutouts/matcha-coconut.webp", altEn: "Coconut", altFa: "نارگیل" },
     ],
-    makeItYours: MAKE_IT_YOURS,
+    // Cream-background sheet keyed from the blue-key art (see
+    // fix7-check/key-v2-cream.py): the supplied v2-key.jpg is the same
+    // 6 ingredients on a blue screen, while the reference sheet is on
+    // cream. The blue sheet would render bright-blue thumbnails.
+    spriteSheet: "/images/ingredients-v2.webp",
+    makeItYours: MAKE_IT_YOURS_MIDORI,
   },
 };
 
