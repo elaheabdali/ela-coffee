@@ -440,6 +440,44 @@ html[data-brand="midori"] {
   padding-bottom: 0.08em;
   margin-bottom: -0.08em;
 }
+/* The gap between words lives HERE, not as the `me-[0.25em]` utility
+   on the spans (WordReveal.tsx): that utility is used only in
+   packages/ui, which Tailwind's content detection — rooted at
+   apps/web — never scans, so it was never emitted and every
+   word-reveal heading rendered with its words joined
+   ("Chooseyourcoffee", in both locales). Same class of bug as the
+   batch-5 missing keyframes. (Fix batch 8.) */
+.ela-word:not(:last-child) {
+  margin-inline-end: 0.25em;
+}
+
+/* Marquee band (Marquee.tsx): the same Tailwind gap as the word
+   spacing above — `w-max`, `whitespace-nowrap`, `sm:text-3xl`,
+   `pr-6`, `size-5` and `text-espresso/45` are used only in
+   packages/ui, so none of them was ever emitted. Without `w-max`
+   the track is as wide as its container (1280px) while its content
+   is ~5300px, so the -50% loop translate jumps instead of looping
+   seamlessly; the band text also rendered 24px instead of 30px,
+   wrappable, with no item padding and full-colour 24px separators.
+   (Fix batch 8.) */
+.animate-ela-marquee {
+  width: max-content;
+}
+.animate-ela-marquee li {
+  white-space: nowrap;
+  padding-right: 1.5rem;
+}
+@media (min-width: 40rem) {
+  .animate-ela-marquee li {
+    font-size: var(--text-3xl);
+    line-height: var(--text-3xl--line-height);
+  }
+}
+.animate-ela-marquee li svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: color-mix(in oklab, var(--color-espresso) 45%, transparent);
+}
 .ela-word-inner {
   display: inline-block;
   animation: ela-word-up 0.95s cubic-bezier(0.22, 1, 0.36, 1)
