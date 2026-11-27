@@ -6,12 +6,14 @@
  */
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Check, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Price } from "@ela-coffee/ui";
 import { ALL_DRINKS } from "@/data/flavours";
 import { useOrderStatus } from "@/hooks/useOrderStatus";
 import { ORDER_STATUSES, type OrderStatus as OrderStatusValue } from "@/lib/types";
+import { useBag } from "@/stores/bag";
 
 /** Translation key per order status (next-intl keys are type-checked). */
 const STATUS_KEYS = {
@@ -21,11 +23,35 @@ const STATUS_KEYS = {
   DONE: "statusDone",
 } as const;
 
-export function OrderStatus({ orderId }: { orderId: string }) {
+/**
+ * When true, the bag is cleared the first time the order is seen as
+ * PAID. Only the payment success page passes this: the bag must
+ * survive until the payment is verified — the customer leaves for
+ * the gateway with the order still PENDING, and a cancelled payment
+ * must leave the bag untouched so they can retry. The drawer renders
+ * this tracker too, but without the prop, so its pre-payment view
+ * never clears anything. The ref guard clears once per order id,
+ * so a refresh of the success page is a no-op (clear is idempotent).
+ */
+export function OrderStatus({
+  orderId,
+  clearBagWhenPaid = false,
+}: {
+  orderId: string;
+  clearBagWhenPaid?: boolean;
+}) {
   const t = useTranslations("order");
   const locale = useLocale();
   const priceLocale = locale === "en" ? "en" : "fa";
   const { status, order, transport, error } = useOrderStatus(orderId);
+
+  const clearedForOrderRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!clearBagWhenPaid || order?.payment !== "PAID") return;
+    if (clearedForOrderRef.current === orderId) return;
+    clearedForOrderRef.current = orderId;
+    useBag.getState().clear();
+  }, [clearBagWhenPaid, order, orderId]);
 
   const currentIndex = ORDER_STATUSES.indexOf(status);
 
@@ -64,7 +90,9 @@ export function OrderStatus({ orderId }: { orderId: string }) {
               </div>
               <div className={`pb-5 ${current ? "font-semibold" : ""}`}>
                 <p>{t(STATUS_KEYS[step])}</p>
-                {current ? <p className="text-sm text-muted-foreground">{t("currentStep")}</p> : null}
+                {current ? (
+                  <p className="text-sm text-muted-foreground">{t("currentStep")}</p>
+                ) : null}
               </div>
             </li>
           );
