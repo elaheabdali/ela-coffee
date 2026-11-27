@@ -15,6 +15,7 @@ vi.mock("next/image", () => ({
     priority?: boolean;
     sizes?: string;
     fetchPriority?: "high" | "low" | "auto";
+    className?: string;
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -23,6 +24,7 @@ vi.mock("next/image", () => ({
       data-priority={props.priority ? "true" : undefined}
       sizes={props.sizes}
       fetchPriority={props.fetchPriority}
+      className={props.className}
     />
   ),
 }));
@@ -64,8 +66,8 @@ describe("wheel helpers", () => {
 });
 
 describe("FlavorWheel", () => {
-  it("renders the hero heading, current flavour, price pill and 6 dots", () => {
-    renderWheel();
+  it("renders the hero heading, current flavour, price pill, counter and 15 tiles", () => {
+    const { container } = renderWheel();
     expect(
       screen.getByRole("heading", { level: 1, name: "Choose your coffee" }),
     ).toBeInTheDocument();
@@ -73,65 +75,129 @@ describe("FlavorWheel", () => {
     expect(
       screen.getByRole("button", { name: /Add Ela Original to your bag, 180,000 T/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText("1 / 6")).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "All flavors" })).toBeInTheDocument();
+    // Reference counter: padded "01 / 06" (two spans, so match each part).
+    expect(screen.getByText("01")).toBeInTheDocument();
+    expect(screen.getByText("/ 06")).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Flavors" })).toBeInTheDocument();
+    expect(container.querySelectorAll("button[data-slot]").length).toBe(15);
   });
 
-  it("shows the reference's 4 featured flavours", () => {
-    renderWheel();
-    for (const name of ["Mocha", "Cinnamon", "Caramel", "Vanilla"]) {
+  it("shows the reference's reachable tiles (±1, ±2) with float delays, not a fan", () => {
+    const { container } = renderWheel();
+    for (const name of [
+      "Choose Brown Sugar Cinnamon",
+      "Choose Dark Mocha",
+      "Choose Salted Caramel",
+      "Choose Vanilla Cream",
+    ]) {
       expect(screen.getByRole("button", { name })).toBeInTheDocument();
     }
-    expect(screen.queryByRole("button", { name: "Hazelnut" })).not.toBeInTheDocument();
+    // The current flavour's tile (slot 0) is aria-hidden, not a button role.
+    expect(
+      screen.queryByRole("button", { name: "Choose Ela Original" }),
+    ).not.toBeInTheDocument();
+    // Float delay is -1.2s per wrapped drink index (the reference's e0).
+    const caramelTile = container.querySelector('button[data-slot="1"] .animate-ela-float');
+    expect((caramelTile as HTMLElement)?.style.animationDelay).toBe("-1.2s");
+    const cinnamonTile = container.querySelector('button[data-slot="-1"] .animate-ela-float');
+    expect((cinnamonTile as HTMLElement)?.style.animationDelay).toBe("-6s");
+  });
+
+  it("layers all six scene photos with the active one pouring over the previous", () => {
+    const { container } = renderWheel();
+    const scene = container.querySelector(".ela-glass.z-10");
+    expect(scene).not.toBeNull();
+    const images = scene?.querySelectorAll("img") ?? [];
+    expect(images.length).toBe(6);
+    expect(images[0]?.className).toContain("z-[2]");
+    expect(images[0]?.className).toContain("opacity-100");
+    expect(images[1]?.className).toContain("z-0");
+    expect(images[1]?.className).toContain("opacity-0");
+    // After moving to flavour 2 the first photo stays underneath (z-1)
+    // and the second pours in (z-2 + pour animation).
+    const stage = screen.getByTestId("hero-stage");
+    fireEvent.keyDown(stage, { key: "ArrowRight" });
+    expect(images[0]?.className).toContain("z-[1]");
+    expect(images[1]?.className).toContain("z-[2]");
+    expect(images[1]?.className).toContain("animate-ela-pour");
+  });
+
+  it("announces the selected flavour in the sr-only live region", () => {
+    renderWheel();
+    const stage = screen.getByTestId("hero-stage");
+    fireEvent.keyDown(stage, { key: "ArrowRight" });
+    expect(screen.getByTestId("hero-live-region")).toHaveTextContent(
+      "Salted Caramel selected, 195,000 T",
+    );
+  });
+
+  it("shows the counter bars and the scroll cue", () => {
+    const { container } = renderWheel();
+    // Active bar w-6 bg-crema, the other five w-2 bg-cream/25.
+    expect(container.querySelectorAll(".w-6.bg-crema").length).toBe(1);
+    expect(container.querySelectorAll(".w-2.bg-cream\\/25").length).toBe(5);
+    expect(screen.getByText("Scroll to taste")).toBeInTheDocument();
   });
 
   it("ArrowRight goes to the next flavour, ArrowLeft to the previous", () => {
     renderWheel();
-    const stage = screen.getByRole("region", { name: "Choose your coffee" });
+    const stage = screen.getByTestId("hero-stage");
     fireEvent.keyDown(stage, { key: "ArrowRight" });
-    expect(screen.getByText("2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("02")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Add Salted Caramel to your bag/ }),
     ).toBeInTheDocument();
     fireEvent.keyDown(stage, { key: "ArrowLeft" });
-    expect(screen.getByText("1 / 6")).toBeInTheDocument();
+    expect(screen.getByText("01")).toBeInTheDocument();
   });
 
-  it("clicking a dot jumps directly to that flavour", () => {
-    renderWheel();
-    fireEvent.click(screen.getByRole("button", { name: "Dark Mocha" }));
-    expect(screen.getByText("5 / 6")).toBeInTheDocument();
+  it("clicking a reachable tile jumps directly to that flavour", () => {
+    const { container } = renderWheel();
+    // Dark Mocha is index 4: the reachable tile at slot -2.
+    const tile = container.querySelector('button[data-slot="-2"]');
+    expect(tile).not.toBeNull();
+    fireEvent.click(tile as HTMLElement);
+    expect(screen.getByText("05")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Add Dark Mocha to your bag/ })).toBeInTheDocument();
   });
 
   it("dragging left goes next, dragging right goes previous", () => {
     renderWheel();
-    const stage = screen.getByRole("region", { name: "Choose your coffee" });
+    const stage = screen.getByTestId("hero-stage");
     fireEvent.pointerDown(stage, { pointerId: 1, clientX: 300, button: 0 });
     fireEvent.pointerMove(stage, { pointerId: 1, clientX: 200 });
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 200 });
-    expect(screen.getByText("2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("02")).toBeInTheDocument();
 
     fireEvent.pointerDown(stage, { pointerId: 1, clientX: 200, button: 0 });
     fireEvent.pointerMove(stage, { pointerId: 1, clientX: 300 });
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 300 });
-    expect(screen.getByText("1 / 6")).toBeInTheDocument();
+    expect(screen.getByText("01")).toBeInTheDocument();
   });
 
   it("a short drag does not change the flavour", () => {
     renderWheel();
-    const stage = screen.getByRole("region", { name: "Choose your coffee" });
+    const stage = screen.getByTestId("hero-stage");
     fireEvent.pointerDown(stage, { pointerId: 1, clientX: 300, button: 0 });
     fireEvent.pointerMove(stage, { pointerId: 1, clientX: 280 });
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 280 });
-    expect(screen.getByText("1 / 6")).toBeInTheDocument();
+    expect(screen.getByText("01")).toBeInTheDocument();
   });
 
   it("the price pill adds the current drink to the bag", () => {
     renderWheel();
     fireEvent.click(screen.getByRole("button", { name: /Add Ela Original to your bag/ }));
     expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 1 }]);
-    expect(screen.getByRole("status")).toHaveTextContent("Ela Original added to your bag.");
+    // Two status regions announce the add: the toast (with a period)
+    // and the hero's sr-only live region (without one).
+    expect(screen.getByTestId("hero-live-region")).toHaveTextContent(
+      "Ela Original added to your bag",
+    );
+    expect(
+      screen
+        .getAllByRole("status")
+        .some((el) => el.textContent === "Ela Original added to your bag."),
+    ).toBe(true);
   });
 
   it("shows the bag icon when the drink is not in the bag", () => {
@@ -150,7 +216,7 @@ describe("FlavorWheel", () => {
       expect(chip.querySelector(".lucide-check")).not.toBeNull();
       expect(chip.querySelector(".lucide-shopping-bag")).toBeNull();
       act(() => {
-        vi.advanceTimersByTime(1500);
+        vi.advanceTimersByTime(1600);
       });
       expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
       expect(chip.querySelector(".lucide-check")).toBeNull();
@@ -168,14 +234,14 @@ describe("FlavorWheel", () => {
       const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
       fireEvent.click(chip);
       act(() => {
-        vi.advanceTimersByTime(1500);
+        vi.advanceTimersByTime(1600);
       });
       expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
       fireEvent.click(chip);
       expect(useBag.getState().items).toEqual([{ drinkId: "ela-original", qty: 2 }]);
       expect(chip.querySelector(".lucide-check")).not.toBeNull();
       act(() => {
-        vi.advanceTimersByTime(1500);
+        vi.advanceTimersByTime(1600);
       });
       expect(chip.querySelector(".lucide-shopping-bag")).not.toBeNull();
       expect(chip.querySelector(".lucide-check")).toBeNull();
@@ -187,12 +253,14 @@ describe("FlavorWheel", () => {
   it("switching flavour clears the check immediately", () => {
     vi.useFakeTimers();
     try {
-      renderWheel();
+      const { container } = renderWheel();
       const chip = screen.getByRole("button", { name: /Add Ela Original to your bag/ });
       fireEvent.click(chip);
       expect(chip.querySelector(".lucide-check")).not.toBeNull();
-      // Switch to Dark Mocha via its dot: the check must not leak over.
-      fireEvent.click(screen.getByRole("button", { name: "Dark Mocha" }));
+      // Switch to Dark Mocha via its reachable tile: the check must
+      // not leak over.
+      const tile = container.querySelector('button[data-slot="-2"]');
+      fireEvent.click(tile as HTMLElement);
       const mochaChip = screen.getByRole("button", { name: /Add Dark Mocha to your bag/ });
       expect(mochaChip.querySelector(".lucide-shopping-bag")).not.toBeNull();
       expect(mochaChip.querySelector(".lucide-check")).toBeNull();
@@ -203,7 +271,7 @@ describe("FlavorWheel", () => {
 
   it("does not capture the pointer on pointerdown — only once a drag starts", () => {
     renderWheel();
-    const stage = screen.getByRole("region", { name: "Choose your coffee" });
+    const stage = screen.getByTestId("hero-stage");
     const capture = vi.fn();
     (stage as unknown as { setPointerCapture: (id: number) => void }).setPointerCapture =
       capture;
@@ -222,12 +290,13 @@ describe("FlavorWheel", () => {
     fireEvent.pointerUp(stage, { pointerId: 1, clientX: 340 });
   });
 
-  it("keeps the tile ring behind the cup photo (z-0 under the z-10 scene)", () => {
+  it("places the tile wheel above the cup photo (z-20 over the z-10 scene)", () => {
     const { container } = renderWheel();
-    // The ring wrapper is the aria-hidden layer that holds the tile images.
-    const ring = container.querySelector('[aria-hidden="true"].z-0');
-    expect(ring).not.toBeNull();
-    expect(ring?.querySelectorAll("img").length).toBeGreaterThan(0);
+    // The wheel group sits above the scene frame, like the reference.
+    const wheel = container.querySelector('[role="group"][aria-label="Flavors"]');
+    expect(wheel).not.toBeNull();
+    expect(wheel?.className).toContain("z-20");
+    expect(wheel?.querySelectorAll("button[data-slot]").length).toBe(15);
     const scene = container.querySelector(".ela-glass.z-10");
     expect(scene).not.toBeNull();
     // Audit §3.5 frame: a 16:9 box anchored at --scene-top, not full-bleed.
@@ -238,30 +307,35 @@ describe("FlavorWheel", () => {
 
   it("marks the hero scene image priority so it preloads for LCP", () => {
     const { container } = renderWheel();
-    const sceneImg = container.querySelector(".ela-glass.z-10 img");
-    expect(sceneImg?.getAttribute("data-priority")).toBe("true");
-    // The scene frame is ~957 CSS px on mobile (audit §3.5 geometry),
-    // so the sizes hint must cover the full viewport width.
-    expect(sceneImg?.getAttribute("sizes")).toContain("100vw");
+    const sceneImgs = container.querySelectorAll(".ela-glass.z-10 img");
+    expect(sceneImgs.length).toBe(6);
+    expect(sceneImgs[0]?.getAttribute("data-priority")).toBe("true");
+    // The reference's sizes hint for the scene frame.
+    expect(sceneImgs[0]?.getAttribute("sizes")).toContain("180vh");
+    expect(sceneImgs[1]?.getAttribute("data-priority")).toBeNull();
   });
 
-  it("sizes the tile-ring images to their display size (160px, not 200px)", () => {
+  it("sizes the tile images from the sprite sheet (the reference's sizes hint)", () => {
     const { container } = renderWheel();
-    // Tiles display at ≤171 CSS px (--tile ≤ 0.19 × --s); asking for
-    // 200px made the browser fetch the 640w variant for every tile.
-    const ring = container.querySelector('[aria-hidden="true"].z-0');
-    const tileImgs = ring?.querySelectorAll("img") ?? [];
-    expect(tileImgs.length).toBeGreaterThan(0);
+    const wheel = container.querySelector('[role="group"][aria-label="Flavors"]');
+    const tileImgs = wheel?.querySelectorAll("img") ?? [];
+    expect(tileImgs.length).toBe(15);
     for (const img of Array.from(tileImgs)) {
-      expect(img.getAttribute("sizes")).toBe("160px");
+      expect(img.getAttribute("sizes")).toBe("(max-width: 639px) 320px, 800px");
+      expect(img.getAttribute("src")).toBe("/images/ingredients.webp");
     }
   });
 
-  it("gives the wheel region a visible focus ring (no outline-none)", () => {
+  it("exposes the hero section as the labelled region; the stage itself is not focusable", () => {
     const { container } = renderWheel();
+    // The reference's structure: <section aria-labelledby="hero-title">
+    // is the region; the stage div carries the pointer handlers and no
+    // role/tabindex, and arrows are handled at window level.
+    const region = screen.getByRole("region", { name: "Choose your coffee" });
+    expect(region.tagName).toBe("SECTION");
     const stage = container.querySelector(".ela-stage");
     expect(stage).not.toBeNull();
-    expect(stage?.className).not.toContain("outline-none");
-    expect(stage?.getAttribute("tabindex")).toBe("0");
+    expect(stage?.getAttribute("tabindex")).toBeNull();
+    expect(stage?.getAttribute("role")).toBeNull();
   });
 });

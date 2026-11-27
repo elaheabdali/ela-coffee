@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingBag } from "lucide-react";
+import { Check, ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatToman } from "@ela-coffee/i18n";
 import { Reveal } from "@ela-coffee/ui";
@@ -21,7 +22,10 @@ export interface MenuCardProps {
  * (fix batch 7): dark `bg-roast` card on the dark section, portrait
  * scene image with a hover zoom, a 56px ingredient-sprite thumbnail
  * and a price pill overlaid on the image, outline tasting-note pills,
- * and a full-width cream "Add to bag" button.
+ * and a full-width cream "Add to bag" button. The button shows the
+ * reference's transient "Added to your bag" state (fix batch 9):
+ * bg-crema + Check for 1400 ms, then back to the bag icon — the
+ * price span hides while added. The batch-5 cream toast still fires.
  *
  * Deliberate deviations from the reference's literal classes:
  * - `font-display` is our theme's Fraunces (the reference's
@@ -43,6 +47,21 @@ export function MenuCard({ drink, delayMs = 0 }: MenuCardProps) {
   const tHero = useTranslations("hero");
   const add = useBag((state) => state.add);
   const { notifyAdded } = useBagToast();
+
+  /**
+   * Transient "Added" state (reference MenuCard `tj` in
+   * ref-js/0u26thf6sg1fh.js): local state, reverts after 1400 ms.
+   * The drink id is stored with the state (fix batch 4 lesson) so
+   * the check can never leak onto another card. The batch-5 cream
+   * toast still fires alongside it.
+   */
+  const [addedDrinkId, setAddedDrinkId] = useState<string | null>(null);
+  const added = addedDrinkId === drink.id;
+  useEffect(() => {
+    if (!added) return;
+    const timer = window.setTimeout(() => setAddedDrinkId(null), 1400);
+    return () => window.clearTimeout(timer);
+  }, [added]);
 
   const name = isFa ? drink.nameFa : drink.nameEn;
   const description = isFa ? drink.descriptionFa : drink.descriptionEn;
@@ -121,11 +140,30 @@ export function MenuCard({ drink, delayMs = 0 }: MenuCardProps) {
               onClick={() => {
                 add(drink.id);
                 notifyAdded(name);
+                setAddedDrinkId(drink.id);
               }}
-              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-cream px-5 py-3 text-sm font-semibold text-espresso transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+              className={
+                added
+                  ? "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-crema px-5 py-3 text-sm font-semibold text-espresso transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+                  : "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-cream px-5 py-3 text-sm font-semibold text-espresso transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crema"
+              }
             >
-              <ShoppingBag className="size-4" aria-hidden="true" />
-              {tDialog("addToBag")}
+              {added ? (
+                <Check className="size-4" strokeWidth={2.5} aria-hidden="true" />
+              ) : (
+                <ShoppingBag className="size-4" aria-hidden="true" />
+              )}
+              {added ? tDialog("addedToBag") : tDialog("addToBag")}
+              {/* Deliberate deviation from the reference card button
+                  (`tj` shows no price here): the price span is kept
+                  while resting and hidden while added, so the added
+                  state reads as a confirmation, matching the flavour
+                  dialog's button (`tr`), which shows the price the
+                  same way. text-espresso/60 on cream passes AA
+                  (4.85:1 ela, 4.56:1 midori). */}
+              {added ? null : (
+                <span className="tabular-nums text-espresso/60">{priceText}</span>
+              )}
             </button>
           </div>
         </div>

@@ -1,15 +1,34 @@
 "use client";
 
+import type { CSSProperties } from "react";
+import { Mountain, Sprout } from "lucide-react";
 import { useLocale } from "next-intl";
 import { toFaDigits } from "@ela-coffee/i18n";
-import { Eyebrow, Reveal, WordReveal } from "@ela-coffee/ui";
+import { Reveal, WordReveal } from "@ela-coffee/ui";
 import { BRANDS } from "@/data/flavours";
 import { useBrand } from "@/stores/brand";
 
 /**
- * Origins section (#origins) — cream section (audit §1.1/§1.2).
- * Two origin cards from the brand dataset, each with its share of
- * the blend and its facts.
+ * Origins section (#origins) — rebuilt class-for-class from the
+ * reference markup (fix batch 9, ref-home.html): dark `bg-background`
+ * section, crema eyebrow, WordReveal h2, intro in text-cream/65, and
+ * a two-column grid of `kuro-contours` cards on bg-roast, each with
+ * its share of the blend, region + country, a circular icon badge
+ * (Mountain for coffee, Sprout for matcha), description and a
+ * three-column fact list. Copy is the reference's English, verified
+ * against the JS dataset (ref-js/0u26thf6sg1fh.js `origins.items`).
+ *
+ * Deliberate deviations from the reference's literal classes:
+ * - `font-display` is our theme's Fraunces (the reference's
+ *   `font-heading font-soft` has no equivalent token here).
+ * - The fact `dt` is `text-cream/60`, not the reference's
+ *   `text-cream/45`: cream at 45% over roast measures 3.99:1 (ela)
+ *   / 3.94:1 (midori) against the WCAG AA 4.5:1 minimum for this
+ *   11px semibold uppercase text; at 60% it measures 6.18:1 /
+ *   5.93:1 and passes. The `dd` keeps the reference's full cream.
+ * - The `--reveal-delay` lives on the `Reveal` wrapper and
+ *   `--contour-at` on the article (the reference puts both on the
+ *   article); visually identical.
  */
 export function Origins() {
   const { brand } = useBrand();
@@ -17,61 +36,84 @@ export function Origins() {
   const isFa = locale === "fa";
   const data = BRANDS[brand];
   const origins = data.origins;
+  const Icon = brand === "ela" ? Mountain : Sprout;
 
   return (
-    <section id="origins" className="bg-cream text-espresso">
-      <div className="mx-auto flex max-w-7xl flex-col gap-10 px-5 py-24 sm:px-12 lg:px-16">
-        <div className="flex flex-col gap-4">
+    <section
+      id="origins"
+      aria-labelledby="origins-title"
+      className="bg-background py-24 text-cream lg:py-32"
+    >
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="max-w-2xl">
           <Reveal variant="fade-up">
-            {/* text-espresso/70: see Story.tsx — the muted token fails
-                AA on cream (1.99:1). */}
-            <Eyebrow className="text-espresso/70">
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-crema">
               {isFa ? origins.eyebrowFa : origins.eyebrowEn}
-            </Eyebrow>
+            </p>
           </Reveal>
           <WordReveal
             as="h2"
+            id="origins-title"
             text={isFa ? origins.titleFa : origins.titleEn}
-            className="font-display text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-black tracking-[-0.02em]"
+            delayMs={80}
+            className="mt-4 text-balance font-display text-[clamp(2.25rem,5vw,3.75rem)] font-medium leading-[1.02] tracking-[-0.03em]"
           />
-          <Reveal variant="fade-up" delayMs={300}>
-            <p className="max-w-2xl leading-relaxed text-espresso/80">
+          <Reveal variant="fade-up" delayMs={260}>
+            <p className="mt-5 text-base leading-relaxed text-cream/65 sm:text-lg">
               {isFa ? origins.introFa : origins.introEn}
             </p>
           </Reveal>
         </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {origins.cards.map((card, index) => (
-            <Reveal key={card.nameEn} variant="fade-up" delayMs={index * 150}>
-              <article className="flex h-full flex-col gap-4 rounded-2xl bg-card p-6 text-foreground shadow-ela-card ring-1 ring-border sm:p-8">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="font-display text-2xl font-bold">
-                    {isFa ? card.nameFa : card.nameEn}
-                  </h3>
-                  <span className="font-mono text-sm text-crema">
-                    {isFa
-                      ? `${toFaDigits(String(card.share))}٪ از ترکیب`
-                      : `${card.share}% of the blend`}
-                  </span>
-                </div>
-                <p className="leading-relaxed text-muted-foreground">
-                  {isFa ? card.introFa : card.introEn}
-                </p>
-                <dl className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
-                  {card.facts.map((fact) => (
-                    <div key={fact.labelEn} className="flex items-baseline justify-between gap-4">
-                      <dt className="text-sm text-muted-foreground">
-                        {isFa ? fact.labelFa : fact.labelEn}
-                      </dt>
-                      <dd className="text-sm font-medium">
-                        {isFa ? fact.valueFa : fact.valueEn}
-                      </dd>
+        <div className="mt-14 grid gap-5 lg:grid-cols-2">
+          {origins.cards.map((card, index) => {
+            const slug = card.nameEn.toLowerCase();
+            return (
+              <Reveal key={card.nameEn} variant="fade-up" delayMs={index === 0 ? 0 : 140}>
+                <article
+                  aria-labelledby={`origin-${slug}`}
+                  style={{ "--contour-at": index === 0 ? "85% 115%" : "15% -15%" } as CSSProperties}
+                  className="kuro-contours relative flex flex-col overflow-hidden rounded-[1.75rem] border border-cream/10 bg-roast p-7 sm:p-10"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-crema">
+                        {isFa
+                          ? `${toFaDigits(String(card.share))}٪ از ترکیب`
+                          : `${card.share}% of the blend`}
+                      </p>
+                      <h3
+                        id={`origin-${slug}`}
+                        className="mt-3 font-display text-4xl font-medium tracking-[-0.03em] sm:text-5xl"
+                      >
+                        {isFa ? card.nameFa : card.nameEn}
+                      </h3>
+                      <p className="mt-1 text-cream/60">
+                        {isFa ? card.regionFa : card.regionEn}
+                      </p>
                     </div>
-                  ))}
-                </dl>
-              </article>
-            </Reveal>
-          ))}
+                    <span className="grid size-12 shrink-0 place-items-center rounded-full border border-cream/15 bg-espresso/60">
+                      <Icon className="size-5 text-crema" aria-hidden="true" />
+                    </span>
+                  </div>
+                  <p className="mt-8 max-w-md text-sm leading-relaxed text-cream/75 sm:text-base">
+                    {isFa ? card.introFa : card.introEn}
+                  </p>
+                  <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-cream/10 pt-6">
+                    {card.facts.map((fact) => (
+                      <div key={fact.labelEn}>
+                        <dt className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-cream/60">
+                          {isFa ? fact.labelFa : fact.labelEn}
+                        </dt>
+                        <dd className="mt-1.5 text-sm font-medium text-cream">
+                          {isFa ? fact.valueFa : fact.valueEn}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

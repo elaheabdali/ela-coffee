@@ -50,7 +50,7 @@ describe("flavours dataset", () => {
     }
   });
 
-  it("flags exactly the 73 uncertain Persian strings with TODO(review)", () => {
+  it("flags exactly the 75 uncertain Persian strings with TODO(review)", () => {
     const flagged: string[] = [];
     const walk = (value: unknown): void => {
       if (typeof value === "string") {
@@ -65,10 +65,14 @@ describe("flavours dataset", () => {
     // 12 drink descriptions + 36 tasting notes + 4 story bodies +
     // 2 menu intros + 8 process bodies + 2 origins intros +
     // 4 origin-card intros + 1 midori story title + 1 midori badge
-    // caption + 3 midori stat labels. The tasting notes were never
-    // flagged before fix batch 7; the menu rebuild restored the
-    // reference's note wording, so all 36 fa notes are unreviewed.
-    expect(flagged).toHaveLength(73);
+    // caption + 3 midori stat labels + 2 midori origin-note values
+    // (batch 9: the reference's "Umami, sweet grass" / "Floral,
+    // sweet pea" replaced the invented "Umami, seaweed" /
+    // "Grass, green apple", so their fa values are unreviewed).
+    // The tasting notes were never flagged before fix batch 7; the
+    // menu rebuild restored the reference's note wording, so all 36
+    // fa notes are unreviewed.
+    expect(flagged).toHaveLength(75);
     for (const s of flagged) {
       expect(s).toMatch(/[\u0600-\u06FF]/);
     }

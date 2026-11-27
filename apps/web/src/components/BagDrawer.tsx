@@ -139,7 +139,12 @@ export function BagDrawer() {
   });
 
   const checkoutMutation = useMutation({
-    mutationFn: async (values: CheckoutValues): Promise<{ order: OrderDTO }> => {
+    mutationFn: async (
+      values: CheckoutValues,
+    ): Promise<{
+      order: OrderDTO;
+      payment?: { authority: string; url: string; verified: boolean };
+    }> => {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
@@ -152,13 +157,37 @@ export function BagDrawer() {
           phone: values.phone,
         }),
       });
-      const data = (await response.json()) as { order?: OrderDTO; error?: { message?: string } };
+      const data = (await response.json()) as {
+        order?: OrderDTO;
+        payment?: { authority: string; url: string; verified: boolean };
+        error?: { message?: string };
+      };
       if (!response.ok || !data.order) {
         throw new Error(data.error?.message ?? "Order failed.");
       }
-      return { order: data.order };
+      return { order: data.order, payment: data.payment };
     },
     onSuccess: (data) => {
+      // The order stays PENDING until the customer pays on the
+      // gateway page, so send the browser there instead of showing
+      // the tracking view — for the real Zarinpal StartPay URL and
+      // for the Mock gateway (/payment/mock), which simulates it.
+      // The callback returns the customer to the success / failure
+      // page afterwards, where the order id is shown.
+      //
+      // Pin next-intl's NEXT_LOCALE cookie first: the callback
+      // route reads the locale from it, but next-intl only writes
+      // it when the locale changes via client navigation — a
+      // visitor who landed directly on /en has none and would land
+      // on the fa result page. SameSite=Lax + Secure on HTTPS
+      // matches the cookie next-intl itself writes.
+      document.cookie =
+        `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax` +
+        (window.location.protocol === "https:" ? "; Secure" : "");
+      if (data.payment && !data.payment.verified && data.payment.url) {
+        window.location.assign(data.payment.url);
+        return;
+      }
       clear();
       setOrderId(data.order.id);
       setServerError(null);

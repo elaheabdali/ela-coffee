@@ -81,6 +81,14 @@ export const memoryStore = {
 
   getOrder: (id: string): OrderDTO | null => orders.get(id) ?? null,
 
+  /** The payment callback resolves the order from its authority. */
+  getOrderByAuthority: (authority: string): OrderDTO | null => {
+    for (const order of orders.values()) {
+      if (order.paymentAuthority === authority) return order;
+    }
+    return null;
+  },
+
   updateOrderStatus: (id: string, status: OrderStatus): OrderDTO | null => {
     const order = orders.get(id);
     if (!order) return null;

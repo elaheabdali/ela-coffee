@@ -11,6 +11,19 @@
  * hand-rolled CSS keyframes + IntersectionObserver (`Reveal` in
  * @ela-coffee/ui). Durations/easings below are the reference's exact values.
  */
+/*!
+ * Vercel build-cache note (batch 9): the batch-9 plain-CSS rules in
+ * section 6 - ela-panel-in, ela-label-in, ela-price-in,
+ * kuro-contours, ela-tile-glass, reduced-motion ela-pour-mask -
+ * were missing from the production stylesheet served after the
+ * batch-9 deploy, although the local build of the same commit
+ * contains them, because Vercel reused the previous CSS. This note
+ * alone does not change the minified output, so the kuro-contours
+ * rule below was also moved after ela-tile-glass: a pure reorder of
+ * independent selectors, no visual change, to guarantee a new
+ * stylesheet hash. Do not remove this note or tidy the order without
+ * re-checking the live CSS for those selectors.
+ */
 @import "tailwindcss";
 
 /* NOTE (fix batch 5): do NOT add an `@source` directive for
@@ -541,6 +554,51 @@ html[data-brand="midori"] {
 .animate-ela-dialog-overlay-in {
   animation: ela-dialog-overlay-in 0.2s ease-out both;
 }
+
+/* Hero header panels + hero label / price-chip enter animations
+   (fix batch 9): the reference uses tailwindcss-animate's `animate-in
+   fade-in zoom-in-95 slide-in-from-top-2 duration-200` (panel),
+   `fade-in slide-in-from-bottom-2 duration-500` (flavour label) and
+   `fade-in duration-300` (chip price) — that plugin is not installed
+   here, so these are the same motions as plain CSS (same §6 rule as
+   the marquee/dialog classes above). */
+.ela-panel-in {
+  animation: ela-panel-in 0.2s ease-out both;
+}
+.ela-label-in {
+  animation: ela-label-in 0.5s ease-out both;
+}
+.ela-price-in {
+  animation: ela-price-in 0.3s ease-out both;
+}
+@keyframes ela-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes ela-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ela-price-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes ela-marquee {
   from {
     transform: translateX(0);
@@ -603,8 +661,19 @@ html[data-motion="paused"] .animate-ela-scroll-cue {
   .animate-ela-scroll-cue,
   .animate-ela-marquee,
   .animate-ela-dialog-in,
-  .animate-ela-dialog-overlay-in {
+  .animate-ela-dialog-overlay-in,
+  .ela-panel-in,
+  .ela-label-in,
+  .ela-price-in {
     animation: none !important;
+  }
+  /* The pour mask is driven by the ela-pour animation (--pour 16% →
+     115%). With that animation disabled, --pour sticks at its 16%
+     initial value, so the hero would show a permanent blend: the top
+     sliver of the new drink over the previous drink's photo. Drop
+     the mask instead, so reduced-motion users see the full photo. */
+  .ela-pour-mask {
+    mask-image: none;
   }
   [data-reveal]:not([data-revealed]) {
     opacity: 1;
@@ -744,27 +813,32 @@ html[data-motion="paused"] .animate-ela-scroll-cue {
 }
 
 /*
- * One flavour tile. The tile is placed at the wheel pivot
- * (centre-x, cup-cy + wheel-r) and swung up onto the wheel by
- * rotate + translateY, so the six tiles form the audit's fan arc.
- * `--d` is the signed angular distance from the current flavour
- * (wrapping, -3..3); `--near` is min(|d|, 3) / 3.
+ * One flavour tile (fix batch 9: the reference's `.kuro-tile`,
+ * ref-main.css). The tile is a <button> placed by Tailwind classes
+ * at the wheel pivot (centre-x, cup-cy + wheel-r) and swung onto the
+ * ring by the reference's formula: --d is the signed slot distance
+ * (--v minus the wheel rotation --rot and the intro offset --intro,
+ * both inherited from the .kuro-wheel container), --near is 1 only at
+ * the centre, and opacity fades tiles in at |d| ≈ 0.32 and out past
+ * |d| ≈ 2.85 — so the resting hero shows the ±1 and ±2 tiles
+ * flanking the cup, not a fan. The reference interpolates --rot with
+ * rAF; our --rot changes discretely from React state, so the .6s
+ * transform/opacity transition below is what smooths our flavour
+ * changes (and the drag). The tile content is the ingredient-sprite
+ * cut-out (DrinkThumb, glass variant).
  */
 .ela-tile {
-  position: absolute;
-  left: 50%;
-  top: calc(var(--cup-cy) + var(--wheel-r));
-  width: var(--tile);
-  aspect-ratio: 16 / 9;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 16px 30px -12px rgb(0 0 0 / 0.8);
+  --d: calc(var(--v) - var(--rot) - var(--intro));
+  --ad: max(var(--d), calc(var(--d) * -1));
+  --near: clamp(0, calc(1 - var(--ad)), 1);
   transform:
-    translate(-50%, -50%)
-    rotate(calc(var(--d, 0) * 10.5deg))
-    translateY(calc(-1 * var(--wheel-r) - var(--s) * 0.3 * var(--near, 0)))
-    scale(calc(1 - 0.55 * var(--near, 0)));
-  opacity: calc(1 - 0.35 * var(--near, 0));
+    rotate(calc(var(--d) * var(--wheel-step)))
+    translateY(calc(var(--wheel-r) * -1 - var(--s) * 0.3 * var(--near)))
+    scale(calc(1 - 0.55 * var(--near)));
+  opacity: min(
+    clamp(0, calc((var(--ad) - 0.32) * 2.6), 1),
+    clamp(0, calc((2.85 - var(--ad)) * 1.8), 1)
+  );
   transition:
     transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.6s ease;
@@ -775,6 +849,31 @@ html[data-motion="paused"] .animate-ela-scroll-cue {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Glass cut-out tile (the reference's `.kuro-glass`): isolation only —
+   unlike the scene's .ela-glass it has no bottom gradient overlay,
+   so the sprite cell stays un-darkened. */
+.ela-tile-glass {
+  isolation: isolate;
+}
+
+/*
+ * Contour rings on the origin cards (fix batch 9): the reference's
+ * `.kuro-contours` (ref-main.css) — the same repeating-radial
+ * gradient, but the ring centre comes from `--contour-at` per card
+ * (85% 115% / 15% -15%). `--kuro-crema` does not exist in our theme;
+ * the equivalent token is `--ela-crema` (same value per brand).
+ * NOTE: this rule sits after .ela-tile-glass on purpose (see the
+ * Vercel build-cache note at the top of this file) — do not move it
+ * back above .ela-glass without re-checking the live CSS.
+ */
+.kuro-contours {
+  background-image: repeating-radial-gradient(
+    circle at var(--contour-at, 80% 120%),
+    transparent 0 22px,
+    color-mix(in srgb, var(--ela-crema) 11%, transparent) 22px 23px
+  );
 }
 
 /* ------------------------------------------------------------------ */

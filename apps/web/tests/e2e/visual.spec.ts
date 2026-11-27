@@ -70,8 +70,13 @@ test.describe("visual regression", () => {
         // optimizer can take a while to encode the large variants
         // the 1440/1920 viewports request; the wait returns as soon
         // as the last image completes, so a warm cache is still fast.
+        // Images inside a `display: none` subtree (e.g. the Join
+        // sprite tiles, `hidden lg:block`) are skipped: Firefox
+        // never starts a lazy fetch for them, so `complete` stays
+        // false forever below lg — and a hidden image cannot affect
+        // any screenshot pixel anyway.
         await page.waitForFunction(
-          () => [...document.images].every((img) => img.complete),
+          () => [...document.images].every((img) => img.complete || img.offsetParent === null),
           undefined,
           { timeout: 60_000 },
         );
