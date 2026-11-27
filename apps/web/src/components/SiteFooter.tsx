@@ -22,7 +22,6 @@ const CONTACT_LINKS = [
   { key: "phone", href: "tel:+982100000000", Icon: Phone },
   { key: "whatsapp", href: "https://wa.me/982100000000", Icon: MessageCircle },
   { key: "telegram", href: "https://t.me/elacoffee", Icon: Send },
-  { key: "eitaa", href: "https://eitaa.com/elacoffee", Icon: MessagesSquare },
   { key: "instagram", href: "https://instagram.com/elacoffee", Icon: Instagram },
 ] as const;
 
@@ -48,9 +47,7 @@ export function SiteFooter() {
         </div>
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-3">
-            <span className="font-display text-3xl font-black tracking-[-0.02em]">
-              {wordmark}
-            </span>
+            <span className="font-display text-3xl font-black tracking-[-0.02em]">{wordmark}</span>
             <p className="max-w-xs text-sm leading-relaxed text-cream/70">
               {brand === "midori" ? tFooter("taglineMatcha") : tFooter("tagline")}
             </p>
