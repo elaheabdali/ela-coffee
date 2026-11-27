@@ -57,6 +57,20 @@ export interface Drink {
    * Keyed by drink, not by index, so reordering never remaps a tile.
    */
   sprite: { x: number; y: number };
+  /**
+   * Transparent ingredient cut-out for the hero wheel tile (hero
+   * cutout fix): a keyed RGBA WebP under /images/cutouts/, one per
+   * drink, verified against the drink's sprite-sheet cell — the
+   * coffee sheet (ingredients.webp, cream) is beans/caramel/vanilla
+   * on the top row and hazelnut/chocolate/cinnamon below; the
+   * matcha sheet (ingredients-v2-key.jpg, blue) is matcha/
+   * strawberry/blueberry on top and blackberry/cherry/coconut
+   * below. The wheel renders this, not the sprite cell, so the
+   * ingredient floats bare on the dark hero like the reference
+   * (whose blue sheet is keyed out by its feColorMatrix filter);
+   * the menu-card thumbnails keep using `sprite`.
+   */
+  cutout: string;
   /** In the reference's 4-of-6 hero button group (audit §8.8). */
   featured: boolean;
 }
@@ -175,6 +189,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["کاکائوی تلخ — TODO(review)", "بادام برشته — TODO(review)", "شکر قهوه‌ای — TODO(review)"],
     image: "/images/scenes/original.webp",
     sprite: { x: -15, y: -15 },
+    cutout: "/images/cutouts/coffee-beans.webp",
     featured: false,
   },
   {
@@ -197,6 +212,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["شکر سوخته — TODO(review)", "کره و شکر قهوه‌ای — TODO(review)", "نمک دریا — TODO(review)"],
     image: "/images/scenes/caramel-latte.webp",
     sprite: { x: -145, y: -15 },
+    cutout: "/images/cutouts/coffee-caramel.webp",
     featured: true,
   },
   {
@@ -218,6 +234,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["دانهٔ وانیل — TODO(review)", "خامهٔ تازه — TODO(review)", "عسل گل وحشی — TODO(review)"],
     image: "/images/scenes/vanilla-latte.webp",
     sprite: { x: -275, y: -15 },
+    cutout: "/images/cutouts/coffee-vanilla.webp",
     featured: true,
   },
   {
@@ -239,6 +256,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["فندق برشته — TODO(review)", "پرالین — TODO(review)", "شکلات شیری — TODO(review)"],
     image: "/images/scenes/hazelnut-latte.webp",
     sprite: { x: -15, y: -145 },
+    cutout: "/images/cutouts/coffee-hazelnut.webp",
     featured: false,
   },
   {
@@ -261,6 +279,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["شکلات تلخ — TODO(review)", "گیلاس سیاه — TODO(review)", "دانهٔ کاکائو — TODO(review)"],
     image: "/images/scenes/mocha-latte.webp",
     sprite: { x: -145, y: -145 },
+    cutout: "/images/cutouts/coffee-chocolate.webp",
     featured: true,
   },
   {
@@ -283,6 +302,7 @@ const COFFEE_DRINKS: Drink[] = [
     notesFa: ["ملاس — TODO(review)", "دارچین سیلان — TODO(review)", "تافی — TODO(review)"],
     image: "/images/scenes/cinnamon-latte.webp",
     sprite: { x: -275, y: -145 },
+    cutout: "/images/cutouts/coffee-cinnamon.webp",
     featured: true,
   },
 ];
@@ -308,6 +328,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["علف تازه — TODO(review)", "خامهٔ شیرین — TODO(review)", "اومامی — TODO(review)"],
     image: "/images/scenes/matcha-original.webp",
     sprite: { x: -15, y: -15 },
+    cutout: "/images/cutouts/matcha-matcha.webp",
     featured: false,
   },
   {
@@ -330,6 +351,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["بلوبری وحشی — TODO(review)", "وانیل — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/blueberry.webp",
     sprite: { x: -275, y: -15 },
+    cutout: "/images/cutouts/matcha-blueberry.webp",
     featured: true,
   },
   {
@@ -351,6 +373,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["گیلاس تلخ — TODO(review)", "ساکورا — TODO(review)", "بادام — TODO(review)"],
     image: "/images/scenes/cherry.webp",
     sprite: { x: -145, y: -145 },
+    cutout: "/images/cutouts/matcha-cherry.webp",
     featured: true,
   },
   {
@@ -372,6 +395,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["نارگیل برشته — TODO(review)", "شکر نیشکر — TODO(review)", "ماچا — TODO(review)"],
     image: "/images/scenes/coconut.webp",
     sprite: { x: -275, y: -145 },
+    cutout: "/images/cutouts/matcha-coconut.webp",
     featured: false,
   },
   {
@@ -393,6 +417,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["شاه‌توت — TODO(review)", "عسل گل وحشی — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/blackberry.webp",
     sprite: { x: -15, y: -145 },
+    cutout: "/images/cutouts/matcha-blackberry.webp",
     featured: true,
   },
   {
@@ -414,6 +439,7 @@ const MATCHA_DRINKS: Drink[] = [
     notesFa: ["توت‌فرنگی رسیده — TODO(review)", "خامه — TODO(review)", "چای سبز — TODO(review)"],
     image: "/images/scenes/strawberry.webp",
     sprite: { x: -145, y: -15 },
+    cutout: "/images/cutouts/matcha-strawberry.webp",
     featured: true,
   },
 ];

@@ -315,14 +315,21 @@ describe("FlavorWheel", () => {
     expect(sceneImgs[1]?.getAttribute("data-priority")).toBeNull();
   });
 
-  it("sizes the tile images from the sprite sheet (the reference's sizes hint)", () => {
+  it("sizes the tile images from the transparent cut-outs (hero cutout fix)", () => {
     const { container } = renderWheel();
     const wheel = container.querySelector('[role="group"][aria-label="Flavors"]');
     const tileImgs = wheel?.querySelectorAll("img") ?? [];
     expect(tileImgs.length).toBe(15);
+    // The tiles no longer render the sprite sheet (its cream cell
+    // showed as a white square on the dark hero); each tile renders
+    // its drink's transparent cut-out instead, with the reference's
+    // sizes hint kept. 15 slots wrap 6 drinks, so every cut-out
+    // appears at least twice.
+    const cutouts = new Set(Array.from(tileImgs).map((img) => img.getAttribute("src")));
+    expect(cutouts.size).toBe(6);
     for (const img of Array.from(tileImgs)) {
       expect(img.getAttribute("sizes")).toBe("(max-width: 639px) 320px, 800px");
-      expect(img.getAttribute("src")).toBe("/images/ingredients.webp");
+      expect(img.getAttribute("src")).toMatch(/^\/images\/cutouts\/[a-z-]+\.webp$/);
     }
   });
 

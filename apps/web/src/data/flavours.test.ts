@@ -158,6 +158,36 @@ describe("flavours dataset", () => {
     }
   });
 
+  it("gives every drink a transparent hero cut-out matching its sprite cell (hero cutout fix)", () => {
+    // Verified against the sheets: coffee (ingredients.webp, cream)
+    // is beans/caramel/vanilla on the top row and hazelnut/
+    // chocolate/cinnamon below; matcha (ingredients-v2-key.jpg,
+    // blue) is matcha/strawberry/blueberry on top and blackberry/
+    // cherry/coconut below. The wheel renders the cut-out, not the
+    // sprite cell, so the ingredient floats bare on the dark hero
+    // like the reference (whose blue sheet is keyed out by its
+    // feColorMatrix filter); the menu thumbnails keep the sprite.
+    const expectedCutout: Record<string, string> = {
+      "ela-original": "coffee-beans",
+      "ela-caramel": "coffee-caramel",
+      "ela-vanilla": "coffee-vanilla",
+      "ela-hazelnut": "coffee-hazelnut",
+      "ela-mocha": "coffee-chocolate",
+      "ela-cinnamon": "coffee-cinnamon",
+      "midori-original": "matcha-matcha",
+      "midori-strawberry": "matcha-strawberry",
+      "midori-blueberry": "matcha-blueberry",
+      "midori-blackberry": "matcha-blackberry",
+      "midori-cherry": "matcha-cherry",
+      "midori-coconut": "matcha-coconut",
+    };
+    for (const drink of ALL_DRINKS) {
+      expect(drink.cutout).toBe(`/images/cutouts/${expectedCutout[drink.id]}.webp`);
+    }
+    // One distinct cut-out per drink.
+    expect(new Set(ALL_DRINKS.map((d) => d.cutout)).size).toBe(12);
+  });
+
   it("offers Coconut milk for matcha and Almond for coffee (fix batch 7)", () => {
     const milk = (brand: "ela" | "midori") =>
       BRANDS[brand].makeItYours.find((g) => g.labelEn === "Milk");

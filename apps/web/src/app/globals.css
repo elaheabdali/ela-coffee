@@ -913,4 +913,13 @@ html[lang="fa"] .leading-relaxed {
   user-select: none;
 }
 
+/* Wheel-tile cut-out image (hero cutout fix): the transparent
+   ingredient fits inside the tile without cropping, so a tall
+   cut-out (strawberry) or a wide one (beans) is shown whole. This
+   beats the .ela-tile img cover rule above (same element, higher
+   specificity) — the sprite cell needed cover to fill the square. */
+.ela-tile .ela-cutout img {
+  object-fit: contain;
+}
+
 

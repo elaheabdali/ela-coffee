@@ -11,7 +11,6 @@ import { useBag } from "@/stores/bag";
 import { useBrand } from "@/stores/brand";
 import { FLAVOUR_COUNT, useFlavour } from "@/stores/flavour";
 import { useBagToast } from "@/components/BagToast";
-import { DrinkThumb } from "./FlavorDialogs";
 
 /**
  * Signed angular distance from the current flavour, wrapped to (-3, 3]
@@ -433,14 +432,36 @@ export function FlavorWheel() {
                     className="animate-ela-float block size-full"
                     style={{ animationDelay: `${-1.2 * wrapped}s` }}
                   >
-                    <DrinkThumb
-                      drink={tileDrink}
-                      spriteSheet={data.spriteSheet}
-                      glass
-                      eager
-                      sizes="(max-width: 639px) 320px, 800px"
-                      className="size-full rounded-[24%] transition-[scale] duration-300 ease-out group-hover:scale-[1.06] group-active:scale-95"
-                    />
+                    {/*
+                     * The ingredient as a transparent cut-out (hero
+                     * cutout fix), not the sprite cell: the reference
+                     * (ref-home.html) renders its blue-key sheet
+                     * through an feColorMatrix filter that keys the
+                     * blue out, so the ingredient floats bare on
+                     * the dark hero — ours keys the same way, but
+                     * with the pre-keyed RGBA WebP, because our
+                     * coffee sheet is on cream and the blue-key
+                     * filter cannot remove cream. Same tile, float,
+                     * hover/active scale and focus outline as
+                     * before; only the cream square is gone. The
+                     * .ela-cutout drop-shadow (globals.css) is what
+                     * lifts the bare cut-out off the dark stage.
+                     * Eager for the same reason DrinkThumb was:
+                     * the ±7 slots sit far outside the viewport,
+                     * so a lazy image there never intersects and
+                     * Firefox never starts the fetch.
+                     */}
+                    <span className="ela-cutout relative block size-full rounded-[24%] transition-[scale] duration-300 ease-out group-hover:scale-[1.06] group-active:scale-95">
+                      <Image
+                        src={tileDrink.cutout}
+                        alt=""
+                        fill
+                        draggable={false}
+                        sizes="(max-width: 639px) 320px, 800px"
+                        loading="eager"
+                        className="object-contain"
+                      />
+                    </span>
                   </span>
                 </button>
               );

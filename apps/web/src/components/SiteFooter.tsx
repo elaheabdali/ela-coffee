@@ -1,6 +1,6 @@
 "use client";
 
-import { Instagram, MessageCircle, MessagesSquare, Phone, Send } from "lucide-react";
+import { Instagram, MessageCircle, Phone, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BRANDS } from "@/data/flavours";
 import { ContactForm } from "@/components/ContactForm";
