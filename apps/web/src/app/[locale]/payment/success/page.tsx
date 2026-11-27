@@ -53,7 +53,7 @@ async function OrderLine({
           on the gateway first — so the success page carries the
           tracker instead. */}
       <div className="mt-4 w-full max-w-md text-start">
-        <OrderStatus orderId={order} />
+        <OrderStatus orderId={order} clearBagWhenPaid />
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { addCurrentFlavourViaDialog, gotoLocale, LOCALES, openBag, type Locale } from "./locales";
+import { addCurrentFlavourViaDialog, bagCountBadge, gotoLocale, LOCALES, openBag, type Locale } from "./locales";
 
 /**
  * Payment flow E2E (batch 9, item 6) — Mock provider only, no network,
@@ -78,6 +78,22 @@ for (const locale of LOCALE_LIST) {
       expect(data.order.payment).toBe("PAID");
       expect(data.order.status).toBe("RECEIVED");
       expect(authority).toContain(orderId);
+
+      // The success page clears the bag once the order is PAID
+      // (bag-clear fix): wait for the persisted bag to empty before
+      // navigating away, then the bag-count badge is gone at home.
+      await page.waitForFunction(() => {
+        const raw = window.localStorage.getItem("ela-coffee-bag");
+        if (!raw) return true;
+        try {
+          const data = JSON.parse(raw) as { state?: { items?: unknown[] } };
+          return (data.state?.items?.length ?? 0) === 0;
+        } catch {
+          return false;
+        }
+      });
+      await gotoLocale(page, locale);
+      await expect(bagCountBadge(page)).toHaveCount(0);
     });
 
     test("cancelling on the gateway lands on the failure page with the order id", async ({
