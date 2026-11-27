@@ -24,7 +24,7 @@ export function BrandMarquee() {
   return (
     <div
       aria-hidden="true"
-      className="overflow-hidden border-y border-espresso/10 bg-crema py-4 text-espresso sm:py-5"
+      className="overflow-hidden border-y border-espresso/10 bg-crema text-espresso"
     >
       <Marquee items={items} separator={brand === "midori" ? "leaf" : "bean"} />
     </div>
